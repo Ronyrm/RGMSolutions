@@ -1,0 +1,69 @@
+{% macro div_pagination_vendedores(datapagination,token,orderby) %}
+    <ul class="pagination mx-2 my-2">
+        {% if datapagination.prevpag == 'False' %}
+            {% set disable = 'disabled' %}
+        {% else %}
+            {% set disable = '' %}
+        {% endif %}
+        <li class="page-item   {{ disable }}">
+            <a class="page-link"
+               title="{{url_for('routesproduct.get_allproducts',current_user={},token=token,page=datapagination.pageatual|int -1,totporpag=datapagination.per_page,order=orderby) }}"
+               href="{{url_for('routesproduct.get_allproducts',current_user={},token=token,page=datapagination.pageatual|int -1,totporpag=datapagination.per_page,order=orderby) }}">
+                Anterior
+            </a>
+        </li>
+        {% for number in range(datapagination.totpage|int) %}
+            {% set disableli = '' %}
+            {% if number+1 ==  datapagination.pageatual|int  %}
+                {% set disableli = 'disabled' %}
+            {% endif %}
+
+            <li class="page-item  {{ disableli }}">
+                <a class="page-link"
+                   title="{{url_for('routesvendedores.get_allvendedores_main',current_user={},token=token,page=number+1,totporpag=datapagination.per_page,order=orderby) }}"
+                   href="{{url_for('routesvendedores.get_allvendedores_main',current_user={},token=token,page=number+1,totporpag=datapagination.per_page,order=orderby) }}">
+                    {{ number + 1 }}
+                </a>
+            </li>
+        {% endfor %}
+
+        {% if datapagination.nextpag == 'False' %}
+            {% set disable = 'disabled' %}
+        {% else %}
+            {% set disable = '' %}
+        {% endif %}
+        <li class="page-item {{ disable }}">
+            <a class="page-link" href="{{url_for('routesvendedores.get_allvendedores_main',current_user={},token=token,page=datapagination.pageatual|int+1,totporpag=datapagination.per_page,order=orderby) }}">
+                Próximo
+            </a>
+        </li>
+    </ul>
+    <div class="dropdown my-2">
+        <button type="button" class="btn btn-md btn-success text-white dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Total de Itens por Página
+        </button>
+
+        <ul class="dropdown-menu bg-success text-white">
+            <li>
+                <a class="dropdown-item " href="{{url_for('routesvendedores.get_allvendedores_main',current_user={},token=token,page=1,totporpag=1,order=orderby) }}">
+                    1 item por página
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{url_for('routesvendedores.get_allvendedores_main',current_user={},token=token,page=1,totporpag=15,order=orderby) }}">
+                    15 itens por página
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{url_for('routesvendedores.get_allvendedores_main',current_user={},token=token,page=1,totporpag=30,order=orderby) }}">
+                    30 itens por página
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{url_for('routesvendedores.get_allvendedores_main',current_user={},token=token,page=1,totporpag=60,order=orderby) }}">
+                    60 itens por página
+                </a>
+            </li>
+        </ul>
+    </div>
+{% endmacro %}

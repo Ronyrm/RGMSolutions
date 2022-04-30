@@ -1,0 +1,66 @@
+{% macro nav_menuatleta(idpessoa,username,refeicao,dataatual,databr) %}
+<nav class="navbar navbar-expand-lg  bg-primary">
+    <small class=" mb-0 text-warning mr-4">Usuário Logado: {{username}}</small>
+    <button id="btn-menu" class="navbar-toggler btn btn-warning" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="glyphicon glyphicon-menu-hamburger"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="nav navbar-nav">
+            <li class="nav-item my-1">
+                <div class="dropdown">
+                    <button class="btn btn-outline-warning btn-sm mx-1 dropdown-toggle"
+                            type="button" id="dropdownMenuButtondados" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dados
+                    </button>
+                    <div class="dropdown-menu  bg-primary" aria-labelledby="dropdownMenuButtondados">
+                        <a type="button" class="btn btn-outline-warning btn-sm mx-1 mb-1" id="btndadosatleta" onclick="dadosatleta();"
+                             href="#">
+                            Gerais
+                        </a>
+                        <a type="button" class="btn btn-outline-warning btn-sm mb-1" id="btnenderecoatleta"
+                           onclick="enderecosatleta({{idpessoa}});"
+                           data-toggle="modal" data-target=".modal-table-enderecos"
+                           href="#">
+                                Endereços
+
+                        </a>
+                    </div>
+                </div>
+
+
+            </li>
+            <li class="nav-item my-1">
+                <a class="btn btn-outline-warning  btn-sm mx-1" onclick="mostrarrefeicoes();" id="btnmostrarefeicoes" data-toggle="collapse" data-target="#navbarSupportedContent" href="#">
+                    Refeições <span class="badge badge-light" id="span-total-ref">{{refeicao|length}}</span>
+                </a>
+            </li>
+            <li class="nav-item my-1">
+                <a class="btn btn-outline-warning  btn-sm mx-1" onclick="mostrarmeta(this);" id="btnmostrarmeta" data-toggle="collapse" data-target="#navbarSupportedContent" href="#">
+                    Minha Meta
+                </a>
+            </li>
+            <li class="nav-item my-1 d-none" id="li-meudiario">
+                <a class="btn btn-outline-warning btn-sm mx-1" href="{{ url_for('routesatleta.get_maindiarioatleta',dataatual=dataatual,databr=databr) }}">
+                    Meu Diário
+                </a>
+            </li>
+            <li class="nav-item my-1" id="li-utilidades">
+                <div class="dropdown">
+                    <button class="btn btn-outline-warning btn-sm mx-1 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Ferramentas
+                    </button>
+                    <div class="dropdown-menu text-center bg-primary" aria-labelledby="dropdownMenuButton">
+                        <a class="btn btn-outline-warning btn-sm mx-1" href="{{ url_for('routespackagetrack.get_main_packagetracker',pessoa=username)}}">
+                            Rastreio Correios
+                        </a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item my-1">
+                <a class="btn btn-outline-warning  btn-sm mx-1" href="{{ url_for('routesatleta.logoutatleta') }}" class="btn btn-outline-warning btn-block btn-sm" id="logout">Sair</a>
+            </li>
+        </ul>
+
+    </div>
+</nav>
+{% endmacro %}

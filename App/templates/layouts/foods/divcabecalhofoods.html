@@ -1,0 +1,45 @@
+{% macro div_cab_foods(pageatual,total,perpage,orderby,inputdesc) %}
+
+    <div class="row p-2">
+        <div class="col-12 col-md-12 my-1">
+            <form  method="GET" action="{{ url_for('routestabalimentos.get_tabalimentos',totpage=perpage,orderby=orderby,page=pageatual) }}">
+                {% if inputdesc=='%%' %}
+                    {% set inputdesc = '' %}
+                {% endif %}
+                <div class="input-group">
+                    <input class="form-control border-primary border-2 rounded-2" type="text"
+                           name="descricao" id="input-descricao" value="{{ inputdesc }}" placeholder="Pesquisa por descrição" aria-label="Search">
+                    <div class="input-group-append">
+                        <button class="btn  btn-warning" type="submit" id="btn_Pesq"><span class="glyphicon glyphicon-search"></span> </button>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+        {% if total >= 19999999  %}
+            <div class="col-md-4 d-flex order-2 justify-content-end my-1">
+                <label class="text-primary mr-2" for="orberby-foods">Ordenar por:</label>
+                <select class="bg-primary text-white" id="orberby-foods" onchange="changeorderby('{{page}}','{{per_page}}');" name="orberby-foods">
+                    {% set selectcamp='' %}
+                    {% if orderby=='0'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="0" {{selectcamp}}  >Maior Id</option>
+
+                    {% set selectcamp='' %}
+                    {% if orderby=='1'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="1" {{selectcamp}}>Menor Id</option>
+
+                    {% set selectcamp='' %}
+                    {% if orderby=='2'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="2" {{selectcamp}}>Nome</option>
+                </select>
+            </div>
+        {% endif %}
+
+    </div>
+{% endmacro %}

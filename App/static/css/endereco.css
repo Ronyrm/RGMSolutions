@@ -1,0 +1,4 @@
+#formendereco input[type="text"]:disabled{
+ background-color: black;
+
+}

@@ -1,0 +1,39 @@
+{% extends "layouts/search_track_correios/base.html" %}
+{% block codigo %} {{ codigo }} {% endblock %}
+{% block content %}
+
+<div  id="content-packagetracker" class="container  py-2">
+    <div class="form-group col-12 col-lg-6 my-2">
+        <label class="text-warning" for="codigo">Forneça o Código de rastreio abaixo</label>
+        <div class="input-group">
+            {% if codigo == None %}
+            {% set codigo='' %}
+            {% endif %}
+            <input type="text" name="codigo" id="codigo" class="form-control" value="{{ codigo }}" placeholder=""
+            aria-describedby="helpId">
+            <div class="input-group-append">
+                <a class="btn btn-warning form-control" href="#"
+                    onclick="btn_tracker_correios(document.getElementById('codigo').value);">
+                        <span class="glyphicon glyphicon-search"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="ml-2">
+    </div>
+    <div id="div-tracker-correios" class="ml-2 p-2">
+    </div>
+
+
+</div>
+<script>
+    $().ready(function() {
+        codigo = document.getElementById('codigo').value;
+        if (codigo.length>0){
+            btn_tracker_correios(codigo);
+        }
+        console.log('Codigo:'+codigo);
+
+    });
+</script>
+{% endblock %}

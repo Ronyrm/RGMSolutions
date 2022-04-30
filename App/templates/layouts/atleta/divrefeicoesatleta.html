@@ -1,0 +1,72 @@
+{% macro telarefeicoesatleta(refeicoes,idpessoa) %}
+    <div class="bg-primary my-1">
+        <!--<div class="alert alert-warning" role="alert">
+            Nenhuma Refeição Lançada, Clique no botão Inserir
+        </div>!-->
+
+        <div id="divrefatleta" class="d-none">
+            <div class="bg-primary d-flex justify-content-between p-1 align-middle text-center" >
+
+                    <div class="ml-2 my-auto text-warning align-middle text-center" id="head-telarefeicao">
+
+                    </div>
+                    <button class="btn btn-warning btn-sm my-2 mr-2 "
+                            data-toggle="modal" data-target=".insert-edit-modal-refeicao"
+                            onclick="btninsertrefeicao({{ idpessoa }})"> Inserir
+                    </button>
+
+            </div>
+
+            <div class="bg-primary p-2">
+                <table class="table table-striped table-dark table-sm" id="table-refeicoes">
+                    <thead class="">
+                        <tr>
+                            <th scope="col">Descrição</th>
+                            <th scope="col" class="text-center">Hora</th>
+                            <th scope="col" class="text-center" >Ativa</th>
+                            <th scope="col" class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-warning" id="tbody-refeicoes">
+
+                        {% for refeicao in refeicoes %}
+
+                        <tr class="mb-1" id="tr-refeicao{{ refeicao.id }}" >
+
+                            <td class="align-middle"><label class="text-warning"> {{refeicao.descricao}}</label></td>
+                            <td class="align-middle text-center"><label class="text-warning">{{refeicao.hora[0:5]}}</label> </td>
+                            <td class="align-middle text-center">
+                                {% set chk = '' %}
+                                {%if refeicao.mostrar == 'S' %}
+                                {% set chk = 'checked' %}
+                                {% endif %}
+                                <input type="checkbox" {{chk}} name="chkativa{{refeicao.id}}" readonly="readonly" onclick="return false;" onkeydown="return false;" >
+                            </td>
+                            <td class="text-center">
+
+                                    <button class="btn btn-sm btn-warning mx-1 my-1"
+                                        title="Editar {{refeicao.descricao}}"
+                                    data-toggle="modal" data-target=".insert-edit-modal-refeicao"
+                                    onclick='editrefeicao({{ refeicao|tojson|safe }});'>
+                                    <span class="glyphicon glyphicon-pencil"></span>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger mx-1 my-1"
+                                    data-toggle="modal" data-target=".modal-delete-refeicao"
+                                    title="Excluir {{refeicao.descricao}}"
+                                    onclick="deleterefeicao({{ refeicao.id }},'{{ refeicao.descricao }}');">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                    </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="bg-primary d-flex justify-content-end p-1">
+                    <button class="btn btn-warning btn-sm  mr-2" onclick="btnvoltarref();" id="btnvoltarrefeicao"> Fechar</button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+{% endmacro %}

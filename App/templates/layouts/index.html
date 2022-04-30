@@ -1,0 +1,19 @@
+{% extends "layouts/base.html" %}
+
+{% block idlogado %} {{ idlogado }} {% endblock %}
+{% block usernamelogado %} {{ usernamelogado }} {% endblock %}
+{% block nameuser %} {{ nameuser }} {% endblock %}
+{% block token %} {{ token }} {% endblock %}
+{% block current_user %} {{ current_user }} {% endblock %}
+
+ {% import 'layouts/pesqalimentos.html' as dival %}
+{% block content %}
+<div align="center">
+  <img class="img-fluid border border-success rounded" width="800" height="500" src="{{ url_for('static', filename='/img/imglogo.jpg') }}" alt="">
+  <h1 class="title">
+    <!--- {{ session['current_user']['name'] }} {{ current_user['username'] }} !-->
+
+    {{ dival.banner(current_user) }}
+  </h1>
+</div>
+{% endblock %}

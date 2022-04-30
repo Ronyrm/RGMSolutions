@@ -1,0 +1,85 @@
+{% extends "layouts/covid/pacientes/base.html" %}
+{%block tabpacientes %} {{ tabpacientes }} {% endblock %}
+{%block result %} {{ result }} {% endblock %}
+{%block pagination %} {{ pagination }} {% endblock %}
+{%block mensagem %} {{ mensagem }} {% endblock %}
+{%block tpfiltro %} {{ tpfiltro }} {% endblock %}
+{%block idexame %} {{ idexame }} {% endblock %}
+{%block idanalito %} {{ idanalito }} {% endblock %}
+{%block idhospital %} {{ idhospital }} {% endblock %}
+{%block resultado %} {{ resultado }} {% endblock %}
+{%block vlresultado %} {{ vlresultado }} {% endblock %}
+{%block tpoperador %} {{ tpoperador }} {% endblock %}
+{% block content %}
+<div  id="content-pacientes" class="container text-warning">
+
+    {% set lblde = ((pagination.page * pagination.per_page) - pagination.per_page + 1) %}
+    {% set lblate = pagination.page * pagination.per_page %}
+    {% if lblate > pagination.total %}
+        {% set lblate = pagination.total %}
+    {% endif %}
+
+    <div class="d-flex justify-content-center">
+        <h2 class="my-3 p-2 bg-warning rounded rounder-2 text-dark"> Pacientes {{resultado}}</h2>
+    </div>
+
+    <div class="d-flex justify-content-center">
+            <label class="text-muted">
+                De {{lblde}} até {{lblate}}, Página Atual: {{pagination.page}} de {{pagination.total_pages}}, Total de registros: {{pagination.total}}
+            </label>
+    </div>
+    <div class="container my-1">
+        <div class="div-pagination-foods my-2   d-flex justify-content-between" id="div-pagination-foods">
+            {{pagination.links}}
+            <div>
+                <button class="btn btn-warning btn-sm" data-toggle="modal" onclick="click_btn_filtro();" data-target="#modal-filtro-pacientes">
+                    Filtro
+                </button>
+            </div>
+        </div>
+        <table class="table table-dark text-warning table-sm mb-4">
+            <thead>
+                <tr>
+                    <th scope="col" class="text-white">Código</th>
+                    <th scope="col" class="text-white">Idade</th>
+                    <th scope="col" class="text-white">Genero</th>
+                    <th scope="col" class="text-white text-center">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tbpac in tbpacientes %}
+                    {% set idade = 2020 - tbpac.anonascimento|int %}
+                    {% if tbpac.genero == 'M' %}
+                        {% set sexo = 'Masculino' %}
+                    {% endif%}
+                    {% if tbpac.genero == 'F' %}
+                        {% set sexo = 'Feminino' %}
+                    {% endif %}
+
+                    <tr>
+                        <td> {{tbpac.idpaciente}}</td>
+                        <td> {{idade}} anos</td>
+                        <td> {{sexo}}</td>
+                        <td class="align-middle text-center">
+                            <a href="{{url_for('routescovid.main_exames_paciente',codpaciente=tbpac.idpaciente,pageatual=pagination.page,per_page=pagination.per_page,tpfiltro=tpfiltro,idexame=idexame,idanalito=idanalito,idhospital=idhospital)}}"
+                               type="button"
+                               class="btn btn-warning btn-sm">
+                                Seus Exames
+                            </a>
+                        </td>
+                    </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% import 'layouts/covid/pacientes/mdfiltropacientes.html' as mdfiltro %}
+    {{ mdfiltro.modal_filtropacientes(idhospital,idexame,idanalito,tpfiltro,resultado) }}
+</div>
+
+<script>
+    $().ready(function() {
+
+    });
+</script>
+{% endblock %}

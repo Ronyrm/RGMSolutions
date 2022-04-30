@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% import 'layouts/head.html' as head %}
+    {{ head.head_content('RGMSolutions') }}
+
+    {% block cssuser %} {% endblock %}
+    {% block csslogin %} {% endblock %}
+
+
+</head>
+<body>
+
+    <main>
+
+        <nav class="navbar navbar-expand-lg bgpadrao  mx-0">
+            <a class="navbar-brand colorlink" href="{{ url_for('main.index') }}">
+                <img class="img-fluid" src="{{ url_for('static', filename='img/topmixmenu.png') }}" alt="">
+            </a>
+
+
+            <button class="navbar-toggler ml-auto custom-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon text-white"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarToggler">
+
+                <ul class="navbar-nav menuprincipal">
+                    {% if not token  %}
+                        <li class="nav-item">
+                            <a class="nav-link colorlink" href="{{ url_for('main.login') }}">
+                                <span class="glyphicon glyphicon-user"></span> Login</a>
+                        </li>
+                    {% endif %}
+                    {% if token  %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link  colorlink px-2 mx-2" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="glyphicon glyphicon-user"></span> {{current_user.username}}
+                            </a>
+                            <div class="dropdown-menu bg-success border-success" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item colorlink" href="#">Dados</a>
+                                {% if current_user %}
+                                    <a class="dropdown-item colorlink" href="{{ url_for('main.index') }}">Sair</a>
+                                {% endif %}
+                            </div>
+                        </li>
+                        <!--<li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('main.login') }}">{{current_user.name}}</a>
+                            </li>
+                        !-->
+                    {% endif %}
+                    <!--
+                    {% if not current_user %}
+                        <li class="nav-item">
+                            <a class="nav-link colorlink" href="#">Inscreva-se</a>
+                        </li>
+                    {% endif %}
+                    !-->
+
+                {% if token %}
+
+                    <li class="nav-item">
+                        <a class="nav-link colorlink px-2" href="#" id="navbarDropdown_menu " role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-home"></span> Cadastro
+                        </a>
+                        <div class="dropdown-menu bgpadrao  border-success" aria-labelledby="navbarDropdown_menu">
+                            <a class="dropdown-item colorlink" href="{{url_for('routesproduct.get_allproducts',current_user={},token=token,page=1,totporpag=15) }}">Produtos</a>
+                            <a class="dropdown-item colorlink" href="{{url_for('routesvendedores.get_allvendedores_main',current_user={},token=token,page=1,totporpag=15,order=0) }}">Vendedores</a>
+                        </div>
+                    </li>
+                </ul>
+
+                {% endif %}
+            </div>
+        </nav>
+
+
+        <div id="content" class="container main-container my-2">
+            {% block content %} {% endblock %}
+            {% block contentalimentos %} {% endblock %}
+        </div>
+
+        <!--<div id="footer" class="container text-center">
+
+        </div>!-->
+        <!--<nav class="navbar fixed-bottom bgpadrao">
+            <div class="row" style="position: relative;" >
+                <div class="col-sm-6 col-lg-4">
+                    {% if sucess %}
+                        <p class="my-2 ml-2 text-left colortxt"  >
+                            Usuário Logado: {% block idlogado %} {% endblock %} - {% block nameuser %} {% endblock %}
+                        </p>
+                    {% endif %}
+                </div>
+                <div class="col-sm-6 col-lg-8">
+                    <p class="my-2 mx-2 text-left text-sm-right colortxt">
+                          {% block footer %}
+                                &copy; copyright 2021 by rony gustavo rodrigues de magalhaes.
+                          {% endblock %}
+                    </p>
+
+                </div>
+            </div>
+        </nav>!-->
+    </main>
+
+    {% block jslogin %} {% endblock %}
+
+</body>
+</html>

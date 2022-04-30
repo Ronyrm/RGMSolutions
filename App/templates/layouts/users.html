@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+
+{% extends "layouts/base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block users %}{{users}}{% endblock %}
+{% block idlogado %}{{idlogado}}{% endblock %}
+{% block usernamelogado %}{{usernamelogado}}{% endblock %}
+{% block cssuser %}<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">{% endblock %}
+
+
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <table class="table bgcolor">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Usuário</th>
+              <th scope="col">Nome Completo</th>
+              <th scope="col">Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+                <tr>
+                    <th scope="row"> {{user.id}}</th>
+                    <td>{{user.username}}</td>
+                    <td>{{user.name}}</td>
+                    <td>{{user.email}}</td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+{% endblock %}

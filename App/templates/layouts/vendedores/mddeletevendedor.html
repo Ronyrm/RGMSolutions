@@ -1,0 +1,30 @@
+{% macro mddeletevendedor(token,pageatual,per_page,order) %}
+    <div class="modal fade modal-delete" id="modal-delete" tabindex="2" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered " role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-success">
+                    <input type="hidden" name="edtiddelete" id="edtiddelete" >
+                    <h5 class="modal-title">Exclusão</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id='alert-msgdelete' class="alert alert-dismissible fade show text-center d-none mx-2 my-2" role="alert">
+                    ddddddddddddddd
+                </div>
+
+                <div class="modal-body" id="modal-msg-delete">
+
+                </div>
+                <div class="modal-footer bg-success">
+                    <button type="button" id="btnconfirmaexclusao" onclick="confirmaexclusao('{{ token }}','{{ pageatual }}', '{{ per_page }}','{{ order }}');" class="btn btn-primary" >
+                        <span class="glyphicon glyphicon-ok"></span> Confirmar
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                       <span class="glyphicon glyphicon-remove"></span> Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

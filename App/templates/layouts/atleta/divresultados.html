@@ -1,0 +1,111 @@
+{% macro divresultados(metaatleta,sumdieta) %}
+    <div class="row mt-4">
+        <!-- Meta Atleta !-->
+        <div class="col-12 col-lg-4 my-1">
+            <div class="col-12 bg-dark border border-warning rounded-2 div-somas" id="div-metataatleta">
+                <h6 class="text-center text-warning p-2"> Meta Atleta</h6>
+                <table class="table table-sm table-dark">
+                    <thead>
+                        <tr>
+                            <th class="align-middle" scope="col">Valor Calórico:</th>
+                            <td class="align-middle"><label class="mx-auto">{{metaatleta[0].valalvocalorico|round}} kcal</label></td>
+                        </tr>
+                        <tr>
+                            <th scope="col">Proteina:</th>
+                            <td>
+                                    Kcal: {{metaatleta[0].valkcalproteina|round}} |
+                                    Grs: {{metaatleta[0].valgramasproteina|round}} |
+                                    {{metaatleta[0].percproteina|round}}%
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="col">Carboidrato:</th>
+                            <td>
+                                    Kcal: {{metaatleta[0].valkcalcarb|round}} |
+                                    Grs: {{metaatleta[0].valgramascarbo|round}} |
+                                    {{metaatleta[0].perccarb|round}}%
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="col">Gordura:</th>
+                            <td>
+                                    Kcal: {{metaatleta[0].valkcalfat|round}} |
+                                    Grs: {{metaatleta[0].valgramasgordura|round}} |
+                                    {{metaatleta[0].percfat|round}}%
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <!-- Total Dieta !-->
+        <div class="col-12 col-lg-4 my-1">
+            <div class="col-12 bg-dark border border-warning rounded-2 div-somas" id="div-totaldiario">
+                <h6 class="text-center text-warning p-2"> Total Diário</h6>
+                <table class="table table-sm table-dark">
+                    <thead>
+                        <tr>
+                            <th class="align-middle" scope="col">Valor Calórico:</th>
+                            {% set totalkcal = 0 %}
+                            {% if sumdieta.totalkcal != None %}
+                                {% set totalkcal = sumdieta.totalkcal %}
+                            {% endif %}
+                            <td class="align-middle"><label class="mx-auto">{{ totalkcal|round }} Kcal</label></td>
+                        </tr>
+                        <tr>
+                            <th scope="col">Proteina:</th>
+                            {% set totalproteina = 0 %}
+                            {% set kcal = 0 %}
+                            {% if sumdieta.totalproteina != None %}
+                                {% set totalproteina = sumdieta.totalproteina %}
+                                {% set kcal = sumdieta.totalproteina*4 %}
+                            {% endif %}
+
+                            <td>
+                                Kcal: {{kcal|round(2)}} |
+                                Grs: {{totalproteina|round(2)}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="col">Carboidrato:</th>
+                            {% set totalcarbo = 0 %}
+                            {% set kcal = 0 %}
+                            {% if sumdieta.totalcarbo != None %}
+                                {% set totalcarbo = sumdieta.totalcarbo %}
+                                {% set kcal = sumdieta.totalcarbo*4 %}
+                            {% endif %}
+                            <td>
+                                Kcal: {{ kcal|round(2) }} |
+                                Grs: {{ totalcarbo|round(2) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="col">Gordura:</th>
+                            {% set totalgordura = 0 %}
+                            {% set kcal = 0 %}
+                            {% if sumdieta.totalgordura != None %}
+                                {% set totalgordura = sumdieta.totalgordura %}
+                                {% set kcal = sumdieta.totalgordura*9 %}
+                            {% endif %}
+                            <td>
+                                Kcal: {{kcal|round(2)}} |
+                                Grs: {{ totalgordura|round(2) }}
+
+                            </td>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <!-- Diferença !-->
+        <div class="col-12 col-lg-4 my-1">
+            <div class="col-12 bg-dark border border-warning rounded-2 div-somas" id="div-kcaldiferenca">
+                <h6 class="text-center text-warning p-2"> Diferença</h6>
+                <table class="table table-sm table-dark">
+                    <thead id="thead-diferenca">
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

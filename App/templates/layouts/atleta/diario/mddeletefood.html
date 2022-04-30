@@ -1,0 +1,31 @@
+{% macro modaldeletefood() %}
+    <div class="modal fade modal-delete-food" id="modal-delete-food" tabindex="2" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered " role="document">
+            <div class="modal-content bg-primary">
+                <div class="modal-header bg-primary">
+                    <input type="hidden" name="edtiddelete" id="edtiddelete" >
+                    <h5 class="modal-title">Exclusão</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div id='alert-msgdelete' class="alert alert-dismissible fade show text-center d-none mx-2 my-2" role="alert">
+                    ddddddddddddddd
+                </div>
+
+                <div class="modal-body text-warning bg-primary" id="modal-msg-delete">
+
+                </div>
+                <div class="modal-footer bg-primary">
+                    <button type="button" onclick="confirmaexclusaofood(foodselect);" class="btn btn-warning" >
+                        <span class="glyphicon glyphicon-ok"></span> Sim
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                       <span class="glyphicon glyphicon-remove"></span> Não
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

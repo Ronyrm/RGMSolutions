@@ -1,0 +1,189 @@
+{% extends "layouts/bolsa_valores/update_data_empresas/base.html" %}
+{%block tabempresas %} {{ tabempresas }} {% endblock %}
+{% block content %}
+<script>
+    var tipo_filtro = {{tabempresas.tipo}};
+    var limit_filtro = {{tabempresas.limit}};
+    var empAtiva_filtro = "{{tabempresas.ativa}}";
+    var orderby_filtro = {{tabempresas.orderby}};
+    var tipoorder_filtro = "{{tabempresas.tipoorder}}";
+
+    var aFilterDividends = {{tabempresas.filterdividends|safe}};
+    var aFilterPL = {{tabempresas.filterpl|safe}};
+    var aFilterPVPA = {{tabempresas.filterpvpa|safe}};
+    var aFilterValCotacao = {{tabempresas.filtervalcotacao|safe}};
+    var aFilterSetores = {{tabempresas.filtersetor|safe}};
+
+    var only_field_visibility = {{tabempresas.only|safe}};
+    var tabempresas = {{tabempresas|replace("None","''")|safe}};
+    var totalempresas = {{tabempresas.total}};
+
+</script>
+<div  id="content-bolsa-valores" class="text-warning  py-2">
+    <div class="d-flex justify-content-between mx-2 my-2">
+        <div class="text-center">
+            <label>Total de Empresas: {{tabempresas.total}}</label>
+            <button class="mx-1 btn btn-warning d-none" id="btn-comparar-papeis">Comparar</button>
+        </div>
+        <div class="text-center" id="div-data-ibovespa">
+
+        </div>
+        <div class="text-center">
+            <button class="btn btn-warning mx-1" data-toggle="modal"  data-target="#modal-filtrar-empresas">Filtrar</button>
+            <button class="btn btn-warning mx-1" data-toggle="modal" data-target="#modal-update-valores-empresa-all">Atualizar Empresas</button>
+        </div>
+    </div>
+    <table class="table table-dark table-sm table-striped" id="table-empresas" style="overflow:auto;">
+        <thead class="bg-warning text-dark" style="position: sticky;top: 0">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Símbolo</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Setor - Sub</th>
+                <th scope="col">Ult.Att</th>
+                <th scope="col" class="th-table-empresas" onclick="sorted_tabempresas_value('perc_dif_cotacao');">
+                    <div class="d-flex justify-content-between">
+                        Val.Cotação
+                        <i class="fas fa-sort-down"></i>
+                </th>
+                <th scope="col" class="th-table-empresas" onclick="sorted_tabempresas_value('val_divyield');">Div.Yield % - R$</th>
+                <th scope="col" class="th-table-empresas" onclick="sorted_tabempresas_date('ex_date_dividend');">Ex-data</th>
+                {% if (tabempresas.tipo == 4) or (tabempresas.tipo) == 5 %}
+                <th scope="col" title="Patrimonio Líquido">Patr.Liquido</th>
+                <th scope="col" class="th-table-empresas" onclick="sorted_tabempresas_value('val_roe');">Roe</th>
+                <th scope="col">Lucro Liq. Atual</th>
+                <th scope="col">Nºde Ações</th>
+                <th scope="col">LPA</th>
+                <th scope="col" class="th-table-empresas" onclick="sorted_tabempresas_value('val_p_l');">P/L</th>
+                <th scope="col">VPA</th>
+                <th scope="col">P/VPA</th>
+
+                {% endif %}
+                <th scope="col">Ação</th>
+            </tr>
+        </thead>
+        <tbody id="tbody-empresas">
+        </tbody>
+    </table>
+
+</div>
+
+<div id="content-detail-empresa" class="py-2 d-none">
+    <div class="d-flex justify-content-betweem mx-2">
+        <div class="text-center">
+            <a class="btn btn-warning btn-sm my-auto" onclick="btn_voltar_lista_empresas(this);">Voltar</a>
+        </div>
+        <h2 class="text-warning mx-auto text-center mb-2" id="lbl-name-empresa"></h2>
+        <div class="text-center">
+            <button type="button" class="btn btn-warning my-auto mr-2"
+                data-toggle="modal" data-target="#modal-update-valores-empresa">
+                Atualização Empresa
+            </button>
+        </div>
+    </div>
+    <div class="mt-4 mx-2" id="div-data-empresa">
+
+    </div>
+
+
+    <div class="container my-2">
+        <button class="btn btn-outline-warning btn-sm my-1 mx-1 active btn-menu" onclick="btn_mostrar_detail_prices_cotacao('detalhes',this);">Detalhes</button>
+        <button class="btn btn-outline-warning btn-sm my-1 mx-1 btn-menu" onclick="btn_mostrar_detail_prices_cotacao('cotacao',this);">Gráfico Cotações</button>
+        <button class="btn btn-outline-warning btn-sm my-1 mx-1 btn-menu" onclick="btn_mostrar_detail_prices_cotacao('dividendos',this);">Gráfico Dividendos</button>
+    </div>
+    <div class="d-flex justify-content-center">
+        <h5 id="lbl-name-grafic" class="text-warning"></h5>
+    </div>
+    <div class="container">
+        <div id="div-content-detalhes" class="div-content mx-2"></div>
+        <div id="div-content-prices-cotacao" class="div-content mx-2">
+
+            <div class="d-flex justify-content-start">
+                <div class="my-2">
+                    <input type="date" id="dt-ini-grafic"><label class="mx-1">a</label>
+                    <input type="date" id="dt-fim-grafic">
+                </div>
+                <button class="btn btn-warning btn-sm my-auto ml-2" onclick="btn_click_gera_grafic_prices_cotacao_diary();"> Gerar </button>
+            </div>
+
+            <div id="chart-prices-cotacao-diary" class="my-2" style="height: 500px"></div>
+
+            <div class="d-flex justify-content-start">
+                <div class="my-2">
+                <label class="text-warning">Mês:</label>
+                <select id="mes-ini" class="mx-1">
+                    <option value="01" selected> Janeiro</option>
+                    <option value="02"> Fevereiro</option>
+                    <option value="03"> Março</option>
+                    <option value="04"> Abril</option>
+                    <option value="05"> Maio</option>
+                    <option value="06"> Junho</option>
+                    <option value="07"> Julho</option>
+                    <option value="08"> Agosto</option>
+                    <option value="09"> Setembro</option>
+                    <option value="10"> Outubro</option>
+                    <option value="11"> Novembro</option>
+                    <option value="12"> Dezembro</option>
+                </select>
+                <label class="text-warning mx-1">a</label>
+                <select id="mes-fim" class="mx-1">
+                    <option value="01"> Janeiro</option>
+                    <option value="02"> Fevereiro</option>
+                    <option value="03"> Março</option>
+                    <option value="04"> Abril</option>
+                    <option value="05"> Maio</option>
+                    <option value="06"> Junho</option>
+                    <option value="07"> Julho</option>
+                    <option value="08"> Agosto</option>
+                    <option value="09"> Setembro</option>
+                    <option value="10"> Outubro</option>
+                    <option value="11"> Novembro</option>
+                    <option value="12"> Dezembro</option>
+                </select>
+                <label class="text-warning mx-1">Ano</label>
+                <select id="select-ano"></select>
+            </div>
+                <button class="btn btn-warning btn-sm my-auto ml-2" onclick="btn_click_gera_grafic_prices_cotacao_month();"> Gerar </button>
+            </div>
+            <div id="chart-prices-cotacao-month" class="my-2" style="height: 500px"></div>
+        </div>
+        <div id="div-content-dividendos" class="div-content d-none mx-2">
+            <div class="d-flex justify-content-start">
+                <div class="my-2">
+                    <label class="text-warning mx-1">Ano:</label>
+                    <select id="select-ano-ini-dividendos"></select>
+                    <label class="text-warning mx-1">a</label>
+                    <select id="select-ano-fim-dividendos"></select>
+                    <label class="text-warning ml-2 mr-1">Tipo:</label>
+                    <select id="select-tpdate">
+                        <option value="0">Mensal</option>
+                        <option value="1">Anual</option>
+                    </select>
+                </div>
+                <button class="btn btn-warning btn-sm my-auto ml-2" onclick="btn_click_gera_grafic_dividendos_month();"> Gerar </button>
+            </div>
+            <div id="chart-dividendos-month" class="my-2" style="height: 500px"></div>
+
+        </div>
+    </div>
+</div>
+
+{% import 'layouts/bolsa_valores/update_data_empresas/mdupdatevaloresempresa.html' as modalupdate %}
+{{ modalupdate.modal_updatevaloresempresa() }}
+
+{% import 'layouts/bolsa_valores/update_data_empresas/mdupdatevaloresempresasall.html' as modalupdateall %}
+{{ modalupdateall.modal_updatevaloresempresasall() }}
+
+
+{% import 'layouts/bolsa_valores/update_data_empresas/mdfiltroempresas.html' as modalfiltrar %}
+{{ modalfiltrar.modal_filtraresempresas() }}
+
+
+{% import 'layouts/bolsa_valores/update_data_empresas/mddataibov.html' as modaldataibov %}
+{{ modaldataibov.modal_dataibov() }}
+
+
+<script>
+
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    {% import 'layouts/head.html' as head %}
+    {{ head.head_content('RGMSolutions') }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/foods.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/atleta.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mercadopago.css') }}">
+</head>
+
+<body id="body-mercadopago">
+
+{% block content %} {% endblock %}
+
+</body>
+
+</html>

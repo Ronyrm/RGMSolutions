@@ -1,0 +1,102 @@
+{% extends "layouts/vendedores/basevendedores.html" %}
+{% block token %} {{ token }} {% endblock %}
+{% block result %} {{ result }} {% endblock %}
+{% block datapagination %} {{ datapagination }} {% endblock %}
+{% block tabvendedor %} {{ tabvendedor }} {% endblock %}
+{% block mensagem %} {{ mensagem }} {% endblock %}
+{% block order %} {{ order }} {% endblock %}
+
+
+{% block jsvendedores %}
+<script src="{{ url_for('static', filename='js/vendedores.js') }}"></script>
+{% endblock %}
+{% block jsjquery %}{% endblock %}
+
+{% block content %}
+<div  id="contentvendedores">
+    <!-- Central !-->
+    <div class="row p-2">
+        <div class="col-12 col-md-6 my-1">
+            <form  method="GET" action="{{ url_for('routesvendedores.get_allvendedores_main',current_user={},token=token,page=1,totporpag=15,order=order) }}">
+
+                <div class="input-group">
+                    <input class="form-control border-success border-2 rounded-2" type="text" name="nome" placeholder="Pesquisa por Nome ou CPF/CNPJ" aria-label="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-success btn-success" type="submit" id="btn_Pesq"><span class="glyphicon glyphicon-search"></span> </button>
+                    </div>
+                </div>
+                <input class="form-control" type="hidden" name="token" value="{{token}}">
+            </form>
+
+        </div>
+        {% if tabvendedor|count >= 1  %}
+            <div class="col-8 col-md-3 d-flex order-3 justify-content-end my-1">
+                <label class="text-success mr-2" for="orberby-vendedor">Ordenar por:</label>
+                <select class="bg-success text-white" id="orberby-vendedor" onchange="changeorderby('{{token}}','{{datapagination.pageatual}}','{{datapagination.per_page}}');" name="orberby-vendedor">
+                    {% set selectcamp='' %}
+                    {% if order=='0'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="0" {{selectcamp}}  >Maior Id</option>
+
+                    {% set selectcamp='' %}
+                    {% if order=='1'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="1" {{selectcamp}}>Menor Id</option>
+
+                    {% set selectcamp='' %}
+                    {% if order=='2'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="2" {{selectcamp}}>Nome</option>
+                </select>
+            </div>
+        {% endif %}
+        <div class="col-4 col-md-3 d-flex order-2 justify-content-start my-1">
+            <button class="btn btn-success btn-sm mr-2  " data-toggle="modal" data-target=".insert-edit-modal-vendedor" onclick='btninserirvendedor();'>
+                <span class="glyphicon glyphicon-plus"></span>  Inserir
+            </button>
+        </div>
+    </div>
+
+    {% import 'layouts/vendedores/mdinsertvendedor.html' as modalinsvend %}
+    {{ modalinsvend.mdinserteditvendedor(token,datapagination.pageatual,datapagination.per_page,order) }}
+
+    {% import 'layouts/vendedores/mddeletevendedor.html' as modaldelvend %}
+    {{ modaldelvend.mddeletevendedor(token,datapagination.pageatual,datapagination.per_page,order) }}
+
+    <!-- Tabela/Grid Vendedores !-->
+
+    {% if result == True  %}
+        <div class="row mx-1" id="div-tabvendedor">
+            {% import 'layouts/vendedores/tabvendedores.html' as tbvendedores %}
+            {{ tbvendedores.table_vendedores(tabvendedor) }}
+        </div>
+
+        <!-- Paginação !-->
+        <nav class="" aria-label="Page navigation example">
+            <div class="row justify-content-center my-2" id="div-pagination-vendedores">
+                {% import 'layouts/vendedores/paginationvendedores.html' as pagvendedor %}
+                {{ pagvendedor.div_pagination_vendedores(datapagination,token,order) }}
+           </div>
+        </nav>
+    {% endif %}
+
+    {% if result == False  %}
+        <div id='alertsemvendedor' class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+            <strong>Mensagem</strong>  <br> {{ mensagem }}
+        </div>
+    {% endif %}
+</div>
+
+
+
+
+
+<script>
+    $().ready(function() {
+    });
+
+</script>
+{% endblock %}

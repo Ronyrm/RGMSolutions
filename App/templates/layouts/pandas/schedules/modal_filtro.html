@@ -1,0 +1,121 @@
+{% macro mdfiltro(ckb_dt,ckb_phone,ckb_nome,edtnome,per_page,ckb_localidade,ckb_nolocalidade,cidade,uf) %}
+    <div class="modal fade modal-filtro" id="modal-filtro" tabindex="0" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header  text-warning">
+                    <h5 class="modal-title">Filtrar Contatos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id='alert-msg-filtro' class="alert alert-dismissible fade show text-center d-none mx-2 my-2" role="alert">
+
+                </div>
+
+                <div class="modal-body ">
+                    <div class="row">
+                        <div class="col-6 col-lg-6">
+                            <div>
+
+                        <label class="text-warning mr-1" for="per_page"> Total por Página:</label>
+                        <select name="per_page" id="per_page">
+                            {% set selected = '' %}
+                            {% if per_page == 10 %}
+                            {% set selected = 'selected' %}
+                            {% endif %}
+                            <option value="10" {{selected}}>10</option>
+                            {% set selected = '' %}
+                            {% if per_page == 50 %}
+                            {% set selected = 'selected' %}
+                            {% endif %}
+                            <option value="50" {{selected}}>50</option>
+                            {% set selected = '' %}
+                            {% if per_page == 100 %}
+                            {% set selected = 'selected' %}
+                            {% endif %}
+                            <option value="100" {{selected}}>100</option>
+                            {% set selected = '' %}
+                            {% if per_page == 200 %}
+                            {% set selected = 'selected' %}
+                            {% endif %}
+                            <option value="200" {{selected}}>200</option>
+                        </select>
+                    </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" {{ckb_dt}} value=""  id="ckb-datanascimento">
+                                <label class="form-check-label" for="ckb-datanascimento">
+                                    Que contenha data de Nascimento
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" {{ckb_phone}} value="" id="ckb-phone">
+                                <label class="form-check-label" for="ckb-phone">
+                                    Que contenha Telefone
+                                </label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" {{ckb_nome}} onclick="click_ckbnome();" type="checkbox" value="S" id="ckb-nome">
+                                <label class="form-check-label"  for="ckb-nome">
+                                    Por Nome que inicia com
+                                </label>
+
+                            </div>
+                            <input class="form-control" type="text" placeholder="Digite aqui as Iniciais" value="{{edtnome}}" class="d-none" name="edtnome" id="edtnome">
+                        </div>
+                        <div class="col-6 col-lg-6">
+                            <div class="form-check" id="div-check-nolocalidade">
+                                <input class="form-check-input"  {{ckb_nolocalidade}} onclick="click_ckbnolocalidade();" type="checkbox" value=""  id="ckb-nolocalidade">
+                                <label class="form-check-label mr-3" for="ckb-nolocalidade">
+                                Sem Localidade
+                                </label>
+                            </div>
+                            <div class="form-check" id="div-check-localidade">
+                                <input class="form-check-input" {{ckb_localidade}} onclick="click_ckblocalidade('{{uf}}');" type="checkbox" value=""  id="ckb-localidade">
+                                <label class="form-check-label" for="ckb-localidade">
+                                    Localidade
+                                </label>
+                            </div>
+
+                            <div class="form-group d-none mt-2" id="div-localidade">
+                                <div class="form-row selectoruf">
+                                    <div class="col-12">
+                                        <label for="selectUF">UF</label>
+                                        <select name="selectUF" value="{{uf}}" onchange="onchange_input_uf(this.value);" id="selectUF" class="form-control form-control-sm"></select>
+                                        <input type="hidden" id="edtsiglauf" name="edtsiglauf">
+                                        <small class="text-danger d-none" id="small-selectuf"> Aguarde Carregando Cidades...</small>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="col-12">
+                                        <label for="brownser-cidades">Cidade</label>
+                                        <input list="brownser-cidades" tabindex="7"
+                                               placeholder="Digite aqui a Cidade"
+                                               value="{{cidade}}"
+                                                class="form-control form-control-sm"
+                                                name="edtnomecidade" id="edtnomecidade"
+                                                oninput="btn_brownser_change(this.value);">
+                                        <datalist id="brownser-cidades" data-model-name="brownser-cidades">
+                                        <input type="hidden" name="edtlocalidade" id="edtlocalidade">
+                                        </datalist>
+                                        <small class="text-danger d-none" id="small-cidade"> Forneça a Cidade</small>
+                                        <input type="hidden" id="edtidcidade" name="edtidcidade">
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="btnconfirmaexclusao" onclick="click_btn_filtrar();" class="btn btn-warning" >
+                        <span class="glyphicon glyphicon-ok"></span> Filtrar
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                       <span class="glyphicon glyphicon-remove"></span> Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

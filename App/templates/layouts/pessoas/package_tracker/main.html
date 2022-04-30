@@ -1,0 +1,40 @@
+{% extends "layouts/pessoas/package_tracker/base.html" %}
+{% block idpessoa %} {{ idpessoa }} {% endblock %}
+
+{% block content %}
+
+<div  id="content-packagetracker" class="container  py-2">
+    <div id="msg-small" class="alert-danger p-1 d-none"></div>
+    <div class="row bg-primary text-warning text-center p-2 mt-3 d-flex justify-content-between">
+        <h5> Rastreamento de Objetos - Correios Brasil </h5>
+        <button class="btn btn-warning" data-toggle="modal" data-target="#insert-edit-modal-track"
+                onclick="document.getElementById('edtidpacktracker').value='-1';">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+    </div>
+    <nav class="navbar navbar-expand-lg bg-primary my-3" id="nav-status">
+        <div id="navbarNavAltMarkup">
+                <a class="btn btn-outline-warning active mx-1 my-1" id="btn-track-pendentes"
+                   onclick="search_track(this,'P')"
+                   href="#">
+                    Pendentes <span class="sr-only">(current)</span>
+                </a>
+                <a class="btn btn-outline-warning mx-1 my-1" id="btn-track-entregues"
+                   onclick="search_track(this,'E')"
+                   href="#">
+                    Entregues
+                </a>
+                <a class="btn btn-outline-warning mx-1 my-1" id="btn-track-nao-encontrado"
+                   onclick="search_track(this,'N')"
+                   href="#">
+                    Não Localizado
+                </a>
+        </div>
+    </nav>
+
+    <div id="accordion" class="d-none">
+    </div>
+</div>
+{% import 'layouts/pessoas/package_tracker/md_add_update_track.html' as adduptrack %}
+{{ adduptrack.addupdate_track(idpessoa) }}
+{% endblock %}

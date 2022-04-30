@@ -1,0 +1,462 @@
+{% extends "layouts/products/baseproducts.html" %}
+{% block jsproduct %}
+<script src="{{ url_for('static', filename='js/products.js') }}"></script>
+<script src="{{ url_for('static', filename='js/groupproducts.js') }}"></script>
+
+{% endblock %}
+{% block jsjquery %}{% endblock %}
+
+{% block idlogado %} {{ idlogado }} {% endblock %}
+{% block usernamelogado %} {{ usernamelogado }} {% endblock %}
+{% block token %} {{ token }} {% endblock %}
+{% block tabproducts %} {{ tabproducts }} {% endblock %}
+{% block caminhoimg %} {{ caminhoimg }} {% endblock %}
+{% block nextpag %} {{ nextpag }} {% endblock %}
+{% block prevpag %} {{ prevpag }} {% endblock %}
+{% block pageatual %} {{ pageatual }} {% endblock %}
+{% block totpage %} {{ totpage }} {% endblock %}
+{% block perpage %} {{ perpage }} {% endblock %}
+{% block prev_num %} {{ prev_num }} {% endblock %}
+{% block nextnum %} {{ nextnum }} {% endblock %}
+{% block datapag %} {{ datapag }} {% endblock %}
+{% block urlroot %} {{ urlroot }} {% endblock %}
+{% block divmsg %} {{ divmsg }} {% endblock %}
+{% block divmsgerro %} {{ divmsgerro }} {% endblock %}
+{% block content %}
+<div  id="contentproducts">
+    <!-- Central !-->
+    <nav class="container  my-2" align="center">
+
+        {% if divmsg|length >0 %}
+        <div id='cxmsg' class="alert alert-primary alert-dismissible fade show" role="alert">
+            <strong>Mensagem</strong> {{ divmsg }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
+        {% if divmsgerro|length >0 %}
+        <div id='cxmsgerro' class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Mensagem</strong> {{ divmsgerro }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endif %}
+        <div id='msgdel' class="alert-dismissible fade d-none" role="alert">
+
+        </div>
+    </nav>
+    <nav class="navbar navbar-expand-lg justify-content-between">
+        <form  method="GET" action="{{ url_for('routesproduct.get_allproducts',page=1,totporpag=15) }}">
+
+            <div class="input-group">
+                    <input class="form-control border-success border-2 rounded-2" type="text" name="desc" placeholder="Pesquisa por Descrição" aria-label="Search">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-success btn-success" type="submit" id="btn_Pesq"><span class="glyphicon glyphicon-search"></span> </button>
+                    </div>
+            </div>
+
+            <input class="form-control" type="hidden" name="token" value="{{token}}">
+
+        </form>
+        <button class="btn btn-success mr-2 " data-toggle="modal" data-target=".edit-modal" onclick='editprod("None","-1","I")'>
+            <span class="glyphicon glyphicon-plus"></span>  Inserir
+        </button>
+
+    </nav>
+    <!-- Tabelas de Produtos !-->
+    {% if tabproducts|count >= 1  %}
+        <table class="table table-striped table-light ">
+            <thead class="bg-success">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Id</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col">Grupo</th>
+                    <th scope="col">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="border border-success border-2">
+            {% for product in tabproducts %}
+
+                {% set camimg = 'nophoto.png' %}
+                {% if product.caminhoimg|length > 0   %}
+                    {% set camimg = product.caminhoimg %}
+                {% endif %}
+                {% if product.caminhoimg != ''   %}
+                    {% set camimg = product.caminhoimg %}
+                {% endif %}
+
+                {% if camimg == '' %}
+                    {% set camimg = 'nophoto.png' %}
+                {% endif %}
+                <tr id="tr-prod{{ product.id }}" title="tr-prod{{ product.id }}">
+                    <th scope="row">
+                        <img  width="100" id="imgprod_{{product.id}}" height="100" title="imgprod_{{product.id}}" src="{{ url_for('static', filename='/img/uploads/' + camimg) }}" alt="" />
+                    </th>
+                    <td>{{product.id}}</td>
+                    <td>{{product.descricao}} </td>
+                    <td>{{product.produto_grupo.descricao}} </td>
+                    <td>
+                        <div>
+                            {% set list = caminhoimg.split('/') %}
+                            <button class="btn btn-sm btn-success mx-1 my-1"
+                                title="Editar {{product.descricao}}"
+                                data-toggle="modal" data-target=".edit-modal"
+                                onclick='editprod({{ product|tojson|safe }},{{ list }},"A")'>
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </button>
+                            <button class="btn btn-sm btn-danger mx-1 my-1"
+                                data-toggle="modal" data-target=".modal-delete"
+                                title="Excluir {{product.descricao}}"
+                                onclick="deleteprod({{ product.id }},'{{ product.descricao }}','{{ token }}');">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div id='alertsemprod' class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+            <strong>Mensagem</strong>  <br>Nenhum produto ainda cadastrado
+        </div>
+    {% endif %}
+
+    <!-- Paginação !-->
+    <nav class="" aria-label="Page navigation example">
+        <div class="row justify-content-center my-2">
+            <ul class="pagination mx-2 my-2">
+
+                {% if prevpag == False %}
+                    {% set disable = 'disabled' %}
+                {% else %}
+                    {% set disable = '' %}
+                {% endif %}
+                <li class="page-item   {{ disable }}">
+                    <a class="page-link" href="{{url_for('routesproduct.get_allproducts',current_user={},token=token,page=pageatual-1,totporpag=perpage) }}">
+                        Anterior
+                    </a>
+                </li>
+                {% for number in range(totpage|int) %}
+
+                    {% set disableli = '' %}
+                    {% if number+1 ==  pageatual|int  %}
+                        {% set disableli = 'disabled' %}
+                    {% endif %}
+
+                    <li class="page-item  {{ disableli }}">
+                        <a class="page-link" href="{{url_for('routesproduct.get_allproducts',current_user={},token=token,page=number+1,totporpag=perpage) }}">
+                            {{ number + 1 }}
+                        </a>
+                    </li>
+                {% endfor %}
+
+                {% if nextpag == False %}
+                    {% set disable = 'disabled' %}
+                {% else %}
+                    {% set disable = '' %}
+                {% endif %}
+                <li class="page-item {{ disable }}">
+                    <a class="page-link" href="{{url_for('routesproduct.get_allproducts',current_user={},token=token,page=pageatual+1,totporpag=perpage) }}">
+                        Próximo
+                    </a>
+                </li>
+            </ul>
+
+            <div class="dropdown my-2">
+                <button type="button" class="btn btn-md btn-success text-white dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Total de Itens por Página
+                </button>
+
+                <ul class="dropdown-menu bg-success text-white">
+                    <li>
+                        <a class="dropdown-item " href="{{url_for('routesproduct.get_allproducts',current_user={},token=token,page=pageatual,totporpag=1) }}">
+                            1 item por página
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{url_for('routesproduct.get_allproducts',current_user={},token=token,page=1,totporpag=15) }}">
+                            15 itens por página
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{url_for('routesproduct.get_allproducts',current_user={},token=token,page=1,totporpag=30) }}">
+                            30 itens por página
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{{url_for('routesproduct.get_allproducts',current_user={},token=token,page=1,totporpag=60) }}">
+                            60 itens por página
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="btnqtdpag('{{ token}}','1','5','{{ urlroot }}')">
+                            60 itens por página
+                        </a>
+                    </li>
+              </ul>
+            </div>
+        </div>
+
+    </nav>
+    <!-- Editar e inserir !-->
+    <div class="modal fade edit-modal" id="edit-modal" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-success">
+            <h5 class="modal-title text-white" id="lblidprod"></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form name="formproduct" id="formproduct" enctype="multipart/form-data" method="POST" action="{{ url_for('routesproduct.update_product',currente_user={},token=token,page=pageatual-1,totporpag=perpage) }}">
+              <div class="modal-body bg-success">
+                <div id="accordion">
+                  <p>
+                      <a class="btn btn-outline-padrao active" id="btn-dadosgerais" data-toggle="collapse" data-target="#collapse-dadosgerais"  aria-expanded="false" aria-controls="collapse-dadosgerais">
+                        Dados Gerais
+                      </a>
+                      <a class="btn btn-outline-padrao"  id="btn-img" data-toggle="collapse" data-target="#collapse-image" aria-expanded="false" aria-controls="collapse-image">
+                        Imagem
+                      </a>
+                  </p>
+
+                      <div class="collapse show " id="collapse-dadosgerais" data-parent="#accordion">
+                          <div class="card card-body text-success ">
+                                <div class="form-group">
+                                    <label for="edtdescricao">Descrição</label>
+                                    <input type="text" class="form-control" required name="edtdescricao" id="edtdescricao" placeholder="Descrição">
+                                    <input type="hidden" name="edtid" id="edtid" >
+                                </div>
+                                <div class="form-group">
+                                    <label for="edtsubdescricao">Sub Descrição</label>
+                                    <input type="text" class="form-control" name="edtsubdescricao" id="edtsubdescricao" placeholder="Sub Descrição">
+                                </div>
+                                <div class="form-group">
+                                    <label for="browsers" class="form-label">Grupo de Produtos</label>
+                                    <div class="input-group">
+
+                                        <input class="form-control" list="browsers" id="edtdescgrupoproduto" onblur="searchdalist_grupoprodutos('');" placeholder="Pesquisar Grupo de produtos ...">
+                                        <div class="input-group-append">
+                                            <a class="btn text-white btn-success"
+                                                    data-toggle="modal" data-target=".modal-groupprod"
+                                                    onclick="btngrupoprod(1,5);"
+                                                    title="Inserir Grupo de Produtos"
+                                                    id="btnaddgrupo">
+                                                <span class="glyphicon glyphicon-plus"></span>
+                                            </a>
+                                        </div>
+                                        <div class="input-group-append">
+                                            <a class="btn text-white btn-success"
+                                                    onclick="datalist_grupoprod();"
+                                                    title="Atualiza Grupo de Produtos"
+                                                    id="btnupdateproduto">
+                                                <span class="glyphicon glyphicon-refresh"></span>
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <input class="form-control" type="hidden" name="edtidgrupoproduto" id="edtidgrupoproduto">
+                                    <datalist id="browsers" class="bg-success">
+                                    </datalist>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <label for="edtprecocusto" >Preço de Custo</label>
+                                            <input type="numeric" required class="form-control" name="edtprecocusto" id="edtprecocusto" placeholder="Preço de Custo">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label for="edtmargemlucro">% de Lucro</label>
+                                            <input type="numeric" required class="form-control" name="edtmargemlucro" id="edtmargemlucro" placeholder="Margem de Lucro">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label for="edtprecovenda">Preço de Venda</label>
+                                            <input type="numeric" required class="form-control" name="edtprecovenda" id="edtprecovenda" placeholder="Preço de Venda">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label for="edtestoqminimo">Estoque Mínimo</label>
+                                            <input type="numeric" required class="form-control" name="edtestoqminimo" id="edtestoqminimo" placeholder="Estoque Mínimo">
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="edtestoqatual">Estoque Atual</label>
+                                            <input type="numeric" required class="form-control" name="edtestoqatual" id="edtestoqatual" placeholder="Estoque Atual">
+                                        </div>
+                                    </div>
+                                </div>
+                          </div>
+                      </div>
+                      <div class="collapse" id="collapse-image" data-parent="#accordion">
+                          <div class="card card-body bg-success">
+                              <div class="form-group text-center">
+
+                                    <label for="fileimg">
+                                        <input type="file" name="fileimg" id="fileimg"  onchange="readURL(this);" accept="image/png, image/jpeg"
+                                               class="d-none form-control-file" >
+                                        <img class="icone-img  d-block" src="#" id="imgprod"/>
+                                    </label>
+                                    <br>
+                                    <label  for="fileimg">Clique aqui pra alterar ou inserir uma imagem</label>
+
+                            </div>
+                          </div>
+                          <img  class=" d-none" width="100" id="imgprod_semfoto" height="100" title="sem imagem" src="{{ url_for('static', filename='/img/uploads/nophoto.png') }}" alt="" />
+                      </div>
+
+                </div>
+              </div>
+
+              <div class="modal-footer bg-success">
+                <button type="submit" class="btn btn-primary" >
+                    <span class="glyphicon glyphicon-ok"></span> Salvar
+                </button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">
+                    <span class="glyphicon glyphicon-remove"></span> Cancelar
+                </button>
+
+              </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Deleta Produto !-->
+    <div class="modal fade modal-delete" id="modal-delete" tabindex="2" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered " role="document">
+            <div class="modal-content">
+              <div class="modal-header bg-success">
+                  <input type="hidden" name="edtiddelete" id="edtiddelete" >
+                  <h5 class="modal-title">Exclusão</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body" id="modal-msg-delete">
+
+              </div>
+              <div class="modal-footer bg-success">
+                  <button type="button" id="btnconfirmaexclusao" data-dismiss="modal" onclick="exclusaoclick('{{ token }}','{{ pageatual }}', '{{ totpage }}');" class="btn btn-primary" >
+                      <span class="glyphicon glyphicon-ok"></span> Confirmar
+                  </button>
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">
+                       <span class="glyphicon glyphicon-remove"></span> Cancelar
+                  </button>
+              </div>
+            </div>
+          </div>
+    </div>
+
+    <!-- Modal Grupo de Produtos!-->
+    <div class="modal fade bd-example-modal-lg modal-groupprod" id="modal-groupprod" tabindex="3" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-grid-grupoprod" id="modal-grid-grupoprod" role="document">
+            <div class="modal-content">
+              <div class="modal-header bg-success">
+                  <h5 class="modal-title">Grupo de Produtos</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+              <div class="modal-body" id="modal-gridprod">
+
+              </div>
+              <div class="modal-footer bg-success">
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">
+                       <span class="glyphicon glyphicon-remove"></span> Fechar
+                  </button>
+              </div>
+            </div>
+        </div>
+        <div class="modal-dialog  d-none modal-dados-grupoprod" id="modal-dados-grupoprod" role="document">
+            <div class="modal-content">
+              <div class="modal-header bg-success">
+                  <h5 class="modal-title-dados-grupo" id="modal-title-dados-grupo"></h5>
+              </div>
+                <div class="modal-body" id="modal-dados-gridgrupo">
+                    <div id='cxmsg-grupo' class="alert alert-primary d-none alert-dismissible fade show" role="alert">
+                    </div>
+                    <div class="card card-body">
+                        <div class="form-group">
+                            <label for="edtdescgrupo">Descrição</label>
+                            <input type="text" class="form-control" required name="edtdescgrupo" id="edtdescgrupo" placeholder="Descrição">
+                            <input type="hidden" name="edtidgrupo" id="edtidgrupo">
+                            <input type="hidden" name="edtpagatual" id="edtpagatual" >
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-success">
+                  <button type="button" class="btn btn-primary" onclick="btnconfirmargrupo();">
+                       <span class="glyphicon glyphicon-ok"></span> Confirmar
+                  </button>
+                  <button type="button" class="btn btn-danger" onclick="btncancelargrupo();">
+                       <span class="glyphicon glyphicon-remove"></span> Cancelar
+                  </button>
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-dialog  d-none modal-delete-grupoprod" id="modal-delete-grupoprod" role="document">
+            <div class="modal-content">
+              <div class="modal-header bg-success">
+                  <h5 class="modal-title-delete-grupo" id="modal-title-delete-grupo"> Exclusão</h5>
+              </div>
+                <div class="modal-body" id="modal-bodydelete-grupo">
+                    <div id='cxmsgdelete-grupo' class="alert alert-primary d-none alert-dismissible fade show" role="alert">
+                    </div>
+                    <div class="card card-body">
+                        <p id="paragraf-msg-del"></p>
+                    </div>
+                </div>
+                <div class="modal-footer bg-success">
+                  <button type="button" class="btn btn-primary" onclick="btnconfirmarexclusaogrupo();">
+                       <span class="glyphicon glyphicon-ok"></span> Confirmar
+                  </button>
+                  <button type="button" class="btn btn-danger" onclick="btncancelargrupo();">
+                       <span class="glyphicon glyphicon-remove"></span> Cancelar
+                  </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+$().ready(function() {
+
+	setTimeout(function () {
+		$('#cxmsg').hide();
+		$('#cxmsgerro').hide();
+
+
+	}, 3000);
+	datalist_grupoprod();
+});
+
+$('#btn-dadosgerais').click(function(e) {
+            e.preventDefault();
+		    $('#btn-img').removeClass('active');
+            $(this).addClass('active');
+
+});
+$('#btn-img').click(function(e) {
+            e.preventDefault();
+		    $('#btn-dadosgerais').removeClass('active');
+            $(this).addClass('active');
+
+
+});
+
+
+</script>
+
+{% endblock %}
+

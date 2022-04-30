@@ -1,0 +1,495 @@
+{% macro div_meta_atleta(atleta,metaatleta,ativa) %}
+    {% set dnonemsg = 'd-none'%}
+    {% set msg = '' %}
+    {%if ativa == 'N'%}
+        {% set dnonemsg = ''%}
+        {% set msg = 'Nenhuma meta em aberto, cadastre clicando em "Meta" no meu menu!'%}
+    {% endif %}
+    <div class="alert alert-danger {{dnonemsg}} mb-2" id="msg-meta-atleta">
+            {{msg}}
+    </div>
+    <div class=" text-warning container mt-2" id="div-meta-atleta">
+
+        <form name="formmetaatleta" id="formmetaatleta" class="d-none">
+            <div class="form-group row d-flex justify-content-center">
+                <div id="accordion" class="bg-primary">
+                    <!--- Card Principal !-->
+                    <div class="card bg-primary" id="div-card-principal-meta">
+                        <div id="collapseMain" class="collapse show" aria-labelledby="headingMain" data-parent="#accordion">
+                            <div class="card-body">
+                                <div class="form-group row d-flex justify-content-center">
+                                    <div class="form-group col-6 col-lg-3">
+                                        <label for="edtpesoinicialmetaatleta">Peso Inicial</label>
+                                        <input type="number" value="{{atleta.peso}}" class="form-control form-control-sm" id="edtpesoinicialmetaatleta" name="edtpesoinicialmetaatleta" aria-describedby="alturaHelp" placeholder="Peso Inicial">
+                                        <input type="hidden" value="{{atleta.id}}" name="edtidatleta" id="edtidatleta">
+                                        <input type="hidden" name="edtkcalalvo" id="edtkcalalvo">
+                                        <input type="hidden" name="edttmb" id="edttmb">
+                                        <input type="hidden" name="edtgcd" id="edtgcd">
+                                        <input type="hidden" value="N" name="edtfrmharrisoriginal" id="edtfrmharrisoriginal">
+                                        <input type="hidden" value="N" name="edtfrmharrisrevisada" id="edtfrmharrisrevisada">
+                                        <input type="hidden" value="N" name="edtfrmmiffin" id="edtfrmmiffin">
+                                        <input type="hidden" value="N" name="edtfrmkatch" id="edtfrmkatch">
+                                        <input type="hidden" value="N" name="edtdiasprevisto" id="edtdiasprevisto">
+
+
+
+
+                                    </div>
+                                    <div class="form-group col-6 col-lg-3">
+                                        <label for="edtpesofinalmetaatleta">Meta de Peso</label>
+                                        <input type="number" value="0" onblur="exitpesofinalmetaatleta(this);" class="form-control form-control-sm" id="edtpesofinalmetaatleta" name="edtpesofinalmetaatleta" aria-describedby="pesoHelp" placeholder="Meta de Peso">
+                                    </div>
+                                    <div class="form-group col-6 col-lg-3">
+                                        {% set percfat = atleta.percfat %}
+                                        {% if atleta.percfat == None or atleta.percfat == ''%}
+                                            {% set percfat = 0 %}
+                                        {% endif %}
+
+                                        <label for="edtpercfatinicialmetaatleta">% Gordura</label>
+                                        <input type="number" class="form-control form-control-sm" value="{{percfat}}" id="edtpercfatinicialmetaatleta" name="edtpercfatinicialmetaatleta" aria-describedby="pesoHelp" placeholder="%Gordura">
+                                        <small id="alertpercfatmetaatleta" class="text-danger">Caso não souber, deixar zerado</small>
+                                    </div>
+                                </div>
+                                <div class="form-group border border-warning">
+                                    <div class="form-group d-flex justify-content-center bg-warning">
+                                        <label class="text-dark text-center mr-2"><strong>Objetivo</strong></label>
+                                    </div>
+                                    <div class="form-group d-flex justify-content-center">
+                                        <div class="d-flex justify-content-center">
+                                            <div class="form-check mr-1">
+                                                <input class="form-check-input"  id="radiometamoreatleta" type="radio" onclick="checkmeta_atleta();" name="radiometaatleta" checked value="ganho">
+                                                <label class="form-check-label" for="radiometamoreatleta">
+                                                    Ganho Peso
+                                                </label>
+                                            </div>
+                                            <div class="form-check ml-1">
+                                                <input class="form-check-input"  type="radio" id="radiometalessatleta" onclick="checkmeta_atleta();" name="radiometaatleta"  value="perda">
+                                                <label class="form-check-label" for="radiometalessatleta">
+                                                    Perder Peso
+                                                </label>
+                                            </div>
+                                            <input type="hidden" name="edtobjetivometa" id="edtobjetivometa">
+                                        </div>
+                                    </div>
+                                    <div class="form-group d-flex justify-content-center">
+                                        <div class="form-group col-6 col-lg-6 mx-auto">
+                                            <small class="form-check-label mr-2" for="edtkcalmetaatleta" id="lbltipometaatleta">Excedente Calórico Diário <a class="text-warning a-info"><span class="glyphicon glyphicon-info-sign"></span></a> </small>
+                                            <input type="number" id="edtkcalmetaatleta" name="edtkcalmetaatleta"  value="0" style="width: 100%">
+                                        </div>
+                                        <div class="form-group col-6 col-lg-6 mx-auto">
+                                            <small class="form-check-label mr-2" for="edtkcalexercatleta" id="label-kcalexercises">
+                                                Calorias Exercícios Diários <a class="text-warning a-info"><span class="glyphicon glyphicon-info-sign"></span></a>
+                                            </small>
+                                            <input type="number" id="edtkcalexercatleta" name="edtkcalexercatleta" value="0" style="width: 100%">
+                                            <small id="msg-validcalexec" class="text-danger"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between">
+                                <small id="alertmetaatleta" class="text-danger"></small>
+                                <button  type="button" id="btnavancarmain" onclick="avancarmain();" class="btn btn-outline-warning collapsed mx-1"  data-toggle="collapse" aria-expanded="false" aria-controls="collapseOne">
+                                    Avançar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!--- Nivel de Atividade !-->
+                    <div class="card bg-primary" id="div-card-nivel-atividade">
+                        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" data-parent="#accordion">
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-center p-2">
+                                    <h5 class="text-white text-center"><strong>Escolha abaixo um nível de atividade que mais encaixa com você</strong></h5>
+                                </div>
+                                <div class="list-group mb-2 ">
+                                    <button onclick="btnnivelatv_meta(1.2);" type="button"  data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" class="list-group-item list-group-item-action">
+                                        <small>
+                                            Estilo de vida sedentário, pouco ou nenhum exercício, caminhada moderada, trabalho de escritório (longe de casa) (1.2)
+                                        </small>
+                                    </button>
+                                    <button onclick="btnnivelatv_meta(1.375);" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" class="list-group-item list-group-item-action">
+                                        <small>
+                                            Ligeiramente ativo, exercício ou esportes leves 1 a 3 dias por semana, corrida leve ou caminhada 3 a 4 dias por semana (1,375)
+                                        </small>
+                                    </button>
+                                    <button onclick="btnnivelatv_meta(1.55);" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" class="list-group-item list-group-item-action">
+                                        <small>
+                                            Moderadamente ativo, trabalho físico, exercício ou esportes 4 a 5 dias por semana, trabalhador da construção (1,55)
+                                        </small>
+                                    </button>
+                                    <button onclick="btnnivelatv_meta(1.75)" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" class="list-group-item list-group-item-action">
+                                        <small>
+                                            Muito ativo, trabalho físico pesado, exercícios ou esportes de 6 a 7 dias por semana, trabalhador árduo (1,75)
+                                        </small>
+                                    </button>
+                                    <button  onclick="btnnivelatv_meta(1.9)" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" class="list-group-item list-group-item-action">
+                                        <small>
+                                            Extremamente Ativo, Trabalho Físico Muito Pesado ou Exercício Todos os Dias, Atleta Profissional / Olímpico (1.9)
+                                        </small>
+                                    </button>
+                                </div>
+
+                            </div>
+                            <div class="card-footer d-flex justify-content-end">
+                                <button type="button" id="btnvoltarna" onclick="voltarna();" class="btn btn-outline-warning collapsed mx-1" data-toggle="collapse" data-target="#collapseMain" aria-expanded="false" aria-controls="collapseTwo">
+                                    Voltar
+                                </button>
+                            </div>
+                            <input type="hidden" id="edtnameta" name="edtnameta">
+                        </div>
+                    </div>
+                    <!-- Tabela Escolha Fórmula !-->
+                    <div class="card bg-primary" id="div-card-formula">
+                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                            <div class="card-body">
+                                <div class="row d-flex justify-content-center p-2">
+                                    <h5 class="text-white text-center"><strong>Escolha uma ou mais fórmula, clicando em Incluir na tabela abaixo </strong></h5>
+                                </div>
+
+                                <table class="table table-dark table-striped table-sm" id="tab-bmr-meta">
+                                    <thead class="table-dark text-padrao">
+                                        <tr>
+                                            <th scope="col">
+                                                Fórmula(TMB)<small>
+                                                <a class="text-warning" data-toggle="modal" data-target="#modal-info" onclick="chamamodalinfo('TMB- Taxa Metabólica Basal',msginfo.bmr)" ><span class="glyphicon glyphicon-info-sign"></span></a>
+                                                </small>
+                                            </th>
+                                            <th scope="col"></th>
+                                            <th scope="col">
+                                                TMB<small>
+                                                <a class="text-warning" data-toggle="modal" data-target="#modal-info" onclick="chamamodalinfo('TMB- Taxa Metabólica Basal',msginfo.bmr)" ><span class="glyphicon glyphicon-info-sign"></span></a>
+                                                </a>
+                                                </small>
+                                            </th>
+                                            <th scope="col">
+                                                GCD<small>
+                                                <a class="text-warning" data-toggle="modal" data-target="#modal-info" onclick="chamamodalinfo('GCD - Gasto Calórico Diário',msginfo.tdee)" ><span class="glyphicon glyphicon-info-sign"></span></a>
+                                                </a>
+                                                </small>
+                                            </th>
+                                            <th scope="col">
+                                                Incluir
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="body-BMR-meta">
+
+                                    </tbody>
+                                    <tfoot class="table-dark text-warning">
+                                        <tr>
+                                            <th scope="row"> Média(final)</th>
+                                            <th></th>
+                                            <th class="align-middle text-center"><label id="edtmediabmr-meta" ></label></th>
+                                            <th class="align-middle text-center"><label id="edtmediatdee-meta"></label></th>
+                                            <th></th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+
+                            </div>
+                            <div class="card-footer d-flex justify-content-end">
+                                <button type="button" id="btnvoltarformula" onclick="voltarformula();" class="btn btn-outline-warning collapsed mx-1" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseTwo">
+                                    Voltar
+                                </button>
+                                <button  type="button" class="btn btn-outline-warning collapsed mx-1" id="btnavancarformula" onclick="avancarformula();" disabled  data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Avançar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Resultado Calorias Alvo !-->
+                    <div class="card bg-primary" id="div-card-resultado-calorias-meta">
+                        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <!-- Calorias de Gorduras corporal !-->
+                                    <div class="col-12 d-flex mb-2 justify-content-center bg-warning rounded p-2">
+                                            <h5 class="text-dark text-center "> Resultado </h5>
+                                    </div>
+                                    <div class="form-row border border-warning mt-2">
+                                        <div class="col-12 my-2 d-flex justify-content-center">
+                                            <div col="col-9">
+                                                <a class="text-warning a-info" data-toggle="modal" data-target="#modal-info" onclick="chamamodalinfo('Calorias por Kilo de Gordura Corporal',msginfo.kcalkgfat)" ><span class="glyphicon glyphicon-info-sign"></span></a>
+                                                <label>Calorias por quilo de gordura corporal:
+                                                </label>
+                                            </div>
+                                            <div class="col-3 align-middle" >
+                                                <input  class="w-75" id="edtkcalkgfatmetaatleta" type="number" value="3500">
+                                            </div>
+                                       </div>
+                                        <!-- Tabela Resultado!-->
+                                        <div class="col-12 d-flex justify-content-center">
+                                            <table class="table table-dark table-sm" id="tab-result-meta">
+                                                <thead class="table-dark text-padrao">
+                                                    <tr>
+                                                        <th scope="col"><small></small></th>
+                                                        <th scope="col"><small><strong>Diariamente</strong></small></th>
+                                                        <th scope="col"><small><strong>Semanalmente</strong></small></th>
+                                                        <th scope="col"><small><strong>Mensalmente</strong></small></th>
+                                                        <th scope="col"><small><strong>Anualmente</strong></small></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="body-result-meta" class="table-dark text-warning">
+                                                    <tr>
+                                                        <td><small><strong>TMB</strong></small></td>
+                                                        <td><small><input class="w-75" disabled type="number" value="0" name="edtbmrdiametaatleta" id="edtbmrdiametaatleta"></small></td>
+                                                        <td><small><input class="w-75" disabled type="number" value="0" id="edtbmrsemanalmetaatleta"></small></td>
+                                                        <td><small><input class="w-75" disabled type="number" value="0" id="edtbmrmensalmetaatleta"></small></td>
+                                                        <td><small><input class="w-75" disabled type="number" value="0" id="edtbmranualmetaatleta"></small></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><small><strong>GCD</strong></small></td>
+                                                        <td><small><input class="w-75" disabled type="number" disabled value="0" name="edtgcddiametaatleta" id="edtgcddiametaatleta"></small></td>
+                                                        <td><small><input class="w-75" disabled type="number" disabled value="0" id="edtgcdsemanalmetaatleta"></small></td>
+                                                        <td><small><input class="w-75" disabled type="number" disabled value="0" id="edtgcdmensalmetaatleta"></small></td>
+                                                        <td><small><input class="w-75" disabled type="number" disabled value="0" id="edtgcdanualmetaatleta"></small></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td><small id="lbl-desctipometaatleta"></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" type="number" value="0" onchange="calcgrkgproteinakcalmetaatleta(this);" id="edtmetakaldiametaatleta"></small></td>
+                                                        <td class="align-middle"><small><input  disabled class="w-75" type="number" value="0"  id="edtmetakalsemanalmetaatleta"></small></td>
+                                                        <td class="align-middle"><small><input  disabled class="w-75" type="number" value="0" id="edtmetakalmensalmetaatleta"></small></td>
+                                                        <td class="align-middle"><small><input  disabled class="w-75" type="number" value="0" id="edtmetakalanualmetaatleta"></small></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="align-middle"><small><strong>Kcal dos Exercícios</strong></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" type="number" value="0" onchange="calckcalexercmetaatleta(this);" id="edtKcalExecdiametaatleta"></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" disabled type="number" value="0" id="edtKcalExecsemanalmetaatleta"></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" disabled type="number" value="0" id="edtKcalExecmensalmetaatleta"></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" disabled type="number" value="0" id="edtKcalExecanualmetaatleta"></small></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="col-12 d-flex justify-content-center">
+                                            <label class="text-warning"><strong>Meta - Resultado Final</strong></label>
+                                        </div>
+                                        <!-- Tabela Resultado Final -> Calorias Alvo !-->
+                                        <div class="col-12 d-flex justify-content-center">
+                                            <table class="table table-dark table-sm">
+                                                <thead class="table-dark text-padrao">
+                                                    <tr>
+                                                        <th scope="col"><small></small></th>
+                                                        <th scope="col"><small><strong>Diariamente</strong></small></th>
+                                                        <th scope="col"><small><strong>Semanalmente</strong></small></th>
+                                                        <th scope="col"><small><strong>Mensalmente</strong></small></th>
+                                                        <th scope="col"><small><strong>Anualmente</strong></small></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="table-dark text-warning">
+                                                    <tr>
+                                                        <td><small id="lbl-tipometa-atleta"></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" type="number" onchange="calcpesodia_metaatleta(this);" id="edtpesodiametaatleta"><label id="lblpesodiametaatleta" >gr</label></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" type="number" value="0" disabled id="edtpesosemanalmetaatleta"><label id="lblpesosemanalmetaatleta" >gr</label></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" type="number" value="0" disabled id="edtpesomensalmetaatleta"><label id="lblpesomensalmetaatleta" >kg</label></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" type="number" value="0" disabled id="edtpesoanualmetaatleta"><label id="lblpesoanualmetaatleta" >kg</label></small></td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td><small><strong>Alvo Calórico</strong></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" disabled type="number" value="0" name="edtalvokcaldiametaatleta" id="edtalvokcaldiametaatleta"></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" disabled type="number" value="0"  id="edtalvokcalsemanalmetaatleta"></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" disabled type="number" value="0" id="edtalvokcalmensalmetaatleta"></small></td>
+                                                        <td class="align-middle"><small><input class="w-75" disabled type="number" value="0" id="edtalvokcalanualmetaatleta"></small></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row d-flex justify-content-center">
+                                    <label class="text-warning text-center" id="lbl-resultadofinal"></label>
+                                    <p class="text-white" id="pgf-dadosresultado"></p>
+                                </div>
+                            </div >
+                            <div class="card-footer d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-warning collapsed mx-1" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Voltar
+                                </button>
+                                <button  type="button" onclick="avancarresultado();" class="btn btn-outline-warning collapsed mx-1" data-toggle="collapse" data-target="#collapseFour"  aria-expanded="false" aria-controls="#modal-resultadofinal">
+                                    Avançar
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Divisão dos macros !-->
+                    <div class="card bg-primary" id="div-card-divisao-macro">
+                        <div id="collapseFour" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                            <div class="card-body">
+                                <div class="form-row">
+                                    <div class="col-12 text-dark align-center text-center  bg-warning rounded">
+                                        <p>Divisão dos Macros Nutrientes</p>
+                                        <p id="div-titulo-macronutriente"></p>
+                                    </div>
+
+
+                                </div>
+                                <table class="table table-dark table-sm border border-warning" id="tab-divisaomacro">
+                                    <thead class="table-dark text-padrao">
+                                        <tr>
+                                            <th class="align-middle text-center" scope="col"><small></small></th>
+                                            <td class="align-middle text-center" scope="col"><small><strong>%</strong></small></td>
+                                            <td class="align-middle text-center" scope="col"><small><strong>Calorias</strong></small></td>
+                                            <td class="align-middle text-center" scope="col"><small><strong>Gramas</strong></small></td>
+                                            <td class="align-middle text-center" scope="col"><small><strong>Gramas/KG</strong></small></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="body-divisaomacro" class="table-dark text-warning">
+                                        <tr>
+                                            <td class="align-middle text-center"><small><strong>Protéina:</strong></small></td>
+                                            <td class="align-middle text-center"><input type="number" aria-valuemin="10"  value="30"  onchange="calcpercproteina(this);" class="form-control form-control-sm w-75" id="edtpercproteina" name="edtpercproteina"></td>
+                                            <td class="align-middle text-center"><input type="number" value="0" onchange="calckcalproteina(this);" class="form-control form-control-sm w-75" id="edtkcalproteina" name="edtkcalproteina"></td>
+                                            <td class="align-middle text-center"><input type="number" value="0" onchange="calcgramasproteina(this);" class="form-control form-control-sm w-75" id="edtgramasproteina" name="edtgramasproteina" aria-describedby="pesoHelp"></td>
+                                            <td class="align-middle text-center"><input type="number" value="0" onchange="calcgrporkgproteina(this);" class="form-control form-control-sm w-75" id="edtgrporkgproteina" name="edtgrporkgproteina" aria-describedby="pesoHelp"></td>
+
+                                        </tr>
+                                        <tr>
+                                            <td class="align-middle text-center"><small><strong>Carboidrato:</strong></small></td>
+                                            <td class="align-middle text-center"><input type="number" value="50"  onchange="calcperccarbo(this);" class="form-control form-control-sm w-75" id="edtperccarbo" name="edtperccarbo"></td>
+                                            <td class="align-middle text-center"><input type="number" value="0" onchange="calckcalcarbo(this);" class="form-control form-control-sm w-75" id="edtkcalcarbo" name="edtkcalcarbo"></td>
+                                            <td class="align-middle text-center"><input type="number" value="20" onchange="calcgramascarbo(this);" class="form-control form-control-sm w-75" id="edtgramascarbo" name="edtgramascarbo" ></td>
+                                            <td class="align-middle text-center"><input type="number" value="0" onchange="calcgrkgporcarbo(this);" class="form-control form-control-sm w-75" id="edtgrporkgcarbo" name="edtgrporkgcarbo" aria-describedby="pesoHelp"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="align-middle text-center"><small><strong>Gordura:</strong></small></td>
+                                            <td class="align-middle text-center"><input type="number" value="30" readonly onchange="calcpercgordura(this);" class="form-control form-control-sm w-75" id="edtpercgordura" name="edtpercgordura"></td>
+                                            <td class="align-middle text-center"><input type="number" value="0"  readonly onblur="calckcalgordura();" class="form-control form-control-sm w-75" id="edtkcalgordura" name="edtkcalgordura"></td>
+                                            <td class="align-middle text-center"><input type="number" value="0"  readonly onchange="calcgramasgordura(this);" class="form-control form-control-sm w-75" id="edtgramasgordura" name="edtgramasgordura"></td>
+                                            <td class="align-middle text-center"><input type="number" value="0" readonly  onchange="calcgrkgporgordura(this);" class="form-control form-control-sm w-75" id="edtgrporkggordura" name="edtgrporkggordura" aria-describedby="pesoHelp"></td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="table-dark text-warning">
+                                        <tr>
+                                            <td class="align-middle text-center"><small></small></td>
+                                            <td class="align-middle text-center"><small id="lbl-total-perc"></small></td>
+                                            <td class="align-middle text-center"><small id="lbl-total-calorias"></small></td>
+                                            <td class="align-middle text-center"><small id="lbl-total-gramas"></small></td>
+                                            <td class="align-middle text-center"><small></small></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                            <div class="card-footer d-flex justify-content-end">
+                                <button type="button" class="btn btn-outline-warning collapsed mx-1" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseTwo">
+                                    Voltar
+                                </button>
+                                <button  type="button" onclick="salvarmeta();" class="btn btn-outline-warning collapsed mx-1" data-toggle="modal" data-target="#modal-resultadofinal"  aria-expanded="false" aria-controls="#modal-resultadofinal">
+                                    Salvar Meta
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div id="div-meta-atleta-ativa" class="d-none mt-2 p-1">
+            <div class="bg-warning text-center text-dark p-1 border border-warning rounded">
+                <h5><strong>Meta Atual: {{metaatleta.descricao}}</strong></h5>
+                <a class="btn btn-dark ml-2" href="#" onclick="finalizameta({{metaatleta.id}},'{{metaatleta.descricao}}')"
+                   data-toggle="modal" data-target=".modal-finaliza-meta">
+                        Finalizar Meta
+                </a>
+            </div>
+            <div class="border border-warning text-warning p-2 text-center">
+                {% set meta = 'Ganho' %}
+                {% set tipo = 'Excedente'%}
+                {% if metaatleta.tipometa == 'P' %}
+                {% set meta = 'Perda' %}
+                {% set tipo = 'Defícit' %}
+                {% endif %}
+                <table class="table table-sm table-dark">
+                    <thead class="text-warning">
+                        <tr>
+                            <th scope="col"> Peso Inicial</th>
+                            <th scope="col"> % de Gordura</th>
+                            <th scope="col"> Objetivo</th>
+                            <th scope="col"> Meta Peso </th>
+                            <th scope="col">Nível de Atividade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{metaatleta.pesoinicial}}</td>
+                            <td>{{metaatleta.percentual_gordura}}</td>
+                            <td>{{meta}}</td>
+                            <td>{{metaatleta.pesofinal}}</td>
+                            <td>{{metaatleta.nivelatividade}}</td>
+                        </tr>
+                    </tbody>
+                    <thead class="text-warning">
+                        <tr>
+                            <th scope="col">TMB</th>
+
+                            <th scope="col">GCD</th>
+                            <th scope="col">{{tipo}}</th>
+                            <th scope="col">kcal Exercícios</th>
+                            <th scope="col">Alvo Calórico</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{metaatleta.valtmb}}</td>
+
+                            <td>{{metaatleta.valgcd}}</td>
+                            <td>{{metaatleta.valtotkclmeta}}</td>
+                            <td>{{metaatleta.valtotkclexercicio}}</td>
+                            <td class="align-middle"><label class="p-1 bg-warning text-dark rounded"><strong>{{metaatleta.valalvocalorico}}</strong></label></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="bg-warning d-flex justify-content-center rounded ">
+                    <h5 class="text-dark"><strong>Divisão Macro Nutriente</strong></h5>
+                </div>
+                <div class=" d-flex justify-content-center" id="piechart">
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="modal fade modal-finaliza-meta" id="modal-finaliza-meta" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-centered " role="document">
+            <div class="modal-content bg-primary">
+                <div class="modal-header bg-primary">
+
+                    <h5 class="modal-title text-warning">Finalizar Meta</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id='alert-msgfinalizameta' class="alert alert-dismissible fade show text-center d-none mx-2 my-2" role="alert">
+                    ddddddddddddddd
+                </div>
+
+                <div class="modal-body text-warning bg-primary">
+                    <form id="form-finalizameta" action="#" method="post">
+                        <input id="edtidmetaatleta" name="edtidmetaatleta" type="hidden">
+                        <div class="form-group form-row ">
+                            <label for="edtpesofinal"> Forneça o Peso Final: </label>
+                            <input id="edtpesofinal" name="edtpesofinal" type="number" class="form-control"
+                                   onfocus="document.getElementById('edtidmetaatleta').classList.add('d-none');">
+                            <small class="text-danger d-none" id="small-pesofinal"> Forneça o seu Peso Atual!</small>
+                        </div>
+                        <div class="form-group form-row text-white">
+                            <p>Ao finalizar está meta, o peso final será atualização no seus dados pessoais.</p>
+                            <p>Você so poderá fazer movimentações se cadastrar outra meta</p>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer bg-primary">
+                    <button type="button" id="btnconfirmaexclusao" onclick="confirmafinalizacaometa();" class="btn btn-warning" >
+                        <span class="glyphicon glyphicon-ok"></span> Confirmar
+                    </button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">
+                       <span class="glyphicon glyphicon-remove"></span> Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endmacro %}

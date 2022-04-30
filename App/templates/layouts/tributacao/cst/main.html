@@ -1,0 +1,60 @@
+{% extends "layouts/tributacao/cst/base.html" %}
+{%block table %} {{ table }} {% endblock %}
+{%block result %} {{ result }} {% endblock %}
+{%block mensagem %} {{ mensagem }} {% endblock %}
+{%block desc %} {{ desc }} {% endblock %}
+{%block nametable %} {{ nametable }} {% endblock %}
+
+{% block content %}
+<script>
+
+</script>
+
+
+<div class="pt-2">
+    <ul class="nav">
+                <li class="nav-item my-1 ">
+                    <a class="btn btn-outline-warning  btn-sm mx-1"  onclick="mostrarcst(this,'icms');" id="btnmostrar-csticms" data-toggle="collapse" data-target="#navbarSupportedContent" href="#">
+                        CST ICMS <span class="badge badge-light" id="span-total-reg-icms"></span>
+                    </a>
+                </li>
+                <li class="nav-item my-1">
+                    <a class="btn btn-outline-warning  btn-sm mx-1" onclick="mostrarcst(this,'ipi');" id="btnmostrar-cstipi" data-toggle="collapse" data-target="#navbarSupportedContent" href="#">
+                        CST IPI <span class="badge badge-light" id="span-total-reg-ipi"></span>
+                    </a>
+                </li>
+                <li class="nav-item my-1">
+                    <a class="btn btn-outline-warning  btn-sm mx-1" onclick="mostrarcst(this,'piscofins');" id="btnmostrar-cstpiscofins" data-toggle="collapse" data-target="#navbarSupportedContent" href="#">
+                        CST PIS/COFINS <span class="badge badge-light" id="span-total-reg-piscofins"></span>
+                    </a>
+                </li>
+                <li class="nav-item my-1">
+                    <a class="btn btn-outline-warning  btn-sm mx-1" onclick="mostrarncms();" id="btnmostrar-ncms" data-toggle="collapse" data-target="#navbarSupportedContent" href="#">
+                        NCMs <span class="badge badge-light" id="span-total-reg-ncms"></span>
+                    </a>
+                </li>
+                <li class="nav-item dropdowm">
+                    <a class="btn btn-outline-warning btn-sm mx-1 my-1 dropdown-toggle" href="#" id="dropdown-cests"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Cests
+                    </a>
+                    <div class="dropdown-menu bg-primary" aria-labelledby="dropdown-cests">
+                        <a class="dropdown-item mx-1 text-warning " onclick="mostrar_segmentoscest();" id="btnmostrar-segmentos_cest" data-toggle="collapse" data-target="#navbarSupportedContent" href="#">
+                            Segmentos Cest <span class="badge badge-light" id="span-total-reg-segmentoscests"></span>
+                        </a>
+                        <a class="dropdown-item mx-1  text-warning" onclick="mostrar_cests();" id="btnmostrar-cests" data-toggle="collapse" data-target="#navbarSupportedContent" href="#">
+                            Cest <span class="badge badge-light" id="span-total-reg-cests"></span>
+                        </a>
+                    </div>
+                </li>
+            </ul>
+</div>
+<div  id="content-cst" class="container text-warning  py-2">
+
+</div>
+<script>
+    $().ready(function() {
+
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% macro table_enderecos() %}
+    <script src="{{ url_for('static', filename='js/enderecos.js') }}"></script>
+
+    <div class="modal fade modal-table-enderecos" id="modal-table-enderecos" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content bg-primary">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-warning" id="lbl-head-enderecos">Tabela de Endereços</h5>
+                    <button type="button" class="btn btn-warning"
+                            onclick="btn_click_add_endereco();"
+                    data-toggle="modal" data-target=".insert-edit-modal-endereco">
+                        <span class="glyphicon glyphicon-plus"></span> Incluir
+                    </button>
+                </div>
+                <div id='alert-msg-table-enderecos' class="alert alert-dismissible fade show text-center d-none mx-2 my-2" role="alert">
+
+                </div>
+                <div class="modal-body" id="modal-body-table-enderecos">
+                     <table class="table table-dark table-sm d-none" id="table-enderecos">
+                         <thead class="text-warning">
+                            <tr>
+                                <th scope="col" > Endereço</th>
+                                <th scope="col" class="text-center"> Principal</th>
+                                <th scope="col" class="text-center"> Ações</th>
+                            </tr>
+                         </thead>
+                         <tbody id="tbody-enderecos">
+                         </tbody>
+                     </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endmacro %}

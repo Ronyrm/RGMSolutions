@@ -1,0 +1,57 @@
+CREATE DEFINER=`rony`@`localhost` PROCEDURE `insert_exame_paciente`(
+	IN `exame_` VARCHAR(100),
+	IN `analito_` VARCHAR(100),
+	IN `paciente_` VARCHAR(50),
+	IN `datacoleta_` DATE,
+	IN `origem_` VARCHAR(4),
+	IN `resultado_` VARCHAR(50),
+	IN `valresultado_` DECIMAL(18,3),
+	IN `unidademedida_` VARCHAR(50),
+	IN `valreferencia_` VARCHAR(20),
+	OUT `codigos__` VARCHAR(50)
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+COMMENT ''
+BEGIN
+	DECLARE codpaciente VARCHAR(50);
+	DECLARE codexame INT;
+	DECLARE codanalito INT;	
+	DECLARE str VARCHAR(100);
+	SET str = '';
+	SET codpaciente = 0;
+	SELECT ID FROM pacientes_covid WHERE pacientes_covid.idpaciente=paciente_ INTO codpaciente;
+	IF codpaciente <> 0 THEN
+		SET str = CONCAT(' | Codpaciente: ',codpaciente);
+		
+		SELECT ID FROM exames_covid WHERE exames_covid.descricao=exame_ INTO codexame;
+		
+		if ISNULL(codexame) then
+
+			INSERT INTO exames_covid(descricao) VALUES(exame_);
+			SELECT ID FROM exames_covid WHERE exames_covid.descricao=exame_ INTO codexame;
+			
+			SET str= CONCAT(str,' | CodExame: ',codexame);		
+		END IF; 
+		
+		SET str= CONCAT(str,' | CodExame: ',codexame);
+		
+		SELECT ID FROM analitos_covid WHERE analitos_covid.descricao=analito_ AND analitos_covid.idexame=codexame INTO codanalito;
+		SET str= CONCAT(str,' | CodAnalito: ',codanalito);	
+				
+		if ISNULL(codanalito) then
+			INSERT INTO analitos_covid(descricao,idexame) VALUES(analito_,codexame);
+			SELECT ID FROM analitos_covid WHERE analitos_covid.descricao=analito_ INTO codanalito;
+		END IF;
+		if NOT ISNULL(codexame) and NOT ISNULL(codanalito) then
+			set codigos__ = TRUE;
+			INSERT INTO exames_pacientes_covid(idpaciente,idexame,idanalito,datacoleta,
+			origem,resultado,valresultado,unidademedida,valreferencia) VALUES(codpaciente,codexame,codanalito,datacoleta_,
+			origem_,resultado_,valresultado_,unidademedida_,valreferencia_);
+			
+		END if;
+	END IF;	
+	
+END

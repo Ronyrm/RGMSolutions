@@ -1,0 +1,102 @@
+{% extends "layouts/pandas/schedules/base.html" %}
+{%block schedules %} {{ schedules }} {% endblock %}
+{%block pagination %} {{ pagination }} {% endblock %}
+{%block result %} {{ result }} {% endblock %}
+{%block ckb_nome %} {{ ckb_nome }} {% endblock %}
+{%block ckb_dt %} {{ ckb_dt }} {% endblock %}
+{%block ckb_phone %} {{ ckb_phone }} {% endblock %}
+{%block edtnome %} {{ edtnome }} {% endblock %}
+{%block ckb_localidade %} {{ ckb_localidade }} {% endblock %}
+{%block ckb_nolocalidade %} {{ ckb_nolocalidade }} {% endblock %}
+{%block cidade %} {{ cidade }} {% endblock %}
+{%block uf %} {{ uf }} {% endblock %}
+{%block arqcsv_gerado %} {{ arqcsv_gerado }} {% endblock %}
+
+{% block content %}
+<script>
+    var page = {{pagination.page}};
+    var per_page = {{pagination.per_page}};
+    var uf = '{{uf}}';
+
+</script>
+
+<div  id="content-schudules" class="container text-warning  py-2">
+    {% set lblate = pagination.page * pagination.per_page %}
+    {% set lblde = ((lblate - pagination.per_page) +1) %}
+    {% if lblate > pagination.total %}
+        {% set lblate = pagination.total %}
+    {% endif %}
+
+    <div class="d-flex justify-content-between my-2">
+        <div class="div-pagination-foods" id="div-pagination-foods">
+            {{pagination.links}}
+        </div>
+
+        <div class="p-2">
+            <button class="btn btn-warning btn-sm" onclick="click_btn_modalfiltro('{{uf}}')"
+                    data-toggle="modal" data-target=".modal-filtro"> Filtrar
+            </button>
+
+            {% if arqcsv_gerado == true %}
+                <a class="btn btn-warning btn-sm" href="{{url_for('routesschedules.download_file_schedules_csv')}}">
+                    Baixar arquivo CSV
+                </a>
+            {% endif %}
+        </div>
+
+
+    </div>
+    <div class="d-flex justify-content-center">
+
+        <table class="table table-dark text-warning">
+            <thead>
+                <th scope="col" class="text-white" >Nome</th>
+                <th scope="col" class="text-white">Telefone Principal</th>
+                <th scope="col" class="text-white">Data Nascimento</th>
+                <th scope="col" class="text-white">Localidade</th>
+            </thead>
+            <tbody>
+                {% for contact in schedules %}
+                <tr>
+                    <td>{{contact.name}}</td>
+                    <td>{{contact.home_phone_two}}</td>
+                    {% if contact.birthyday != None %}
+                        <td>{{contact.birthyday[8:10] +'/'+ contact.birthyday[5:7] +'/'+ contact.birthyday[0:4]}}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+
+                    {% if contact.cidade != None %}
+                        <td>{{contact.cidade.nome+', '+contact.cidade.microregiao.mesoregiao.uf.sigla}}</td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-between">
+        <label class="text-white">
+            De {{lblde}} até {{lblate}} contatos, total: {{pagination.total}}.
+        </label>
+        <div class="d-flex justify-content-between">
+            <label class="text-white">
+                Página Atual: {{pagination.page}}
+            </label>
+            <button class="ml-2 btn btn-warning btn-sm" onclick="click_gerarcsv();">Gerar Arquivo CSV</button>
+        </div>
+    </div>
+    {% import 'layouts/pandas/schedules/modal_filtro.html' as modal_filtro %}
+    {{ modal_filtro.mdfiltro(ckb_dt,ckb_phone,ckb_nome,edtnome,pagination.per_page,ckb_localidade,ckb_nolocalidade,cidade,uf) }}
+
+</div>
+<script>
+    $().ready(function() {
+        click_ckbnome();
+        click_ckbnolocalidade();
+        click_ckblocalidade(uf);
+    });
+</script>
+{% endblock %}

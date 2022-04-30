@@ -1,0 +1,85 @@
+{% macro modalinserteditfood(idpessoa) %}
+    <div class="modal fade modal-insert-newfood" id="modal-insert-newfood" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content bg-primary">
+
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-warning" id="lblidfood"> Inserir Alimento</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id='alert-dadosnewfood' class="alert alert-dismissible fade show text-center d-none mx-2 my-2" role="alert">
+                    ddddddddddddddd
+                </div>
+                <form name="formnewfood" id="formnewfood" method="post" action="#">
+                    <div class="card card-body text-warning bg-primary">
+                        <div class="form-group">
+                            <label for="edtdescricao">Descricao</label>
+                            <input type="text"  tabindex="1" class="form-control form-control"
+                                   onfocus="document.getElementById('smalldesc').classList.add('d-none');"
+                                   required name="edtdescricao"  id="edtdescricao" >
+                            <input type="hidden"  class="form-control" value="{{idpessoa}}" name="edtidpessoa" id="edtidpessoa" >
+                            <small class="text-danger d-none" id="smalldesc">Forneça a Descrição</small>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-6">
+                                <label for="edtcalorias">Calorias</label>
+                                <input type="number" tabindex="2" class="form-control form-control" required name="edtcalorias" id="edtcalorias" >
+                            </div>
+                            <div class="col-6">
+                                <label for="edtcarboidrato">Carboidratos</label>
+                                <input type="number" tabindex="3" class="form-control form-control" name="edtcarboidrato" id="edtcarboidrato" >
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-6">
+                                <label for="edtproteina">Proteina</label>
+                                <input type="number" tabindex="4" class="form-control" name="edtproteina" id="edtproteina" >
+                            </div>
+                            <div class="col-6">
+                                <label for="edtlipidios">Gordura</label>
+                                <input type="number" tabindex="5" class="form-control"  name="edtlipidios" id="edtlipidios" >
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-6">
+                                <label for="edtfibras">Fibras</label>
+                                <input type="number" tabindex="6" class="form-control" name="edtfibras" id="edtfibras" >
+                            </div>
+                            <div class="col-6">
+                                <label for="edtsodio">Sódio</label>
+                                <input type="number" tabindex="7" class="form-control "  name="edtsodio" id="edtsodio" >
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-8">
+                                <label for="edtidunmedida">Unidade de Medida</label>
+                                <select class="form-control" tabindex="8" name="edtidunmedida" id="edtidunmedida">
+                                </select>
+                            </div>
+                            <div class="col-4">
+                                <label for="edtqtd">Porção de:</label>
+                                <input type="number" tabindex="9" class="form-control form-control" required
+                                       onfocus="document.getElementById('smallqtd').classList.add('d-none');"
+                                       name="edtqtdnew" id="edtqtdnew" >
+                                <small class="text-danger d-none" id="smallqtd">Forneça a Quantidade da Porção</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer bg-primary">
+                        <button type="button" class="btn btn-warning" tabindex="10" onclick="gravarnewfood();" id="btngravarfood" >
+                            <span class="glyphicon glyphicon-ok"></span> Salvar
+                        </button>
+                        <button type="button" class="btn btn-danger" tabindex="9" id="cancel-food" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

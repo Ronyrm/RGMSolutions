@@ -1,0 +1,133 @@
+
+{% macro addupdate_endereco(idpessoa) %}
+    <div class="modal fade insert-edit-modal-endereco" id="insert-edit-modal-endereco" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content bg-primary">
+
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-warning" id="lblidendereco"> Inserindo Endereço</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id='alert-dadosendereco' class="alert alert-dismissible fade show text-center d-none mx-2 my-2" role="alert">
+
+                </div>
+                <form name="formendereco" id="formendereco">
+                    <div class="card card-body text-warning bg-primary">
+                        <div class="form-row mb-1">
+                                <div class="form-check form-check-inline">
+                                    <label class="form-check-label text-warning mr-2" for="chkprincipal">
+                                        Endereço Principal
+                                    </label>
+                                    <input class="form-check-input" type="checkbox" value="S" id="chkprincipal" checked>
+                                    <input hidden type="hidden" name="edtpadrao" id="edtpadrao">
+                                </div>
+
+                        </div>
+                        <div class="form-row">
+                            <div class="col-6">
+                                <label for="edttipo">Tipo de Endereço</label>
+                                <select tabindex="1" class="form-control form-control-sm" name="edttipo" id="edttipo"  required>
+                                    <option value="0">Comercial</option>
+                                    <option value="1">Entrega</option>
+                                    <option value="2">Cobrança</option>
+                                    <option value="3">Residencial</option>
+                                    <option value="4">Rural</option>
+                                </select>
+                                <small class="text-danger d-none" id="small-tipo">Forneça o Tipo de Endereço</small>
+                            </div>
+                            <div class="col-6">
+                                <label for="edtcep">CEP</label>
+                                <div class="input-group">
+                                    <input type="text" tabindex="2"
+                                           maxlength="10"
+                                           onkeyup="javascript: fMasc( this, mCEP );"
+                                           onfocus="document.getElementById('small-cep').classList.add('d-none');"
+                                           class="form-control form-control-sm" required
+                                           name="edtcep" id="edtcep" >
+
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-warning btn-sm"
+                                                onclick="search_cidade_by_cep(document.getElementById('edtcep').value);">
+                                            <span class="glyphicon glyphicon-arrow-down"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <small class="text-danger d-none" id="small-cep">Forneça um cep válido!</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-9">
+                                <label for="edtlogradouro">Logradouro</label>
+                                <input type="text" tabindex="3"  onfocus="document.getElementById('small-logradouro').classList.add('d-none');"
+                                       class="form-control form-control-sm" required
+                                       name="edtlogradouro" id="edtlogradouro" >
+                                <small class="text-danger d-none" id="small-logradouro">Forneça o Logradouro</small>
+                            </div>
+                            <div class="col-3">
+                                <label for="edtnumero">Nº</label>
+                                <input type="text" tabindex="4"
+                                       class="form-control form-control-sm"
+                                       name="edtnumero" id="edtnumero" >
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-8">
+                                <label for="edtcomplemento">Complemento</label>
+                                <input type="text" tabindex="5"
+                                       class="form-control form-control-sm"
+                                       name="edtcomplemento" id="edtcomplemento">
+                            </div>
+                            <div class="col-4">
+                                <label for="edtbairro">Bairro</label>
+                                <input type="text" tabindex="6"
+                                       class="form-control form-control-sm"
+                                       name="edtbairro" id="edtbairro"
+                                       onfocus="document.getElementById('small-bairro').classList.add('d-none');">
+                                <small class="text-danger d-none" id="small-bairro">Forneça o Bairro</small>
+                            </div>
+                        </div>
+                        <div class="form-row selectoruf">
+                            <div class="col-12">
+                                <label for="edtnomecidade">UF</label>
+                                <select name="selectUF" onchange="onchange_input_uf(this.value);" id="selectUF" class="form-control form-control-sm"></select>
+                                <input type="hidden" id="edtsiglauf" name="edtsiglauf">
+                                <small class="text-danger d-none" id="small-selectuf"> Aguarde Carregando Cidades...</small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-12">
+                                <label for="brownser-cidades">Cidade</label>
+                                <input list="brownser-cidades" tabindex="7"
+                                       placeholder="Digite aqui a Cidade"
+                                        class="form-control form-control-sm"
+                                        name="edtnomecidade" id="edtnomecidade"
+                                        oninput="btn_brownser_change(this.value);">
+                                <datalist id="brownser-cidades" data-model-name="brownser-cidades">
+                                <input type="hidden" name="edtlocalidade" id="edtlocalidade">
+                                </datalist>
+                                <small class="text-danger d-none" id="small-cidade"> Forneça a Cidade</small>
+                                <input type="hidden" id="edtidcidade" name="edtidcidade">
+                            </div>
+                        </div>
+
+                        <input type="hidden" value="{{idpessoa}}" id="edtidpessoa" name="edtidpessoa">
+                        <input type="hidden"id="edtidendereco" name="edtidendereco">
+                    </div>
+
+                    <div class="modal-footer bg-primary">
+                        <button type="button" class="btn btn-warning" onclick="gravarendereco();" id="btngravarendereco" >
+                            <span class="glyphicon glyphicon-ok"></span> Salvar
+                        </button>
+                        <button type="button" class="btn btn-danger" id="cancelendereco" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+}

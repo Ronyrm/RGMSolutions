@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script>
+    var idpessoa = 0;
+</script>
+<html lang="pt-br">
+
+<head>
+    {% import 'layouts/head.html' as head %}
+    {{ head.head_content('RGMSolutions') }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/foods.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/atleta.css') }}">
+</head>
+
+<body class="bodyvalidationacess bodyfoods">
+        <nav class="navbar navbar-expand-md  bg-primary mx-auto">
+            <a class="navbar-brand" href="{{ url_for('routesatleta.get_mainatleta')}}">
+                <img class="img-fluid" src="{{ url_for('static', filename='img/logorgm.png') }}" alt="">
+            </a>
+            <h5 class="text-white mr-auto text-center" > Contatos Renzo Brás </h5>
+        </nav>
+        <div id="content" class="container main-container my-2 bg-primary rounded ">
+            {% block content %} {% endblock %}
+        </div>
+    {% block jsjquery %} {% endblock%}
+
+    <script src="{{ url_for('static', filename='js/enderecos.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pandas.js') }}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,144 @@
+
+{% macro table_foods(tabfoods,totalfoods,current_user,dataatual) %}
+{% if totalfoods >= 1  %}
+
+    <table class="table table-borderless" id="table-foods">
+        <tbody>
+
+            {% for foods in tabfoods %}
+
+                <tr class="text-padrao">
+                    <td>
+                        <div class="card border border-primary border-3">
+                            <div class="card-header bg-primary text-padrao">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="text-padrao"><strong>{{foods.descricao}}</strong></h5>
+                                    </div>
+                                    <div class="col-3 d-flex justify-content-end">
+                                        <button class="btn btn-warning mx-2"
+                                            onclick='mostradadosfoods({{ foods|tojson|safe }},{{foods.qtdgramasemcima}});'
+                                            data-toggle="collapse" data-target="#collapse{{ foods.id }}"
+                                            aria-expanded="true" aria-controls="collapse{{foods.id}}">
+                                            <span class="glyphicon glyphicon-chevron-right"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body bg-cardbody">
+                                <div class="row">
+                                    <div class="col-12 d-flex justify-content-center">
+                                        <p class="card-text text-padrao">
+                                            <strong>
+                                                Porção de: {{"{:.2f}".format(foods.qtdgramasemcima|float) }} {{foods.unalimento.sigla}}
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="row" >
+                                    <div class="col-6 col-md-3 h-25 d-flex justify-content-center" >
+                                        <p class="text-padrao"><small>
+                                            <strong>Carboidrato:</strong> {{"{:.2f}".format(foods.carboidrato|float)}} grs
+                                        </small></p>
+                                    </div>
+                                    <div class="col-6 col-md-3 h-25 d-flex justify-content-center" >
+                                        <p class="text-padrao"><small>
+                                            <strong>Proteina:</strong> {{"{:.2f}".format(foods.proteina|float)}} grs
+                                        </small></p>
+                                    </div>
+                                    <div class="col-6 col-md-3  h-25 d-flex justify-content-center" >
+                                        <p class="text-padrao"><small>
+                                            <strong>Gordura:</strong> {{"{:.2f}".format(foods.lipidios|float)}} grs
+                                        </small></p>
+                                    </div>
+                                    <div class="col-6 col-md-3 h-25 d-flex justify-content-center" >
+                                        <p class="text-padrao"><small>
+                                            <strong>Fibras:</strong> {{"{:.2f}".format(foods.fibras|float)}} grs
+                                        </small></p>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="col-12 d-flex justify-content-center">
+                                        <p class="card-text text-padrao">
+                                            <strong>
+                                                Valor Energético: {{"{:.2f}".format(foods.calorias|float) }} Kcal
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="container d-none mx-auto" id="div-dadosfood">
+        <div class="row bg-primary p-2 ">
+            <div>
+                <button class="btn btn-warning mx-2" onclick="btnvoltarmain();">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </button>
+            </div>
+            <div class="mx-auto text-padrao" id="div-descfood">
+            </div>
+        </div>
+
+        <div class="row border border-primary">
+            <div class="col-12 col-md-6 my-2">
+                <div class="row">
+                    <p class="text-padrao text-rigth mx-2">Porção de:</p>
+                    <input class="w-25" type="text" id="th-porcao">
+                    <button class="btn btn-warning" onclick="calcinfonutri();">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </button>
+
+                    {% if current_user.is_authenticated  and idmeta!= '-1' %}
+                        {% set totref = current_user.pessoa.refeicao|length%}
+                        {%if totref>0 %}
+                            <button class="btn btn-warning ml-1 mt-1"
+                            data-toggle="modal" data-target=".modal-refeicoes">
+                                Adicionar item no seu diário <span class="glyphicon glyphicon-plus"></span>
+                            </button>
+                        {% endif %}
+                    {% endif%}
+
+                </div>
+                <div class="row">
+                    <p class="text-padrao text-rigth  mx-2">Calorias:</p>
+                    <p class="text-padrao text-left" id="th-calorias"></p>
+                </div>
+                <div class="row d-flex justify-content-center mx-2">
+                    <table class="table table-striped border border-primary border-2">
+                        <thead class=" bg-primary">
+                            <tr>
+                                <th  class="text-padrao"><small>Carboidratos</small></th>
+                                <th  class="text-padrao"><small>Proteinas</small></th>
+                                <th scope="col" class="text-padrao"><small>Gorduras</small></th>
+                                <th scope="col" class="text-padrao"><small>Fibras</small></th>
+                                <th scope="col" class="text-padrao"><small>Sódio</small></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="text-dark" id="tr-food">
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row col-6 col-md-6">
+                <div class=" d-flex justify-content-center" id="piechart">
+                </div>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div id='alertsemfoods' class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+        <strong>Mensagem</strong>  <br>Nenhum Alimento ainda cadastrado
+    </div>
+{% endif %}
+
+
+{% endmacro %}

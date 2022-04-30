@@ -1,0 +1,22 @@
+
+a.page-link:disabled{
+    background-color:#717171;
+}
+.icone-img{
+   width: 100px;
+   height: 100px;
+   background-size: cover;
+}
+@media only screen and (min-width: 851px) {
+    .title{
+        position: absolute;
+        left: 50%;
+        transform: translatex(-50%);
+    }
+}
+@media only screen and (max-width: 850px) {
+  .title {
+    font-size: 20px;
+    align:center;
+  }
+}

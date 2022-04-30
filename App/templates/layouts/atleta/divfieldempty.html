@@ -1,0 +1,36 @@
+{% macro divcheckfields_empty(atleta)%}
+
+{% set msg = 'Dados cadastrais: ' %}
+{% set achou = False %}
+{% if atleta.genero== None or atleta.genero == '' %}
+    {% set msg = msg+'gênero, ' %}
+    {% set achou = True %}
+{% endif %}
+
+{% if atleta.altura == None or atleta.altura == ''  %}
+    {% set msg = msg+'altura( em centímetros), ' %}
+    {% set achou = True %}
+{% endif %}
+{% if atleta.peso==None or atleta.peso == '' %}
+    {% set msg = msg+'peso( em Kilograma), ' %}
+    {% set achou = True %}
+{% endif %}
+{% if atleta.dtnascimento== None or atleta.dtnascimento == '' %}
+    {% set msg = msg+'data de nascimento, ' %}
+    {% set achou = True %}
+{% endif %}
+
+<script>var dadoscompletoatleta = true;</script>
+{% if achou == True %}
+    <script>var dadoscompletoatleta = false;</script>
+    {% set msg = msg+'não informado. clique acima em "Dados" para informar!' %}
+
+    <div class="bg-danger mt-1" id="div-dados-empty">
+        <div class="alert alert-danger">
+            {{msg}}
+        </div>
+    </div>
+{% endif %}
+
+
+{% endmacro %}

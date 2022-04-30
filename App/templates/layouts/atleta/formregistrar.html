@@ -1,0 +1,52 @@
+{% macro formregistraratleta(tela,result,mensagem,atleta) %}
+{% set dnone='d-none' %}
+{% if tela=='Registrar' %}
+{% set dnone='' %}
+{% endif %}
+<form class="text-white {{ dnone }} p-2" id="form-registrar" method="post" action="{{url_for('routesatleta.add_atleta')}}">
+    {% if result == False and tela =='Registrar' %}
+    <div class="form-group mt-1">
+        <div class="form-group">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ mensagem }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div class="form-group d-flex justify-content-center p-1">
+        <h5 class="text-padrao"> Registrar Usuário</h5>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <label for="edtname">Nome</label>
+            <input type="text" class="form-control form-control-sm" autocomplete="off" required class="form-control" value="{{atleta.edtname}}" id="edtname" name="edtname" aria-describedby="nameHelp" placeholder="Nome">
+            <input type="hidden"  class="form-control" id="edtid"  name="edtid" value="-1">
+        </div>
+        <div class="row">
+            <label for="edtemail">Email</label>
+            <input type="email" class="form-control form-control-sm" required class="form-control" autocomplete="off" value="{{atleta.edtemail}}" id="edtemail" name="edtemail" aria-describedby="emailHelp" placeholder="Email">
+        </div>
+        <div class="row">
+            <label for="edtusername">UserName</label>
+            <input type="text" class="form-control form-control-sm" required  autocomplete="off" class="form-control" id="edtusername" value="{{atleta.edtusername}}" name="edtusername" aria-describedby="usernameHelp" placeholder="UserName">
+        </div>
+
+       <div class="row">
+           <div class="form-group mr-2">
+               <label for="edtsenha">Senha</label>
+               <input type="password" class="form-control form-control-sm" required class="form-control" id="edtsenha" value="{{atleta.edtsenha}}" name="edtsenha" placeholder="Senha">
+           </div>
+           <div class="form-group">
+                <label for="edtsenhaconf">Confirmar Senha</label>
+                <input type="password" class="form-control form-control-sm" required class="form-control" id="edtsenhaconf" value="{{atleta.edtsenhaconf}}" name="edtsenhaconf" placeholder="Confirmar Senha">
+           </div>
+       </div>
+    </div>
+    <div class="form-group d-flex justify-content-center">
+        <button type="submit" class="btn btn-warning">Registrar</button>
+    </div>
+</form>
+{% endmacro %}

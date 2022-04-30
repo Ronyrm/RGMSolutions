@@ -1,0 +1,217 @@
+:root{
+    --preto: #212121;
+    --azulclaro: #68c3e5;
+    --verde: #28a745;
+    --branco:#fff;
+    --cinzafundo:#3e444a;
+    --verdeescuro:#287045;
+    --azulescuro:#0062cc;
+    --amarelo:#ffc107;
+    --amareloescuro: #d39e00;
+    --fundopagina:#6d6d6d;
+}
+
+
+
+.combobox-primary{
+    background-color: var(--amarelo);
+    color: var(--branco);
+    border: 2px solid var(--amareloescuro);
+}
+
+.menuprincipal{
+    list-style:none;
+    float:left;
+}
+.menuprincipal li{
+    position:relative;
+    float:left;
+    list-style-type: none;
+
+
+}
+.menuprincipal li a{
+ margin: 2px 0 0 2px;
+ padding: 10px;
+}
+.menuprincipal li a{
+    text-decoration:none;
+    padding:5px 10px;
+    display:block;
+}
+
+.menuprincipal li a:hover{
+-moz-box-shadow:0 3px 10px 0 #ffc107;
+-webkit-box-shadow:0 3px 10px 0 #ffc107;
+text-shadow:0px 0px 5px #ffc107;
+}
+
+.menuprincipal li  ul{
+    position:absolute;
+    top:25px;
+    left:0;
+    display:none;
+}
+
+
+.menuprincipal li:hover ul, .menu li.over ul{
+    display:block;
+}
+.btn-outline-padrao {
+  color: white!important;
+  border-color: white!important;
+}
+
+.btn-outline-padrao:hover {
+  color: #28a745;
+  background-color: #ffc107!important;
+  border-color: #ffc107!important;
+}
+
+.btn-outline-padrao:focus, .btn-outline-padrao.focus {
+  box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.5);
+}
+
+.btn-outline-padrao.disabled, .btn-outline-padrao:disabled {
+  color: #ffc107!important;
+  background-color: transparent;
+}
+
+.btn-outline-padrao:not(:disabled):not(.disabled):active, .btn-outline-padrao:not(:disabled):not(.disabled).active,
+.show > .btn-outline-dark.dropdown-toggle {
+  color: #fff;
+  background-color: #ffc107!important;
+  border-color: #ffc107!important;
+}
+
+.btn-outline-padrao:not(:disabled):not(.disabled):active:focus, .btn-outline-padrao:not(:disabled):not(.disabled).active:focus,
+.show > .btn-outline-padrao.dropdown-toggle:focus {
+  box-shadow: 0 0 0 0.2rem rgba(52, 58, 64, 0.5);
+}
+
+
+.custom-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(232,109,3, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+.custom-toggler.navbar-toggler {
+  border-color: #ff4800;
+}
+
+.bgpadrao{
+    /*background-color:#a0a1a0!important */
+    background-color:var(--preto)!important;
+ }
+
+ a.bgpadrao,a.bgpadrao,button.bgpadrao,button.bgpadrao{
+    background-color:#0062cc!important
+ }
+
+
+
+ a.bgpadrao:focus,a.bgpadrao:hover,button.bgpadrao:focus,button.bgpadrao:hover{
+    background-color:#057cfc!important
+ }
+
+.colortxt {
+    color: #28a745;
+}
+
+.colorlink {
+    color: White;
+    /*background-color:#28a745!important*/
+    background-color: var(--preto)
+}
+.colorlink:hover {
+    color: #ffc107;
+
+}
+
+.btnpadrao {
+    background-color:#28a745;
+    border: 2px solid White;
+    border-radius:25px;
+    color: White;
+}
+
+.btnpadrao:hover {
+    background-color: White;
+    border: 2px solid #28a745;
+    border-radius:25px;
+    color:#ff4800;
+}
+
+.btnpadrao-outline {
+
+    background-color: #343a40;
+    border: 2px solid #ff4800;
+    border-radius:25px;
+    color:#ff4800;
+
+}
+
+.btnpadrao-outline:hover {
+    background-color:#ff4800;
+    border: 2px solid #343a40;
+    border-radius:25px;
+    color: #343a40;
+
+}
+
+
+
+
+
+
+.bodybase{
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #E6E6FA;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here
+  height: 60px;
+  line-height: 60px;
+  Vertically center the text there */
+
+}
+
+.txt-align-vert-center{
+ color : white;
+}
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  border: 5px solid black;
+  border-radius: 10px;
+  background-color: black;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--amarelo); 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--amareloescuro); 
+}
+
+
+hr.solid {
+  border-top: 2px solid #bbb;
+  border-radius: 5px;
+}

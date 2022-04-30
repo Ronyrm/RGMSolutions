@@ -1,0 +1,71 @@
+{% macro mdinserteditvendedor(token,pageatual,per_page,order) %}
+
+    <div class="modal fade insert-edit-modal-vendedor" id="insert-edit-modal-vendedor" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header bg-success">
+                    <h5 class="modal-title text-white" id="lblidvendedor"> Inserir Vendedor </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id='alert-dadosvendedor' class="alert alert-dismissible fade show text-center d-none mx-2 my-2" role="alert">
+                    ddddddddddddddd
+                </div>
+                <form name="formvendedor" id="formvendedor" method="POST" enctype="multipart/form-data" action="#">
+                    <div class="card card-body text-success ">
+
+                        <div class="form-group row">
+                            <div class="col-6">
+                                <label for="edtusername">UserName</label>
+                                <input type="text" class="form-control" required name="edtusername" id="edtusername" >
+                            </div>
+                            <div class="col-6">
+                                <label for="edtcpfcnpj">CPF/CNPJ</label>
+                                <input type="text" class="form-control" required name="edtcpfcnpj" id="edtcpfcnpj" >
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edtnome">Nome</label>
+                            <input type="text"  class="form-control" required name="edtnome" id="edtnome" >
+                            <input type="hidden"  name="edtid" id="edtid" >
+                            <input type="hidden"  name="edttoken" id="edttoken" value="{{ token }}" >
+                            <input type="hidden"  name="edtpageatual" id="edtpageatual" value="{{ pageatual }}" >
+                            <input type="hidden"  name="edtper_page" id="edtper_page" value="{{ per_page }}" >
+                            <input type="hidden"  name="edtorder" id="edtorder" value="{{ order }}" >
+                        </div>
+                        <div class="form-group">
+                            <label for="edtrazaosocial">Razão Social</label>
+                            <input type="text"  class="form-control" name="edtrazaosocial" id="edtrazaosocial">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edtemail">Email</label>
+                            <input type="email" class="form-control" required name="edtemail" id="edtemail" >
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="edtcomissao">Comissão</label>
+                            <input type="text" class="form-control" required name="edtcomissao" id="edtcomissao" >
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer bg-success">
+                        <button type="submit" class="btn btn-primary" >
+                            <span class="glyphicon glyphicon-ok"></span> Salvar
+                        </button>
+                        <button type="button" class="btn btn-danger" id="cancel-vendedor" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

@@ -1,0 +1,23 @@
+{% extends "layouts/atleta/validationacess/base.html" %}
+{% block keyacess %} {{ keyacess }} {% endblock %}
+{% block nomeatleta %} {{ nomeatleta }} {% endblock %}
+
+{% block jsjquery %}{% endblock %}
+
+{% block content %}
+
+<div  id="contentvalidation mx-auto">
+  <div class="row bg-primary text-warning d-flex justify-content-center">
+    <h5> Validação de acesso Usuário: {{nomeatleta}}</h5>
+
+  </div>
+  <p class="text-center text-white"><small> Clique no botão abaixo</small></p>
+  <div class="row d-flex justify-content-center">
+    <a class="btn btn-warning my-2" href="{{ url_for('routesatleta.validationacessatleta',keyacess=keyacess) }}">
+      Valida Acesso
+    </a>
+  </div>
+
+</div>
+
+{% endblock %}

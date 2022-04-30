@@ -1,0 +1,16 @@
+{% extends "layouts/mercadopago/base.html" %}
+{%block data %} {{ data }} {% endblock %}
+{% block content %}
+<div  id="content-anvisa" class="container text-warning  py-2">
+    <div class="d-flex justify-content-center">
+        <img class="img-fluid" src="{{ url_for('static', filename='img/icon.png') }}" alt="">
+    </div>
+    <div class="d-flex justify-content-center">
+        <div class="div-msg-mercadopago  p-2 ">
+            <label class="text-center text-warning">
+                {{data.mensagem}}
+            </label>
+        </div>
+    </div>
+</div>
+{% endblock %}

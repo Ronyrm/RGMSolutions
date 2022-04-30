@@ -1,0 +1,30 @@
+{% extends "layouts/base.html" %}
+{% block csslogin %}<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">{% endblock %}
+{% block jslogin %}<script src="{{ url_for('static', filename='js/login.js') }}"></script>{% endblock %}
+{% block sucess %} {{ sucess }}{% endblock %}
+{% block content %}
+<div class="text-center w-100">
+    {% if sucess==False %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ mensage }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+    <form class="form-signin bgpadrao" method="post" action="{{ url_for('auth.auth_form') }}">
+          <!--<img class="img-fluid" src="{{ url_for('static', filename='img/topmix.png') }}" alt="">!-->
+          <h3 class="text-white mb-3 font-weight-normal">Fazer login</h3>
+          <label for="inputEmail" class="sr-only">Email address</label>
+          <input type="text" name="username" id="inputEmail" class="form-control my-1" placeholder="Email/Username" required="" autofocus="">
+          <label for="inputPassword"  class="sr-only">Password</label>
+          <input type="password" name="password" id="inputPassword" class="form-control my-1" placeholder="Senha" required="">
+          <div class="checkbox mb-3">
+            <label>
+              <input type="checkbox" value="lembrar-me"> Lembrar-me
+            </label>
+          </div>
+          <button class="btn btn-lg btn-warning text-white " type="submit">
+              <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Entrar
+          </button>
+    </form>
+</div>
+{% endblock %}

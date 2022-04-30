@@ -1,0 +1,135 @@
+{% extends "layouts/foods/basefoods.html" %}
+{% block result %} {{ result }} {% endblock %}
+{% block datapagination %} {{ datapagination }} {% endblock %}
+{% block mensagem %} {{ mensagem }} {% endblock %}
+{% block orderby %} {{ orderby }} {% endblock %}
+{% block tabfoods %} {{ tabfoods }} {% endblock %}
+{% block pagul %} {{ pagul }} {% endblock %}
+{% block inputdesc %} {{ inputdesc }} {% endblock %}
+{% block dataatual %} {{ dataatual }} {% endblock %}
+{% block databr %} {{ databr }} {% endblock %}
+
+
+{% block jsfoods %}
+<script src="{{ url_for('static', filename='js/foods.js') }}"></script>
+{% endblock %}
+{% block jsjquery %}{% endblock %}
+
+{% block content %}
+
+<script>
+const pageatual = {{pagul.page}};
+const perpage = {{pagul.per_page}};
+{% if current_user.is_authenticated %}
+    const usuariologado = true;
+{% else %}
+    const usuariologado = false;
+{% endif %}
+
+// ... do something with jsArrayOfItems in JavaScript ...
+
+
+
+</script>
+
+<div  id="contentalimento" class="container mt-2">
+
+    <div id="divcab-foods">
+        {% import 'layouts/foods/divcabecalhofoods.html' as cabfoods %}
+        {{ cabfoods.div_cab_foods(pagul.page,pagul.total,pagul.per_page,orderby,inputdesc) }}
+        <div class="row">
+            {% if tabfoods|count >= 1  %}
+            <div class="col-12 col-md-3 d-flex order-1 justify-content-start my-1">
+                <label class=" mx-2" for="orberby-foods">Ordenar por: </label>
+                <select class="combobox-primary" id="orberby-foods"  name="orberby-vendedor">
+                    {% set selectcamp='' %}
+                    {% if orderby=='0'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="0" {{selectcamp}}  >Descrição</option>
+
+                    {% set selectcamp='' %}
+                    {% if orderby=='1'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="1" {{selectcamp}}>Calorias</option>
+
+                    {% set selectcamp='' %}
+                    {% if orderby=='2'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="2" {{selectcamp}}>Carboidrato</option>
+
+                    {% set selectcamp='' %}
+                    {% if orderby=='3'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="3" {{selectcamp}}>Proteina</option>
+
+                    {% set selectcamp='' %}
+                    {% if orderby=='4'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="4" {{selectcamp}}>Gordura</option>
+
+                    {% set selectcamp='' %}
+                    {% if orderby=='5'  %}
+                    {% set selectcamp='selected' %}
+                    {% endif %}
+                    <option value="5" {{selectcamp}}>Fibras</option>
+
+                </select>
+            </div>
+            {% endif %}
+
+            <div class="col-12 col-lg-9 order-2 my-1 d-flex justify-content-center justify-content-lg-end div-pagination-foods">
+                {{pagul.links}}
+            </div>
+        </div>
+    </div>
+
+    {% import 'layouts/foods/tabfoods.html' as tbfoods %}
+    {{ tbfoods.table_foods(tabfoods,pagul.total,current_user,dataatual) }}
+
+    {% if current_user.is_authenticated %}
+        {% if current_user.metaatleta|length == 0 %}
+            {% set idmeta = '-1' %}
+        {% else  %}
+            {% set idmeta = current_user.metaatleta[0].id %}
+        {% endif %}
+        {% import 'layouts/foods/mdrefeicoesatleta.html' as modal_refeicoesatleta %}
+        {{ modal_refeicoesatleta.mdrefeicoesatleta(current_user.pessoa.refeicao,dataatual,idmeta) }}
+    {% endif %}
+
+
+    <nav class="row" id="navpagination-foods"aria-label="Page navigation example">
+        <div class="col-md-4 d-flex justify-content-md-start justify-content-center">
+
+            {% if pagul.page != 1 %}
+                {% set lblde = pagul.per_page * (pagul.page-1)+1 %}
+                {% set lblate = pagul.per_page*pagul.page %}
+            {% else %}
+                {% set lblde = pagul.page %}
+                {% set lblate = pagul.per_page %}
+            {% endif %}
+            <p class="text-padrao">
+                    <small>
+                        De: {{ lblde }} até {{ lblate }} alimentos no total {{pagul.total}}
+                    </small>
+            </p>
+        </div>
+
+        <div class="col-12 col-md-8 d-flex justify-content-md-end justify-content-center div-pagination-foods" id="div-pagination-foods">
+            {{pagul.links}}
+        </div>
+    </nav>
+
+
+</div>
+
+<script>
+    $().ready(function() {
+    });
+
+</script>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% macro modal_updatevaloresempresasall()%}
+    <div class="modal fade" id="modal-update-valores-empresa-all" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content bg-primary">
+                    <label id="lbltot" class="text-warning d-none"></label>
+                    <div class="modal-header">
+                        <h5 class="modal-title text-warning" id="exampleModalLongTitle">Atualizar valores Empresas</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <div class="modal-body" id="modal-body-update-valores-empresa-all">
+                        <label class="text-warning">Período</label>
+                        <div class="d-flex justify-content-center">
+                          <div class="my-2">
+                              <input type="date" id="dt-ini"><label class="mx-1">a</label>
+                              <input type="date" id="dt-fim">
+                          </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        <button class="btn btn-warning"
+                                onclick="click_btn_update_empresas(this);">Atualizar Preços Cotações e Dividendos</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endmacro%}

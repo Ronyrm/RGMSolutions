@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% import 'layouts/head.html' as head %}
+    {{ head.head_content('RGMSolutions') }}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/vendedores.css') }}">
+</head>
+<body>
+    <main>
+        <nav class="navbar navbar-expand-md  bg-success">
+            <div class="navbar-collapse collapse w-100 order-0 order-md-0 dual-collapse2">
+                <ul class="navbar-nav ">
+                    <li class="nav-item ">
+                        <a class="nav-link colorlink px-2" href="{{ url_for('main.indexmain',token=token) }}">
+                            <span class="glyphicon glyphicon-chevron-left"/>Voltar
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="mx-auto order-0">
+                <h1 class="navbar-brand mx-2 text-white " >Cadastro de Vendedores</h1>
+                <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target=".dual-collapse2">
+                    <span class="navbar-toggler-icon text-white"></span>
+                </button>
+
+            </div>
+
+
+
+        </nav>
+
+        <div id="content" class="container main-container my-2">
+            {% block content %} {% endblock %}
+        </div>
+    </main>
+
+
+    {% block jsjquery %} {% endblock%}
+    {% block jsvendedores %} {% endblock %}
+
+</body>
+</html>

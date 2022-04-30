@@ -1,0 +1,108 @@
+{% macro divdadosatleta(atleta) %}
+<div class="container mx-auto">
+    <div class="bg-primary text-warning my-2 p-2 d-none" id="div-dados-atleta">
+        <div class="alert alert-primary d-none" id="msg-dados-atleta">
+
+        </div>
+        <form name="formdadosatleta" id="formdadosatleta" method="POST" action="#">
+            <!-- Nome e Username!-->
+            <div class="form-group row">
+                <div class="col-8">
+                    <label for="edtnomeatleta">Nome</label>
+                    <input type="text" value="{{atleta.name}}" required class="form-control form-control-sm" required name="edtnomeatleta" id="edtnomeatleta" >
+                    <small class="text-danger d-none" id="alert-nome-atleta">Forneça o Nome</small>
+                </div>
+                <div class="col-4">
+                    <label for="edtusernameatleta">UserName</label>
+                    <input type="text" value="{{atleta.username}}"  class="form-control form-control-sm" required name="edtusernameatleta" id="edtusernameatleta" >
+                    <small class="text-danger d-none" id="alert-username-atleta">Forneça o UserName</small>
+                    <input type="hidden"  name="edtid" value="{{atleta.id}}" id="edtidatleta" >
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-8">
+                    <label for="edtprofilename">User Name Whatsapp</label>
+                    <input type="text" value="{{atleta.profilenamephone}}"  class="form-control form-control-sm" required name="edtprofilename" id="edtprofilename" >
+                </div>
+                <div class="col-4">
+                    <label for="edtphone">Telefone</label>
+                    <input type="tel" value="{{atleta.phone}}"  class="form-control form-control-sm" required name="edtphone" id="edtphone" >
+                </div>
+            </div>
+
+            <!-- Email, data nascimento e Genero!-->
+            <div class="form-group row">
+                <div class="col-12 col-lg-6">
+                    <label for="edtemailatleta">Email</label>
+                    <input type="email" value="{{atleta.email}}" class="form-control form-control-sm" required name="edtemailatleta" id="edtemailatleta" >
+                    <input type="hidden" id="edtidadeatleta">
+                    <small class="text-danger d-none" id="alert-email-atleta">Forneça o Email</small>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                    {% set dtnasc = atleta.dtnascimento|string %}
+                    {% set dtnasc = dtnasc[0:4] +'-'+ dtnasc[5:7] +'-'+ dtnasc[8:10] %}
+                    <label for="edtdtbirthatleta">Data de Nascimento</label>
+                    <input type="date"  value="{{dtnasc}}" class="form-control form-control-sm" name="edtdtbirthatleta" id="edtdtbirthatleta">
+                    <small class="text-danger d-none" id="alert-dtnasc-atleta">Forneça a Data Nascimento</small>
+                </div>
+                <div class="col-6 col-lg-3">
+                    {% set selectedM = ''  %}
+                    {% set selectedF = ''  %}
+                    {% if atleta.genero == 'M' %}
+                        {% set selectedM = 'selected'  %}
+                    {% else %}
+                        {% if atleta.genero == 'F' %}
+                            {% set selectedF = 'selected'  %}
+                        {% else %}
+                            {% set selectedV = 'selected'  %}
+                        {% endif %}
+                    {% endif %}
+
+                    <label for="selectgeneroatleta">Gênero</label>
+                        <select id="selectgeneroatleta" name="selectgeneroatleta" class="form-control form-control-sm">
+                            <option value="" {{ selectedV }}></option>
+                            <option value="M" {{ selectedM }}>Masculino</option>
+                            <option value="F" {{ selectedF }}>Feminino</option>
+                        </select>
+                    <small class="text-danger d-none" id="alert-genero-atleta">Forneça o Gênero</small>
+                </div>
+            </div>
+            <!--Altura e Peso e Percentual de Gordura !-->
+            <div class="form-group row">
+
+                <div class="col-6 col-lg-4">
+                    <label for="edtalturaatleta">Altura(CM)</label>
+                    <input type="number" value="{{atleta.altura}}" class="form-control form-control-sm" id="edtalturaatleta" name="edtalturaatleta" aria-describedby="alturaHelp" placeholder="Altura em Centímetro">
+                    <small id="alert-altura-atleta" class="text-danger d-none">Forneça a Altura em CM</small>
+                </div>
+                <div class="form-group col-6 col-lg-4">
+                    <label for="edtpesoatleta">Peso</label>
+                    <input type="number" value="{{atleta.peso}}" class="form-control form-control-sm" id="edtpesoatleta" name="edtpesoatleta" aria-describedby="pesoHelp" placeholder="Peso">
+                    <small id="alert-peso-atleta" class="text-danger d-none"> Forneça o Peso</small>
+                </div>
+                <div class="form-group col-12 col-lg-4">
+                    {% set percfat = atleta.percfat %}
+                    {% if atleta.percfat == None or atleta.percfat == ''%}
+                        {% set percfat = 0 %}
+                    {% endif %}
+
+                    <label for="edtpercfatatleta">% Gordura</label>
+                    <input type="number" class="form-control form-control-sm" value="{{percfat}}" id="edtpercfatatleta" name="edtpercfatatleta" aria-describedby="pesoHelp" placeholder="%Gordura">
+
+                </div>
+            </div>
+
+
+            <div class="d-flex justify-content-between">
+                <small class="text-danger mr-1">"% de Gordura" caso não saiba deixar zerado</small>
+                <div class="d-flex justify-content-end align-middle">
+                    <button type="button" id="btnsalvardados" onclick="salvardadosatleta();" class="btn btn-warning btn-sm" >
+                        <span class="glyphicon glyphicon-ok"></span> Atualizar dados
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endmacro %}

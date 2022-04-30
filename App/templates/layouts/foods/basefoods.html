@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    {% import 'layouts/head.html' as head %}
+    {{ head.head_content('RGMSolutions') }}
+
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/atleta.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/foods.css') }}">
+
+</head>
+<body class="bodyfoods">
+    <nav class="navbar navbar-expand-md  bg-primary">
+            <a class="navbar-brand" href="{{ url_for('routesatleta.get_mainatleta')}}">
+                <img class="img-fluid" src="{{ url_for('static', filename='img/logorgm.png') }}" alt="">
+            </a>
+            {% if current_user.is_authenticated %}
+                <span class="navbar-brand mb-0 h1 text-warning">Olá, {{current_user.name}}!!</span>
+                 <a class="btn btn-outline-warning btn-sm mx-1" href="{{ url_for('routestabalimentos.get_tabalimentos',foodpeople='S') }}">
+                    Meus Alimentos Cadastrados
+                </a>
+
+                <a class="btn btn-outline-warning btn-sm mx-1" href="{{ url_for('routesatleta.get_maindiarioatleta',dataatual=dataatual,databr=databr) }}">
+                    Meu Diário
+                </a>
+            {%endif%}
+
+        </nav>
+
+    {% block content %} {% endblock %}
+
+    {% block jsjquery %} {% endblock%}
+    {% block jsfoods %} {% endblock %}
+
+</body>
+</html>

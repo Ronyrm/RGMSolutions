@@ -1,0 +1,72 @@
+.form-group-cotacao{
+  background-color: black;
+  border: 2px solid var(--amareloescuro);
+  border-radius: 20px;
+  color: var(--amareloescuro);
+  padding: 5px;
+  
+}
+.form-group-cotacao h3,h5{
+  color: var(--amareloescuro);
+  text-align: center; 
+}
+
+.form-group-cotacao h3 {
+  color: var(--amarelo);
+  font-weight: bold;
+}
+
+.col-sm-auto {
+  -ms-flex: 0 0 auto;
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 100%;
+}
+
+.data {
+  letter-spacing: -.025em;
+  margin-bottom: 10px;
+  line-height: 0;
+  position: relative;
+}
+
+.col-sm label{
+  color: white;
+
+}
+.col-sm .lbl-title{
+  font-weight: bold;
+}
+
+input[type=checkbox]
+{
+  /* Double-sized Checkboxes */
+  -ms-transform: scale(2); /* IE */
+  -moz-transform: scale(2); /* FF */
+  -webkit-transform: scale(2); /* Safari and Chrome */
+  -o-transform: scale(2); /* Opera */
+  padding: 10px;
+  color: var(--amarelo);
+}
+.btn-update-empresa{
+  margin-top: 5px;
+  width: 25px;
+  height: 25px;
+  border-radius: 12.5px;
+  background-color: black;
+  color: var(--amarelo);
+
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  display: flex ;
+ 
+}
+.th-table-empresas{
+
+  cursor: pointer;
+}
+
+hr.solid {
+  border-top: 2px solid var(--amarelo]);
+}

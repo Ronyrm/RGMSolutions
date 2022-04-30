@@ -1,0 +1,139 @@
+
+.list-group-item {
+    background-color: var(--preto);
+    color: var(--amarelo);
+    
+}
+
+.list-group{
+    border: 1px solid var(--amareloescuro);
+}
+
+.list-group-item-action{
+    width:100%;
+    color:var(--amarelo);
+    background-color: var(--preto);
+    text-align:inherit
+}
+.list-group-item-action:focus,.list-group-item-action:hover{
+    z-index:1;
+    color:var(--preto);
+    text-decoration:none;
+    background-color: var(--amarelo)
+}
+.list-group-item-action:active{
+    color:var(--preto);
+    background-color:var(--amarelo);
+}
+.a-info{
+    font-size: 20px;
+    text-decoration: none;
+}
+.mymeta-info{
+    border-radius: 10px;
+    border: 2px solid var(--amareloescuro);
+    background-color: black;
+    font-weight: bold;
+    
+    color: var(--amareloescuro);
+}
+#lbl-alvocaloricodia{
+    background-color: black;
+    color: var(--amareloescuro);
+    border-radius: 10px;
+    border: 2px solid var(--amareloescuro);
+    font-size: large;
+}
+#divrefatleta,#div-dados-atleta{
+    border-radius: 3px;
+    border: 2px solid var(--amareloescuro);
+    
+
+}
+
+#formdadosatleta input{
+    border: 1px solid black;
+    /*background-color: black;
+    color: var(--amarelo);*/
+    
+}
+#formdadosatleta select{
+    border: 1px solid black;
+    /*background-color: black;
+    color: var(--amarelo);*/
+    
+}
+
+#formdadosatleta input:placeholder-shown {
+    border: 1px solid red;
+    /*background-color: black;*/
+    color: red;
+}
+#formdadosatleta label{
+    color: white;
+}
+
+#table-refeicoes thead {
+    background-color: var(--amarelo);
+    color: black;
+}
+#table-refeicoes {
+    border: 1px solid var(--amarelo);
+    border-radius: 5px;
+}
+
+#lbl-resultadofinal{
+    background-color: black;
+    color: var(--amarelo);
+    border: 1px solid var(--amareloescuro);
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 5px;
+
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+    
+  }
+  
+  .dropdown-content {
+    display: none;
+    float:right;
+    position: absolute;
+    background-color: var(--preto);
+    min-width: 250px;
+    border: 2px solid black;
+    border-radius: 20px;
+    padding: 10px 12px;
+    z-index: 1;
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  .div-info-clima{
+    border-radius: 30px;
+    background-image: url('../img/uploads/tempo.jpg');
+    background-size: cover;
+    background-color: black;
+
+  }
+.div-info-cotacoes{
+    border-radius: 30px;
+    width: auto;
+    background-image: url('../img/uploads/dolar.jpg');
+    background-size: cover;
+  }
+
+  .div-info-logo{
+
+  }
+.div-info-clima table thead tr th, .div-info-clima table thead tr td, 
+.div-info-cotacoes table thead tr th, .div-info-cotacoes table thead tr td{ 
+    border-bottom: 1px solid var(--amareloescuro);
+    border-top: 0;
+    
+}

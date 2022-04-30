@@ -1,0 +1,24 @@
+{% extends "layouts/pandas/convert_csv_to_json/base.html" %}
+{% block content %}
+
+<div  id="content-packagetracker" class="container  py-2">
+    <div class="form-group col-12 col-lg-6 my-2">
+        <form action="{{url_for('routespandas.convert_csvtojson_contact')}}" method="post" enctype="multipart/form-data">
+
+            <div class="form-group">
+                <label class="text-warning" for="filecsv">Forneça o Arquivo CSV</label>
+                <input type="file" class="form-control-file text-warning"  name="filecsv" id="filecsv">
+            </div>
+            <div class="form-group">
+                <button class="btn btn-warning" type="submit">
+                    Enviar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    $().ready(function() {
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% macro div_pagination_foods(datapagination,orderby) %}
+    <ul class="pagination  mx-2 my-2" items-per-page="10" max-size="10">
+        {% if datapagination.prevpag == 'False' %}
+            {% set disable = 'disabled' %}
+        {% else %}
+            {% set disable = '' %}
+        {% endif %}
+        <li class="page-item   {{ disable }}">
+            <a class="page-link"
+               title="{{url_for('routestabalimentos.get_tabalimentos',pageatual=datapagination.page|int -1,totpage=datapagination.per_page,orderby=orderby) }}"
+               href="{{url_for('routestabalimentos.get_tabalimentos',pageatual=datapagination.page|int -1,totpage=datapagination.per_page,orderby=orderby) }}">
+                Anterior
+            </a>
+        </li>
+
+
+        {% for number in range(datapagination.pages|int) %}
+
+            {% set disableli = '' %}
+            {% if number+1 ==  datapagination.page|int  %}
+                {% set disableli = 'disabled' %}
+            {% endif %}
+
+            <li class="page-item  {{ disableli }}">
+                <a class="page-link"
+                   title="{{url_for('routestabalimentos.get_tabalimentos',pageatual=number+1,totpage=datapagination.per_page,orderby=orderby) }}"
+                   href="{{url_for('routestabalimentos.get_tabalimentos',pageatual=number+1,totpage=datapagination.per_page,orderby=orderby) }}">
+                    {{ number + 1 }}
+                </a>
+            </li>
+        {% endfor %}
+
+        {% if datapagination.nextpag == 'False' %}
+            {% set disable = 'disabled' %}
+        {% else %}
+            {% set disable = '' %}
+        {% endif %}
+        <li class="page-item {{ disable }}">
+            <a class="page-link" href="{{url_for('routestabalimentos.get_tabalimentos',pageatual=datapagination.page|int+1,totpage=datapagination.per_page,orderby=orderby) }}">
+                Próximo
+            </a>
+        </li>
+    </ul>
+    <div class="dropdown my-2">
+        <button type="button" class="btn btn-md btn-success text-white dropdown-toggle " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Total de Itens por Página
+        </button>
+
+        <ul class="dropdown-menu bg-success text-white">
+            <li>
+                <a class="dropdown-item " href="{{url_for('routestabalimentos.get_tabalimentos',pageatual=1,totpage=1,orderby=orderby) }}">
+                    1 item por página
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{url_for('routestabalimentos.get_tabalimentos',pageatual=1,totpage=15,orderby=orderby) }}">
+                    15 itens por página
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{url_for('routestabalimentos.get_tabalimentos',pageatual=1,totpage=30,orderby=orderby) }}">
+                    30 itens por página
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{url_for('routestabalimentos.get_tabalimentos',pageatual=1,totpage=60,orderby=orderby) }}">
+                    60 itens por página
+                </a>
+            </li>
+        </ul>
+    </div>
+{% endmacro %}

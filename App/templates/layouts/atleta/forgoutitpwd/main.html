@@ -1,0 +1,78 @@
+{% extends "layouts/atleta/forgoutitpwd/base.html" %}
+{% block email %} {{ email }} {% endblock %}
+
+{% block content %}
+
+<div id="msg-small" class="alert-danger p-2 mb-2 d-none"></div>
+<!-- Digitar Email, verificar email, enviar email !-->
+<div  id="contentforgoutit" class="container mx-auto">
+    <div class="row bg-primary text-warning d-flex justify-content-center">
+        <h5> Redefinição de Senha </h5>
+    </div>
+    <form class="text-padrao p-2" method="post" autocomplete="off" id="form-forgoutitpwd" >
+        <div class="form-group">
+            <label for="edtemail">Email/UserName</label>
+            <input type="text" value="{{email}}" autocomplete="off" class="form-control" id="edtemail" name="edtemail" aria-describedby="emailHelp" placeholder="Entre com email/username">
+            <small class="text-danger d-none" id="small-email">Forneça o Email</small>
+        </div>
+
+        <div class="form-group d-flex justify-content-between">
+
+            <button type="button" id="btnenviar" onclick="btn_click_envia();" class="btn btn-warning">
+
+                Enviar</button>
+        </div>
+    </form>
+
+</div>
+<!-- Digitar Key de Acesso !-->
+<div  id="contentkeyacess" class="container mx-auto d-none">
+    <div class="row bg-primary text-warning d-flex justify-content-center">
+        <h5> Validar Código de Acesso </h5>
+    </div>
+    <form class="text-padrao p-2" method="post" autocomplete="off" id="form-keyacess" >
+        <div class="form-group container mx-auto">
+            <label for="edtkeyacess" class="text-white">Digite o Código de Acesso:</label>
+            <input type="hidden" value="" id="edtidatleta" name="edtidatleta">
+            <input type="text" value="" autocomplete="off" class="form-control" id="edtkeyacess" name="edtkeyacess" aria-describedby="emailHelp" placeholder="Código">
+            <small class="text-danger d-none" id="small-key">Código Inválido. Verifique!</small>
+        </div>
+
+        <div class="form-group d-flex justify-content-center">
+            <button type="button" id="btnvalidakey" onclick="btn_valida_key();" class="btn btn-warning">
+                Validar
+            </button>
+        </div>
+    </form>
+
+</div>
+<!-- Digitar Senha !-->
+<div  id="contentnewpwd" class="container mx-auto d-none">
+    <div class="row bg-primary text-warning d-flex justify-content-center">
+        <h5> Gerar Nova de Senha </h5>
+    </div>
+    <form class="text-padrao p-2" method="post" autocomplete="off" id="form-newpdw" >
+        <input type="hidden" value="" id="edtidatletapwd" name="edtidatleta">
+        <div class="form-group container mx-auto">
+            <label for="edtpwd">Nova Senha</label>
+            <input type="password" value="" autocomplete="off" class="form-control" id="edtpwd" name="edtpwd" aria-describedby="emailHelp" placeholder="Senha">
+            <small class="text-danger d-none" id="small-pwd">Senha deve ter no mínimo 8 caracteres</small>
+        </div>
+        <div class="form-group container mx-auto">
+            <label for="edtpwdconf">Confirmar Senha</label>
+            <input type="password" value="" autocomplete="off" class="form-control" id="edtpwdconf" name="edtconfconf" placeholder="Confirmar Senha">
+            <small class="text-danger d-none" id="small-pwd-conf">Senha deve ter no mínimo 8 caracteres!</small>
+        </div>
+
+        <div class="form-group d-flex justify-content-between">
+
+            <button type="button" id="btnconfirmar" onclick="btn_confimar_newpwd();" class="btn btn-warning">
+                Confirmar
+            </button>
+        </div>
+    </form>
+
+</div>
+
+
+{% endblock %}

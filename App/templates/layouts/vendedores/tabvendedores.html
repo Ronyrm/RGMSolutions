@@ -1,0 +1,44 @@
+{% macro table_vendedores(tabvendedor) %}
+{% if tabvendedor|count >= 1  %}
+    <table class="table table-striped table-light" id="table-vendedores">
+        <thead class="bg-success">
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">CNPJ/CPF</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Ações</th>
+            </tr>
+        </thead>
+        <tbody class="border border-success border-2">
+            {% for vendedor in tabvendedor %}
+                <tr id="tr-prod{{ vendedor.id }}" title="tr-prod{{ vendedor.id }}">
+                    <td>{{vendedor.id}}</td>
+                    <td>{{vendedor.cpfcnpj}} </td>
+                    <td>{{vendedor.pessoa.nome}} </td>
+                    <td>
+                        <div>
+                            <button class="btn btn-sm btn-success mx-1 my-1"
+                                title="Editar {{vendedor.pessoa.username}}"
+                                data-toggle="modal" data-target=".insert-edit-modal-vendedor"
+                                onclick='editvendedor({{ vendedor|tojson|safe }});'>
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </button>
+                            <button class="btn btn-sm btn-danger mx-1 my-1"
+                                data-toggle="modal" data-target=".modal-delete"
+                                title="Excluir {{vendedor.pessoa.username}}"
+                                onclick="deletevendedor({{ vendedor.id }},'{{ vendedor.pessoa.nome }}','{{ token }}');">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div id='alertsemvendedor' class="alert alert-warning alert-dismissible fade show text-center" role="alert">
+        <strong>Mensagem</strong>  <br>Nenhum vendedor ainda cadastrado
+    </div>
+{% endif %}
+
+{% endmacro %}

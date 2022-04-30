@@ -1,0 +1,14 @@
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('00', 'Entrada com Recuperação de Crédito', 'E');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('05', 'Entrada com Suspensão', 'E');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('04', 'Entrada Imune', 'E');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('02', 'Entrada Isenta', 'E');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('03', 'Entrada Não Tributada', 'E');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('01', 'Entrada Tributada com Alíquota Zero', 'E');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('49', 'Outras Entradas', 'E');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('', 'Outras Saídas', 'S');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('55', 'Saída com Suspensão', 'S');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('54', 'Saída Imune', 'S');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('52', 'Saída Isenta', 'S');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('53', 'Saída Não Tributada', 'S');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('50', 'Saída Tributada', 'S');
+INSERT INTO `cst_ipi` (`codcstipi`, `descricao`, `tipomov`) VALUES ('51', 'Saída Tributável com Alíquota Zero', 'S');

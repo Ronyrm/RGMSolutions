@@ -1,0 +1,24 @@
+{% macro modalinfofood() %}
+    <div class="modal fade modal-info-food" id="modal-info-food" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content bg-primary">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-warning" id="lbldescfood"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="card card-body text-warning bg-primary" id="card-body-infofood">
+
+                </div>
+                <div class="modal-footer bg-primary">
+                  <button type="button" class="btn btn-danger" id="fechar-mdinfofood" data-dismiss="modal">
+                    <span class="glyphicon glyphicon-remove"></span> Fechar
+                  </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+

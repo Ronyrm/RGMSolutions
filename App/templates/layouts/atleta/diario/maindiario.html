@@ -1,0 +1,102 @@
+{% extends "layouts/atleta/diario/basediario.html" %}
+{% block result %} {{ result }} {% endblock %}
+{% block mensagem %} {{ mensagem }} {% endblock %}
+{% block refeicao %} {{ refeicao }} {% endblock %}
+{% block metaatleta %} {{ metaatleta }} {% endblock %}
+{% block atletalogado %} {{ atletalogado }} {% endblock %}
+{% block dataatual %} {{ dataatual }} {% endblock %}
+{% block databr %} {{ databr }} {% endblock %}
+{% block sumdieta %} {{ sumdieta }} {% endblock %}
+
+{% block jsatleta %}
+
+
+{% endblock %}
+
+
+{% block jsfuncs %}
+<script src="{{ url_for('static', filename='js/funcs-sisnutri.js') }}"></script>
+{% endblock %}
+
+{% block jsjquery %}{% endblock %}
+
+
+{% block content %}
+
+
+{% if not current_user.is_authenticated %}
+<div id="contentprincipal" class="container my-2">
+
+</div>
+
+{% endif %}
+
+<!-- ESPAÇO USUARIO  !-->
+{% if current_user.is_authenticated %}
+
+<div id="contentatleta">
+    <div class="bg-primary border p-2 border-warning rounded d-flex justify-content-between">'
+        <h5 class="ml-2 text-warning ">
+            <strong>Meu Diário</strong>
+        </h5>
+        <button type="button" class="btn btn-warning mr-2" onclick="gerarpdf();">Imprimir PDF</button>
+    </div>
+
+    <div id="accordion-refeicoes">
+
+    </div>
+
+    {% import 'layouts/atleta/divresultados.html' as div_resultados %}
+    {{ div_resultados.divresultados(metaatleta,sumdieta) }}
+
+    {% import 'layouts/atleta/diario/mddeletefood.html' as modal_delete_food %}
+    {{ modal_delete_food.modaldeletefood() }}
+    {% import 'layouts/atleta/diario/mdinserteditfood.html' as modal_insedit_food %}
+    {{ modal_insedit_food.modalinserteditfood(dataatual,metaatleta[0].id,current_user.pessoa.id) }}
+    {% import 'layouts/atleta/diario/mdinsertnewfood.html' as modal_ins_food %}
+    {{ modal_ins_food.modalinserteditfood(current_user.pessoa.id) }}
+    {% import 'layouts/atleta/diario/mdinfofood.html' as modal_infofood %}
+    {{ modal_infofood.modalinfofood() }}
+
+
+</div>
+{% endif %}
+
+<script src="{{ url_for('static', filename='js/diario.js') }}"></script>
+
+<script>
+    $().ready(function() {
+        var dt = '{{ dataatual }}';
+
+        dtnow = new Date(dt);
+        console.log(dt);
+        dataprev = adicionarDiasData(dtnow,0);
+        datanext = adicionarDiasData(dtnow,2);
+        dataprevBR = adicionarDiasDataBR(dtnow,0);
+        datanextBR = adicionarDiasDataBR(dtnow,2);
+        databr = adicionarDiasDataBR(dtnow,1);
+
+        var totalregref  = {{ refeicao|length }};
+        {% if refeicao|length > 0 %}
+            var data_refeicao = {{refeicao|tojson}};
+        {% else %}
+            var data_refeicao = [];
+        {% endif %}
+
+        {% if metaatleta|length > 0 %}
+            var data_metaatleta = {{metaatleta[0]|tojson}};
+        {% else %}
+            var data_metaatleta = [];
+        {% endif %}
+
+        var data_sumdieta = {{sumdieta|tojson}};
+        console.log('test');
+        console.log(data_sumdieta);
+        carrega_refeicoes(data_refeicao,dt);
+        calcula_preeche_valdiferenca(data_sumdieta,data_metaatleta);
+        buscaunidademedida();
+    });
+
+</script>
+
+{% endblock %}

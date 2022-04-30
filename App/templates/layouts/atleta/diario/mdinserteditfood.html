@@ -1,0 +1,95 @@
+{% macro modalinserteditfood(dataatual,idmetaatleta,idpessoa) %}
+
+    <div class="modal fade insert-edit-modal-food" id="insert-edit-modal-food" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content bg-primary">
+
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-warning" id="lblheadfood"> Inserir Refeição</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id='alert-dadosfood' class="alert alert-dismissible fade show text-center d-none mx-2 my-2" role="alert">
+
+                </div>
+                <form name="formfood" id="formfood" method="post" action="#">
+                    <div class="card card-body text-warning bg-primary">
+                        <div class="form-group">
+                            <label for="edtdescfood" class="form-label">Alimento</label>
+                            <div class="input-group">
+                                <input class="form-control" required id="edtdescfood" name="edtdescfood" placeholder="Pesquisar Alimento...">
+
+                                <div class="input-group-append">
+                                    <a class="btn text-white btn-warning"
+                                        onclick="searchfood(1);"
+
+                                        title="Pesquisar Alimento">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </a>
+
+                                    <a class="btn text-white btn-warning"
+                                        data-toggle="modal" data-target=".modal-insert-newfood"
+
+                                        title="Inserir Novo Alimento"
+                                        id="btnaddfood">
+                                        <span class="glyphicon glyphicon-plus"></span>
+                                    </a>
+                                </div>
+
+                            </div>
+                            <small class="text-white d-none" id="smalldescricao"> </small>
+                            <small id="small-empty-desc" class="d-none text-danger"> Forneça a descrição do alimento</small>
+                            <div class="col-12 col-lg-9 my-1 d-flex justify-content-center div-pagination-foods d-none" id="div-pagination-foods">
+                            </div>
+                            <div class="list-group mb-2 text-warning d-none" id="div-foods">
+
+                            </div>
+
+                            <input type="hidden"  class="form-control" name="edtidrefeicao" id="edtidrefeicao" >
+                            <input type="hidden"  class="form-control" name="edtidmetaatleta" value="{{idmetaatleta}}" id="edtidmetaatleta" >
+                            <input type="hidden"  class="form-control" name="edtdataatual" value="{{dataatual}}" id="edtdataatual" >
+                            <input type="hidden"  class="form-control" required name="edtidalimento" id="edtidalimento" >
+                            <input type="hidden"  class="form-control" required name="edtvalkcal" id="edtvalkcal" >
+                            <input type="hidden"  class="form-control" required name="edtvalproteina" id="edtvalproteina" >
+                            <input type="hidden"  class="form-control" required name="edtvalcarbo" id="edtvalcarbo">
+                            <input type="hidden"  class="form-control" required name="edtvalfat" id="edtvalfat" >
+                            <input type="hidden"  class="form-control" required name="edtvalfibras" id="edtvalfibras">
+                            <input type="hidden"  class="form-control" required name="edtvalsodio" id="edtvalsodio">
+                            <input type="hidden"  class="form-control" required name="edtiditem" id="edtiditem">
+                            <input type="hidden"  class="form-control" required value="{{idpessoa}}" name="edtidpessoa" id="edtidpessoa">
+                        </div>
+
+                        <div class="form-group d-none" id="frmgroup-qtd">
+                            <label id="lblqtd" for="edtqtd">Quantidade</label>
+                            <div class="input-group">
+                                <input type="number"
+                                       onblur="calcula_valnutricionais(edtqtd.value,foodselect);"
+                                       onfocus="document.getElementById('small-empty-qtd').classList.add('d-none');"
+                                       class="form-control form-control" required name="edtqtd" id="edtqtd" >
+                                <div class="input-group-append">
+                                    <button type="button" onclick="calcula_valnutricionais(edtqtd.value,foodselect);" class="btn btn-warning ">
+                                        <span class="glyphicon glyphicon-ok"></span>
+                                    </button>
+                                </div>
+                            </div>
+                            <small class="text-danger d-none" id="small-empty-qtd"> Forneça a Quantidade<br></small>
+                            <small class="text-white d-none" id="small-UN"></small>
+
+                        </div>
+                        <div class="form-group d-none" id="div-table-dadosnutri"></div>
+                    </div>
+
+                    <div class="modal-footer bg-primary">
+                        <button type="button" class="btn btn-warning" onclick="incluiitemfood();" id="btngravaitemfood" >
+                            <span class="glyphicon glyphicon-ok"></span> Incluir
+                        </button>
+                        <button type="button" class="btn btn-danger" id="cancel-itemfood" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

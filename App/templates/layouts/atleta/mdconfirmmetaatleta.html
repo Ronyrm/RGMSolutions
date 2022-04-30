@@ -1,0 +1,23 @@
+{% macro modal_updatevaloresempresa()%}
+    <!-- Modal Chama tela de confirmação Meta !-->
+    <div class="modal fade" id="modal-resultadofinal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content bg-primary">
+                    <div class="modal-header">
+                        <div class="alert d-none" id="alert-confirmameta"></div>
+                        <h5 class="modal-title text-warning" id="exampleModalLongTitle">Confirmação da Meta</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <div class="modal-body" id="modal-body-confirmameta">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="button" onclick="confirmameta();" class="btn btn-warning">Confirmar Meta</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endmacro%}

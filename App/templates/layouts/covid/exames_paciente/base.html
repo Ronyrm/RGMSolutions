@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    {% import 'layouts/head.html' as head %}
+    {{ head.head_content('RGMSolutions') }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/foods.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/atleta.css') }}">
+</head>
+
+<body class="bodyfoods" id="body-exames-pacientes">
+        <nav class="navbar navbar-expand-md  bg-primary mx-auto">
+            <a class="ml-2 btn btn-warning"
+               onclick="btn_voltar_tela_paciente_click();"
+               href="{{ url_for('routescovid.get_paciente_main',tpoperadoridade=tpoperadoridade,idade=idade,sexo=sexo,vlresultado=vlresultado,tpoperadorresultado=tpoperadorresultado,resultado=resultado,page=pageatual,per_page=per_page,tpfiltro=tpfiltro,idexame=idexame,idanalito=idanalito,idhospital=idhospital)}}">
+               Voltar
+            </a>
+
+            {% if codpaciente|length > 0 %}
+                <h5 class="text-white mx-auto">Pesquisa Exames Pacientes {{codpaciente}}</h5>
+            {% else %}
+                <h5 class="text-white mx-auto">Pesquisa Exames Pacientes</h5>
+            {% endif %}
+
+        </nav>
+
+        <div id="content" class="container main-container my-2 bg-primary rounded ">
+            {% block content %} {% endblock %}
+        </div>
+    {% block jsjquery %} {% endblock%}
+    <script src="{{ url_for('static', filename='js/covid/examespaciente.js') }}"></script>
+
+</body>
+
+</html>

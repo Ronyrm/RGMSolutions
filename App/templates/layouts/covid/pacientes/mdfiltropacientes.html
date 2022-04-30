@@ -1,0 +1,119 @@
+{% macro modal_filtropacientes(idhospital,idexame,idanalito,tpfiltro,resultado) %}
+<div class="modal fade" id="modal-filtro-pacientes" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content bg-primary">
+                    <div class="modal-header">
+                        <div class="alert d-none" id="alert-filtro-pacientes"></div>
+                        <h5 class="modal-title text-warning" id="exampleModalLongTitle">Filtrar Pacientes</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <div class="modal-body" id="modal-body-filtro-pacientes">
+                        <div class="form-group">
+                            <label class="text-warning" for="select-filtro"> Opções</label>
+                            <select class="form-control" id="select-filtro" onchange="select_filtro_change(this.value)">
+                                <option value=0>Todos</option>
+                                <option value=1>Filtros prontos</option>
+                                <option value=2>Especificar</option>
+                            </select>
+                        </div>
+                        <div class="form-row d-none div-filtros" id="div-filtros-especificar">
+                            <div class="form-row col-12">
+                                <label class="text-warning" for="select-hospital">Hospital</label>
+                                <select class="form-control" id="select-hospital"></select>
+                                <small class="text-danger d-none" id="small-hospital"></small>
+                            </div>
+                            <div class="form-row col-12">
+                                <label for="brownser-exames">Exames</label>
+                                <input list="brownser-exames" tabindex="3"
+                                       placeholder="Digite aqui o Exame"
+                                        class="form-control form-control-sm"
+                                        id="edtdesc-exame"
+                                       onblur="btn_brownser_exame_blur();"
+                                        oninput="btn_brownser_exame_change(this.value);">
+                                <datalist id="brownser-exames" data-model-name="brownser-exames">
+                                </datalist>
+                                <small class="text-danger d-none" id="small-exames"></small>
+                                <input type="hidden" id="edtidexame">
+                            </div>
+                            <div class="form-row col-12">
+                                <label for="brownser-analitos">Análitos</label>
+                                <input list="brownser-analitos" tabindex="4"
+                                       placeholder="Digite aqui o Analito"
+                                        class="form-control form-control-sm"
+                                        id="edtdesc-analito"
+                                        oninput="btn_brownser_analito_change(this.value);">
+                                <datalist id="brownser-analitos" data-model-name="brownser-analitos">
+                                </datalist>
+                                <small class="text-danger d-none" id="small-analitos"></small>
+                                <input type="hidden" id="edtidanalito">
+                            </div>
+                            <div class="form-row">
+                                <div class="col-6">
+                                    <label class="text-warning" for="select-operador-resultado">Operador Resultado</label>
+                                    <select class="form-control" id="select-operador-resultado">
+                                        <option value=0>Maior que</option>
+                                        <option value=1>Maior ou igual a</option>
+                                        <option value=2>Menor que</option>
+                                        <option value=3>Maior ou igual a</option>
+                                        <option value=4>Pacientes com Exames alterados</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="text-warning" for="input-valresultado">Valor Resultado</label>
+                                    <input type="number" id="input-valresultado" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group d-none div-filtros" id="div-filtros-prontos">
+                            <a href="{{url_for('routescovid.get_paciente_main',idexame=70,resultado='Detectado',tpfiltro=1,page=1,per_page=20)}}"
+                               class="btn btn-warning"> Filtrar Pacientes com Exames: covid Detectado</a>
+                        </div>
+                        <div class="form-group div-filtros" id="div-sexo-idade">
+                            <div class="form-row">
+                                <div class="col-6">
+                                    <label class="text-warning" for="select-operador-idade">Operador Idade</label>
+                                    <select class="form-control" id="select-operador-idade" onchange="select_op_idade_change(this.value);">
+                                        <option value=0>Igual</option>
+                                        <option value=1>Maior que</option>
+                                        <option value=2>Maior ou igual a</option>
+                                        <option value=3>Menor que</option>
+                                        <option value=4>Maior ou igual a</option>
+                                        <option value=5>De - Até</option>
+                                    </select>
+                                </div>
+                                <div class="col-6" id="div-idade-one">
+                                    <label class="text-warning" for="input-idade">Idade</label>
+                                    <input type="number" id="input-idade" class="form-control">
+                                </div>
+                                <div class="col-6 d-none" id="div-idade-two">
+                                    <div class="col-6">
+                                        <label class="text-warning" for="input-idade-de">Idade De</label>
+                                        <input type="number" id="input-idade-de" class="form-control">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="text-warning" for="input-idade-ate">Idade Até</label>
+                                        <input type="number" id="input-idade-ate" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <label class="text-warning" for="select-sexo">Sexo</label>
+                                <select class="form-control" id="select-sexo">
+                                    <option value=0>Todos</option>
+                                    <option value=1>Masculino</option>
+                                    <option value=2>Feminino</option>
+                                    <option value=3>Não Especificado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer" id="modal-footer-filtro-pacientes">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                        <button type="button" onclick="filtrar_pacientes();" class="btn btn-warning">Filtrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endmacro %}

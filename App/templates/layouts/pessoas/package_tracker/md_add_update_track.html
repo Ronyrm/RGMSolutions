@@ -1,0 +1,48 @@
+{% macro addupdate_track(idpessoa) %}
+    <div class="modal fade insert-edit-modal-track" id="insert-edit-modal-track" tabindex="1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content bg-primary">
+
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-warning" id="lblidrefeicao"> Inserir Código de Rastreio</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id='alert-dadostrack' class="alert alert-dismissible fade show text-center d-none mx-2 my-2" role="alert">
+                    ddddddddddddddd
+                </div>
+                <form name="formtrack" id="formtrack" method="post" action="#">
+                    <div class="card card-body text-warning bg-primary">
+                        <div class="form-group">
+                            <label for="edtcodigo-track">Código</label>
+                            <input type="text" onfocus="document.getElementById('small-codigo').classList.add('d-none');"   class="form-control form-control-sm" required
+                                   name="edtcodigo" id="edtcodigo-track" >
+                            <small class="text-danger d-none" id="small-codigo">Forneça o Código</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="edtdescricao-track">Descrição</label>
+                            <input type="text"  onfocus="document.getElementById('small-descricao').classList.add('d-none');" class="form-control form-control-sm" required
+                                   name="edtdescricao" id="edtdescricao-track" >
+                            <small class="text-danger d-none" id="small-descricao">Forneça a Descrição</small>
+                        </div>
+                        <input type="hidden" value="{{idpessoa}}" id="edtidpessoa" name="edtidpessoa">
+                        <input type="hidden"id="edtidpacktracker" name="edtidpacktracker">
+
+                    </div>
+
+                    <div class="modal-footer bg-primary">
+                        <button type="button" class="btn btn-warning" onclick="gravartrack();" id="btngravartrack" >
+                            <span class="glyphicon glyphicon-ok"></span> Salvar
+                        </button>
+                        <button type="button" class="btn btn-danger" id="cancel-vendedor" data-dismiss="modal">
+                            <span class="glyphicon glyphicon-remove"></span> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+}

@@ -1,0 +1,217 @@
+{% extends "layouts/atleta/baseatleta.html" %}
+{% block result %} {{ result }} {% endblock %}
+{% block mensagem %} {{ mensagem }} {% endblock %}
+{% block tela %} {{ tela }} {% endblock %}
+{% block atletalogado %} {{ atletalogado }} {% endblock %}
+{% block refeicao %} {{ refeicao }} {% endblock %}
+{% block metaatleta %} {{ metaatleta }} {% endblock %}
+{% block datatual %} {{ dataatual }} {% endblock %}
+{% block databr %} {{ databr }} {% endblock %}
+{% block sumdieta %} {{ sumdieta }} {% endblock %}
+
+
+{% block jsatleta %}
+<script src="{{ url_for('static', filename='js/funcs-sisnutri.js') }}"></script>
+<script src="{{ url_for('static', filename='js/msginfomodal.js') }}"></script>
+<script src="{{ url_for('static', filename='js/funcoes/mask_input.js') }}"></script>
+<script src="{{ url_for('static', filename='js/funcoes/funcoes.js') }}"></script>
+<script src="{{ url_for('static', filename='js/atleta.js') }}"></script>
+<script src="{{ url_for('static', filename='js/diario.js') }}"></script>
+
+{% endblock %}
+
+
+{% block content %}
+
+<script>
+
+var metaativa = 'N';
+{% if metaatleta|length > 0 %}
+    {% set metaatletatemp = metaatleta %}
+    {% set metaatleta = metaatleta[0] %}
+    {% if metaatleta.status == 'A' %}
+        metaativa = 'S';
+    {% endif %}
+{% endif %}
+var totalregref  = {{ refeicao|length }};
+{% if refeicao|length > 0 %}
+        var data_refeicao = {{refeicao|tojson}};
+   {% else %}
+        var data_refeicao = []
+   {% endif %}
+
+var totalregmeta = {{ metaatleta|length }};
+{% if metaatleta|length > 0 %}
+        var data_meta = {{metaatleta|tojson}};
+   {% else %}
+        var data_meta = []
+   {% endif %}
+
+{% if current_user.is_authenticated %}
+    var logado = true;
+    var data_atleta = {{atletalogado|tojson}};
+    var idatleta={{current_user.id}};
+    var dtnasc = '';
+    var dtnasctemp = '{{ atletalogado.dtnascimento|string }}';
+    {% if atletalogado.dtnascimento|string != '' %}
+        {% set dtnasc = atletalogado.dtnascimento|string %}
+        dtnasc = '{{ dtnasc[0:4] +'-'+ dtnasc[5:7] +'-'+ dtnasc[8:10] }}';
+
+    {% else %}
+        dtnasc = '';
+    {% endif %}
+
+
+{% else %}
+    var logado = false;
+    var data_atleta = [];
+    var idatleta = 0;
+    var dtnasc = '';
+
+{%endif%}
+
+</script>
+
+<div class="bg-primary mt-2">
+    {% import 'layouts/atleta/simulator.html' as divsimulator %}
+    {{ divsimulator.simulator() }}
+</div>
+
+
+{% if not current_user.is_authenticated %}
+<div id="contentprincipal" class="container my-2">
+
+    <div class="row d-flex justify-content-center">
+        {% if tela == 'Login' or tela == 'Registrar' %}
+        {% set dnone='d-none'%}
+        {% endif %}
+        {% if not current_user.is_authenticated %}
+        <img class="img-fluid {{dnone}}" id="img-portifolio" width="800" height="450" src="{{ url_for('static', filename='/img/portifoliorgm.jpg') }}" alt="">
+        {% endif %}
+        <div class="col-lg-6 col-sm-12 bg-primary form-padrao">
+
+            {% if not current_user.is_authenticated %}
+
+                {% import 'layouts/atleta/formlogin.html' as formlogin %}
+                {{ formlogin.formloginatleta(tela,result,mensagem,atletalogado) }}
+
+                {% import 'layouts/atleta/formregistrar.html' as formregistrar %}
+                {{ formregistrar.formregistraratleta(tela,result,mensagem,atletalogado) }}
+
+
+
+
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endif %}
+
+
+<!--------------------------  ESPAÇO USUARIO  !--------------------------------------------->
+{% if current_user.is_authenticated %}
+
+<div id="contentatleta" class="my-2">
+    {% import 'layouts/atleta/menuatleta.html' as navmenuatleta %}
+    {{ navmenuatleta.nav_menuatleta(atletalogado.pessoa,current_user.name,refeicao,dataatual,databr) }}
+
+    {% import 'layouts/atleta/divfieldempty.html' as divfieldempy %}
+    {{ divfieldempy.divcheckfields_empty(atletalogado) }}
+
+    {% import 'layouts/atleta/divdadosatleta.html' as divdadosatleta %}
+    {{ divdadosatleta.divdadosatleta(atletalogado) }}
+
+    {% import 'layouts/pessoas/enderecos/md_table_enderecos.html' as mdtableenderecos %}
+    {{ mdtableenderecos.table_enderecos() }}
+
+    {% import 'layouts/pessoas/enderecos/md_add_update_endereco.html' as mdaddupdateendereco %}
+    {{ mdaddupdateendereco.addupdate_endereco(atletalogado.pessoa) }}
+
+    {% import 'layouts/pessoas/enderecos/md_delete_endereco.html' as mddelete_endereco %}
+    {{ mddelete_endereco.mddeleteendereco(atletalogado.pessoa) }}
+
+
+
+
+    {% if metaatleta|length == 0 %}
+        {% set ativa = 'N' %}
+    {% else %}
+        {% if metaatleta.status == 'A' %}
+            {% set ativa = 'S' %}
+        {% else %}
+            {% set ativa = 'N' %}
+        {% endif %}
+    {% endif %}
+
+
+    {% import 'layouts/atleta/divmetaatleta.html' as divmetaatleta %}
+    {{ divmetaatleta.div_meta_atleta(atletalogado,metaatleta,ativa) }}
+
+    {% import 'layouts/atleta/mdconfirmmetaatleta.html' as divmodalconfirm %}
+    {{ divmodalconfirm.modal_resultadofinal() }}
+
+    {% import 'layouts/atleta/divrefeicoesatleta.html' as divrefeicoesatleta %}
+    {{ divrefeicoesatleta.telarefeicoesatleta(refeicao,atletalogado.pessoa) }}
+
+    {% import 'layouts/atleta/mdinsertedit_refeicao.html' as modal_refeicao %}
+    {{ modal_refeicao.modalinserteditrefeicao() }}
+
+    {% import 'layouts/atleta/mddelete_refeicao.html' as modal_delete_refeicao %}
+    {{ modal_delete_refeicao.mddeleterefeicao() }}
+
+    {% if ativa == 'S' %}
+    <div id="footer">
+        {% import 'layouts/atleta/divresultados.html' as div_resultados %}
+        {{ div_resultados.divresultados(metaatletatemp,sumdieta) }}
+    </div>
+    {%endif%}
+
+</div>
+{% endif %}
+
+<script>
+    $().ready(function() {
+        geolocation_clima();
+        dados_moeda_BR();
+        var idade = 0;
+        if (dtnasc != ''){
+            idade = retornaidade(dtnasc);
+        }
+
+        if(metaativa == 'S'){
+            document.getElementById('li-meudiario').classList.remove('d-none');
+        }
+
+        if (logado){
+            if (totalregref == 0){
+                console.log(data_refeicao);
+                totalreg = 0;
+                divrefatleta = document.getElementById('divrefatleta');
+                divrefatleta.classList.remove('d-none');
+
+            }
+            else{
+
+                divrefatleta = document.getElementById('divrefatleta');
+                divrefatleta.classList.add('d-none');
+                totalreg = data_refeicao.length;
+            }
+            verifica_table_refeicao_empty(totalreg);
+
+            {% if metaatleta|length > 0 %}
+                var data_metaatleta = {{metaatleta|tojson}};
+            {% else %}
+                var data_metaatleta = [];
+            {% endif %}
+
+            var data_sumdieta = {{sumdieta|tojson}};
+            if(metaativa == 'S'){
+
+                calcula_preeche_valdiferenca(data_sumdieta,data_metaatleta);
+            }
+        }
+    });
+
+</script>
+{% endblock %}

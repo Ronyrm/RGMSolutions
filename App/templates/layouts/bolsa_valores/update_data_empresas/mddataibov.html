@@ -1,0 +1,100 @@
+{% macro modal_dataibov()%}
+    <div class="modal fade" id="modal-data-ibov" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content bg-primary">
+                    <label class="text-warning ml-2" id="small-msg-ibov"></label>
+                    <div class="modal-header">
+                        <h5 class="modal-title text-warning" id="exampleModalLongTitle">Dados Ibovespa</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    <div class="modal-body" id="modal-body-datapibov p-2">
+                        <!-- Botões page control -->
+                        <div class="btn-group my-2" role="group" aria-label="Basic example">
+                            <button type="button" onclick="click_btn_dados();" class="btn btn-warning mx-1" data-toggle="collapse"
+                                    data-target="#collapseDados" aria-expanded="false" aria-controls="collapseDados">
+                                Dados
+                            </button>
+                            <button type="button" onclick="click_btn_grafico();" class="btn btn-warning mx-1" data-toggle="collapse"
+                                    data-target="#collapseGrafico" aria-expanded="false" aria-controls="collapseGrafico">
+                                Gráfico
+                            </button>
+                        </div>
+                        <!-- Pagina de dados -->
+                        <div class="collapse" id="collapseDados">
+                            <div class="card card-body bg-primary">
+                                <div class="form-row">
+                                    <div class="col">
+                                        <label class="text-warning"  for="dt-ini-ibov-dados">Data Inicial</label>
+                                        <input type="date" id="dt-ini-ibov-dados">
+                                    </div>
+                                    <div class="col">
+                                        <label class="text-warning"  for="dt-fim-ibov-dados">Data Final</label>
+                                        <input type="date" id="dt-fim-ibov-dados">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-center mt-4">
+                                    <div class="modal-footer">
+                                        <button class="btn btn-warning mx-1" id="btn-mostrar-ibov" onclick="click_btn_mostrar_ibov();">Mostrar Valores</button>
+                                        <button class="btn btn-warning mx-1" id="btn-update-ibov"  onclick="click_btn_update_ibov();">Atualizar Valores</button>
+                                    </div>
+                                </div>
+                                <!-- table -->
+                                <div class="row mt-2" id="div-data-ibov">
+                                    <div class="alert alert-warning d-none" id="alert-data-Ibov"></div>
+                                    <table class="table table-warning mx-1 d-none" id="table-data-Ibov">
+                                        <thead class="bg-dark text-white">
+                                            <tr>
+                                                <th scope="col">Data</th>
+                                                <th scope="col">Volume</th>
+                                                <th scope="col">Val.Abertura</th>
+                                                <th scope="col">Maior Val.</th>
+                                                <th scope="col">Menor Val.</th>
+                                                <th scope="col">Val.Fechamento</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-dark" id="body-table-ibov"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="collapse" id="collapseGrafico">
+                            <div class="card card-body bg-primary">
+                                <div class="form-row">
+                                    <div class="form-group mx-1">
+                                        <label for="select-tp-datas" class="text-warning">Filtra por</label>
+                                        <select class="form-control" onchange="change_tp_data(this.value);" id="select-tp-datas">
+                                            <option value=0>Por Período de Datas</option>
+                                            <option value=1>Mensal</option>
+                                            <option value=2>Anual</option>
+                                            <option value=3>Mês por Intervalo de Anos </option>
+                                            <option value="4"> Maiores e Menores Pontuação</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group mx-1" id="div-agrupamento">
+                                        <label for="select-tp-agrupamento" class="text-warning">Agrupamento</label>
+                                        <select class="form-control"
+                                                id="select-tp-agrupamento">
+                                            <option value="0" selected>Dia</option>
+                                            <option value="1">Mês</option>
+                                            <option value="2">Ano</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="d-none" id="div-tp-datas"></div>
+                                <div class="d-none" id="div-chart-ibov">
+                                    <div class="d-flex justify-content-center" >
+                                        <div class="alert alert-danger d-none" id="alert-ibov">
+
+                                        </div>
+                                    </div>
+                                    <div class="my-2" style="height: 500px" id="chart-ibov" ></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endmacro%}

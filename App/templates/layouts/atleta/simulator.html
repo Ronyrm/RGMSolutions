@@ -1,0 +1,269 @@
+{% macro simulator() %}
+<div id="div-simulator" class="d-none text-padrao form-padrao p-2">
+    <div class="form-row my-2">
+        <div class="form-group  col-12 bg-warning text-dark d-flex justify-content-center">
+            <h5>Simulador Gasto Calórico</h5>
+        </div>
+    </div>
+    <!-- Div -> Primeira Etapa = Fornecimento dos Dados: sexo, data de nascimento peso, altura, % de gordura !-->
+    <div class="form-row" id="form-simulador-oneetap">
+        <div class="form-group col-6">
+            <label for="selectgenero">Gênero</label>
+            <select id="selectgenero" name="selectgenero" class="form-control">
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+            </select>
+        </div>
+        <div class="form-group col-6">
+            <label for="edtdateniver">Data de Nascimento</label>
+            <input type="date" class="form-control" name="edtdateniver" id="edtdateniver">
+
+        </div>
+        <div class="form-group col-6 col-lg-4">
+            <label for="edtaltura">Altura(CM)</label>
+            <input type="number" class="form-control" id="edtaltura" name="edtaltura" aria-describedby="alturaHelp" placeholder="Altura em Centímetro">
+            <small id="msg-altura" class="text-danger"></small>
+        </div>
+        <div class="form-group col-6 col-lg-4">
+            <label for="edtpeso">Peso</label>
+            <input type="number" class="form-control" id="edtpeso" name="edtpeso" aria-describedby="pesoHelp" placeholder="Peso">
+            <small id="msg-peso" class="text-danger"></small>
+        </div>
+        <div class="form-group col-12 col-lg-4">
+            <label for="edtpercfat">% Gordura</label>
+            <input type="number" class="form-control" id="edtpercfat" name="edtpercfat" aria-describedby="pesoHelp" placeholder="%Gordura">
+        </div>
+        <div class="form-group col-12 d-flex justify-content-between align-items-center">
+            <small id="lbl-msgdadosgerais" class="text-danger"> Caso não souber o % de Gordura deixar em branco</small>
+            <button class="btn btn-warning  mb-2 btn-sm" type="button"  id="btnprimeiraetapa">
+                Próximo <span class="glyphicon glyphicon-menu-right"/>
+            </button>
+        </div>
+    </div>
+    <!-- Div -> Segunda Etapa = Escolha do nivel de atividade !-->
+    <div class="form-row d-none justify-content-center" id="form-simulador-twoetap">
+        <div class="form-row col-12 p-2 d-flex justify-content-betweem">
+                <a id="btnvoltarsegundaetapa" class="btn btn-warning btn-sm ml-2" href="#">
+                   <span class="glyphicon glyphicon-menu-left"/> Voltar
+                </a>
+                <label class="mx-auto text-danger"> Escolha seu nível de atividade abaixo</label>
+
+        </div>
+        <!-- Lista de Grupo Nível de Atividade !-->
+        {% import 'layouts/atleta/listgroup_nivelatividade.html' as listgroup %}
+        {{ listgroup.listgroupna() }}
+
+    </div>
+    <!-- Div -> Terceira Etapa = Calculo da Fórmula !-->
+    <div class="form-row d-none" id="form-simulador-threeetap">
+        <div class="col-12 d-flex justify-content-center">
+            <label class="text-danger"> Selecione abaixo uma ou mais fórmula</label>
+        </div>
+        <table class="table table-dark table-striped table-sm" id="tab-bmr">
+            <thead class="table-dark text-padrao">
+                <tr>
+                    <th scope="col">
+                        Fórmula(TMB)<small>
+                        <a class="text-warning" data-toggle="modal" data-target="#modal-info" onclick="chamamodalinfo('TMB- Taxa Metabólica Basal',msginfo.bmr)" ><span class="glyphicon glyphicon-info-sign"></span></a>
+
+                        </small>
+                    </th>
+                    <th scope="col"></th>
+                    <th scope="col">
+                        TMB<small>
+                        <a class="text-warning" data-toggle="modal" data-target="#modal-info" onclick="chamamodalinfo('TMB- Taxa Metabólica Basal',msginfo.bmr)" ><span class="glyphicon glyphicon-info-sign"></span></a>
+                        </a>
+                        </small>
+                    </th>
+                    <th scope="col">
+                        GCD<small>
+                        <a class="text-warning" data-toggle="modal" data-target="#modal-info" onclick="chamamodalinfo('GCD - Gasto Calórico Diário',msginfo.tdee)" ><span class="glyphicon glyphicon-info-sign"></span></a>
+                        </a>
+                        </small>
+                    </th>
+                    <th scope="col">
+                        Incluir
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="body-BMR">
+
+            </tbody>
+            <tfoot class="table-dark text-warning">
+                <tr>
+                    <th scope="row"> Média(final)</th>
+                    <th></th>
+                    <th class="align-middle text-center"><label id="edtmediabmr" ></label></th>
+                    <th class="align-middle text-center"><label id="edtmediatdee"></label></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="col-12 d-flex justify-content-between">
+            <button class="btn btn-warning mb-2 btn-sm"  id="btnvoltarna">
+                <span class="glyphicon glyphicon-menu-left"/> Voltar
+            </button>
+
+            <button class="btn btn-warning mb-2 btn-sm"   id="btnproximoformula">
+                Próximo <span class="glyphicon glyphicon-menu-right"/>
+            </button>
+        </div>
+    </div>
+    <!-- Div -> Quarta Etapa = Escolha da Meta = Perder ou Ganhar Peso  e calorias do Exercicios!-->
+    <div class="form-row d-none" id="form-simulador-fouretap">
+        <div class="col-12 d-flex justify-content-start">
+            <small class="text-warning">
+                <a class="text-warning"  href="https://pt.wikipedia.org/wiki/Metabolismo_basal" target="_blank">*TMB:</a> Taxa Metabólica Basal
+            </small>
+        </div>
+         <div class="col-12 d-flex justify-content-start mb-2">
+            <small class="text-warning align-right">
+                *GCD:</a> Gasto Calórico Diário  = TMB X Nível de Atividade
+            </small>
+        </div>
+        <div class="col-12 d-flex justify-content-center">
+            <label class="mx-2 mymeta-info p-2" title="Sua Taxa Metabólica Diária" id="lbl-mymeta-bmr"></label>
+            <label class="mx-2 mymeta-info p-2" title="Seu Gasto Calórico Diário que necessita" id="lbl-mymeta-tdee"></label>
+        </div>
+        <div class="h-divider"></div>
+        <div class="col-12 d-flex justify-content-center">
+            <label style="font-weight: bold; " class="text-danger"> Escolha sua Meta Abaixo</label>
+        </div>
+        <div class="form-group col-12 d-flex justify-content-center">
+            <div class="form-check mr-1">
+                <input class="form-check-input" tabindex="1"  id="radiometamore" type="radio" onclick="checkmeta();" name="radiometa" checked value="ganho">
+                <label class="form-check-label" for="radiometamore">
+                    Ganho Peso
+                </label>
+            </div>
+            <div class="form-check ml-1">
+                <input class="form-check-input" tabindex="2" type="radio" id="radiometaless" onclick="checkmeta();" name="radiometa"  value="perda">
+                <label class="form-check-label" for="radiometaless">
+                    Perder Peso
+                </label>
+            </div>
+        </div>
+        <div class="form-group col-6 col-lg-6 mx-auto">
+            <small class="form-check-label mr-2" for="edtcaloriasmeta" id="label-tipometa"></small>
+            <input type="number" id="edt-caloriasmeta" tabindex="3" value="0" style="width: 100%">
+            <small id="msg-validcalmeta" class="text-danger"></small>
+        </div>
+        <div class="form-group col-6 col-lg-6 mx-auto">
+            <small class="form-check-label mr-2" for="edtcaloriasexercises" id="label-kcalexercises">
+                Calorias dos Exercícios Diário <a class="text-warning a-info" href="#"><span class="glyphicon glyphicon-info-sign"></span></a>
+            </small>
+            <input type="number" id="edt-caloriasexercises" tabindex="4" value="0" style="width: 100%">
+            <small id="msg-validcalexec" class="text-danger"></small>
+        </div>
+        <!-- Div -> Quinta Etapa - Final/Resultado -->
+        <div class="col-12 d-flex justify-content-between">
+            <button class="btn btn-warning mb-2 btn-sm"  tabindex="6" id="btnvoltarfouretapa">
+                <span class="glyphicon glyphicon-menu-left"/> Voltar
+            </button>
+            <label class="text-center mx-auto p-2 valresultmeta" id="lbl-alvocaloricodia"></label>
+            <button class="btn btn-warning mb-2 btn-sm" tabindex="5" type="button" id="btn-result">
+                Resultado <span class="glyphicon glyphicon-menu-right"/>
+            </button>
+        </div>
+    </div>
+    <!-- Div -> Quinta Etapa = Resultado!-->
+    <div class="form-row d-none" id="form-simulador-fiveetap">
+        <div class="col-12 mb-2  d-flex justify-content-center">
+            <div col="col-9">
+                <a class="text-warning a-info" data-toggle="modal" data-target="#modal-info" onclick="chamamodalinfo('Calorias por Kilo de Gordura Corporal',msginfo.kcalkgfat)" ><span class="glyphicon glyphicon-info-sign"></span></a>
+                <label>Calorias por quilo de gordura corporal:
+                </label>
+            </div>
+            <div class="col-3 align-middle" >
+                <input  class="w-75" id="edt-kcalkgfat" type="number" value="3500">
+            </div>
+       </div>
+        <div class="col-12 d-flex justify-content-center">
+            <table class="table table-dark table-sm" id="tab-result">
+                <thead class="table-dark text-padrao">
+                    <tr>
+                        <th scope="col"><small></small></th>
+                        <th scope="col"><small><strong>Diariamente</strong></small></th>
+                        <th scope="col"><small><strong>Semanalmente</strong></small></th>
+                        <th scope="col"><small><strong>Mensalmente</strong></small></th>
+                        <th scope="col"><small><strong>Anualmente</strong></small></th>
+                    </tr>
+                </thead>
+                <tbody id="body-result" class="table-dark text-warning">
+                    <tr>
+                        <td><small><strong>TMB</strong></small></td>
+                        <td><small><input class="w-75" disabled type="number" value="0" id="edtbmrdia"></small></td>
+                        <td><small><input class="w-75" disabled type="number" value="0" id="edtbmrsemanal"></small></td>
+                        <td><small><input class="w-75" disabled type="number" value="0" id="edtbmrmensal"></small></td>
+                        <td><small><input class="w-75" disabled type="number" value="0" id="edtbmranual"></small></td>
+                    </tr>
+                    <tr>
+                        <td><small><strong>GCD</strong></small></td>
+                        <td><small><input class="w-75" disabled type="number" disabled value="0" id="edtgcddia"></small></td>
+                        <td><small><input class="w-75" disabled type="number" disabled value="0" id="edtgcdsemanal"></small></td>
+                        <td><small><input class="w-75" disabled type="number" disabled value="0" id="edtgcdmensal"></small></td>
+                        <td><small><input class="w-75" disabled type="number" disabled value="0" id="edtgcdanual"></small></td>
+                    </tr>
+                    <tr>
+                        <td><small id="lbl-desctipometa"></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtmetakaldia"></small></td>
+                        <td class="align-middle"><input class="w-75" type="number" value="0"  id="edtmetakalsemanal"></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtmetakalmensal"></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtmetakalanual"></small></td>
+                    </tr>
+                    <tr>
+                        <td class="align-middle"><small><strong>Kcal dos Exercícios</strong></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtKcalExecdia"></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtKcalExecsemanal"></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtKcalExecmensal"></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtKcalExecanual"></small></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12 d-flex justify-content-center">
+            <label class="text-warning"><strong>Meta - Resultado Final</strong></label>
+        </div>
+        <div class="col-12 d-flex justify-content-center">
+            <table class="table table-dark table-sm">
+                <thead class="table-dark text-padrao">
+                    <tr>
+                        <th scope="col"><small></small></th>
+                        <th scope="col"><small><strong>Diariamente</strong></small></th>
+                        <th scope="col"><small><strong>Semanalmente</strong></small></th>
+                        <th scope="col"><small><strong>Mensalmente</strong></small></th>
+                        <th scope="col"><small><strong>Anualmente</strong></small></th>
+                    </tr>
+                </thead>
+                <tbody class="table-dark text-warning">
+                    <tr>
+                        <td><small id="lbl-tipometa"></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtpesodia"><label id="lblpesodia" >gr</label></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtpesosemanal"><label id="lblpesosemanal" >gr</label></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtpesomensal"><label id="lblpesomensal" >kg</label></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtpesoanual"><label id="lblpesoanual" >kg</label></small></td>
+                    </tr>
+
+                    <tr>
+                        <td><small><strong>Alvo Calórico</strong></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtalvokcaldia"></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtalvokcalsemanal"></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtalvokcalmensal"></small></td>
+                        <td class="align-middle"><small><input class="w-75" type="number" value="0" id="edtalvokcalanual"></small></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12 d-flex justify-content-between">
+            <button class="btn btn-warning mb-2 btn-sm"  id="btnvoltarmeta">
+                <span class="glyphicon glyphicon-menu-left"/> Voltar
+            </button>
+        </div>
+    </div>
+</div>
+<!-- Div ->Modal informações!-->
+
+{% import 'layouts/modalinfo.html' as modalinfosimulador %}
+{{ modalinfosimulador.modalinfo() }}
+
+{% endmacro %}

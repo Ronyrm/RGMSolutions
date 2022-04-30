@@ -1,0 +1,42 @@
+{% extends "layouts/covid/exames_paciente/base.html" %}
+
+{% block content %}
+<script>
+    var codpaciente = '0';
+    {% if codpaciente != '0' %}
+        var codpaciente = '{{ codpaciente }}';
+    {% else %}
+        {% set codpaciente = '' %}
+    {% endif %}
+</script>
+
+<div  id="content-exames-pacientes" class="container text-warning">
+
+    <div class="row text-warning">
+        <label for="input-id" class="text-warning p-2"> Id Paciente</label>
+        <div class="input-group mb-2">
+            <input type="text"  class="form-control" value="{{codpaciente}}" placeholder="Digita aqui o Código do Paciente" id="input-id">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-warning" onclick="return_menu_groupby_data();">
+                        <span class="glyphicon glyphicon-search"></span>
+                    </button>
+                </div>
+        </div>
+    </div>
+
+
+</div>
+<div id="div-menu-datas" class="container">
+
+</div>
+<div id="div-table-exames-pacientes" class="container"></div>
+
+<script>
+    $().ready(function() {
+        if(codpaciente != '0' && codpaciente != '') {
+            return_menu_groupby_data();
+
+        }
+    });
+</script>
+{% endblock %}

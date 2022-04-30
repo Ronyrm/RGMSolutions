@@ -1,0 +1,51 @@
+{% extends "layouts/anvisa/base.html" %}
+
+{% block content %}
+<div class="pt-2">
+    <ul class="nav">
+                <li class="nav-item my-1 ">
+                    <a class="btn btn-outline-warning  btn-sm mx-1"
+                       onclick="mostrar_laboratorios();" href="#"
+                       id="btn_laboratorios">
+                        Laboratórios
+                    </a>
+                </li>
+                <li class="nav-item my-1 ">
+                    <a class="btn btn-outline-warning  btn-sm mx-1"
+                       onclick="mostrar_substancias();" href="#"
+                       id="btn_substancias">
+                        Substâncias
+                    </a>
+                </li>
+                <li class="nav-item my-1 ">
+                    <a class="btn btn-outline-warning  btn-sm mx-1"
+                       onclick="mostrar_tipos_medicamentos();" href="#"
+                       id="btn_tipos_medicamentos">
+                        Tipos de Medicamentos
+                    </a>
+                </li>
+                <li class="nav-item my-1 ">
+                    <a class="btn btn-outline-warning  btn-sm mx-1"
+                       onclick="mostrar_classes_terapeuticas();" href="#"
+                       id="btn_classes_terapeuticas">
+                        Classes Terapêuticas
+                    </a>
+                </li>
+                <li class="nav-item my-1 ">
+                    <a class="btn btn-outline-warning  btn-sm mx-1"
+                       onclick="mostrar_medicamentos('1','50','','0');" href="#"
+                       id="btn_medicamentos">
+                        Medicamentos
+                    </a>
+                </li>
+            </ul>
+</div>
+<div  id="content-anvisa" class="container text-warning  py-2">
+
+</div>
+<script>
+    $().ready(function() {
+
+    });
+</script>
+{% endblock %}

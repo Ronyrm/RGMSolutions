@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html lang="pt-br">
+
+<head>
+    {% import 'layouts/head.html' as head %}
+    {{ head.head_content('RGMSolutions') }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/foods.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/atleta.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loaders.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bolsa_valores.css') }}">
+</head>
+
+<body class="bodyfoods" id="body-bolsa-valores">
+        <nav class="navbar navbar-expand-md  bg-primary mx-auto">
+            <a class="navbar-brand" href="{{ url_for('routesatleta.get_mainatleta')}}">
+                <img class="img-fluid" src="{{ url_for('static', filename='img/logorgm.png') }}" alt="">
+            </a>
+            <h5 class="text-white mr-4" onclick="document.location.reload(true);">Bolsa de Valores</h5>
+
+        </nav>
+
+
+        <div id="content" class="my-2 mx-4 bg-primary rounded ">
+            {% block content %} {% endblock %}
+        </div>
+    {% block jsjquery %} {% endblock%}
+        <script src="{{ url_for('static', filename='js/bolsa_valores/md_filtrar_empresas.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/bolsa_valores/bolsa_valores_empresa.js') }}"></script>
+<script src="{{ url_for('static', filename='js/bolsa_valores/md_data_ibov.js') }}"></script>
+
+</body>
+
+</html>

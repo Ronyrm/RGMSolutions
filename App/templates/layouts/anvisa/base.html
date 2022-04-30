@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<script>
+    var idpessoa = 0;
+</script>
+<html lang="pt-br">
+
+<head>
+    {% import 'layouts/head.html' as head %}
+    {{ head.head_content('RGMSolutions') }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/foods.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/atleta.css') }}">
+</head>
+
+<body class="bodyfoods" id="body-anvisa">
+        <nav class="navbar navbar-expand-md  bg-primary mx-auto">
+            <a class="navbar-brand" href="{{ url_for('routesatleta.get_mainatleta')}}">
+                <img class="img-fluid" src="{{ url_for('static', filename='img/logorgm.png') }}" alt="">
+            </a>
+            <h5 class="text-white mr-4">Medicamentos - Anvisa</h5>
+
+        </nav>
+
+
+        <div id="content" class="container main-container my-2 bg-primary rounded ">
+            {% block content %} {% endblock %}
+        </div>
+    {% block jsjquery %} {% endblock%}
+    <script src="{{ url_for('static', filename='js/anvisa/anvisa.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/anvisa/laboratorios.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/anvisa/substancias.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/anvisa/classes_terapeuticas.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/anvisa/tipos_medicamentos.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/anvisa/medicamentos.js') }}"></script>
+
+</body>
+
+</html>
