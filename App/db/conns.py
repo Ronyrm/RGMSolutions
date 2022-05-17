@@ -1,5 +1,4 @@
 
-
 db_locahost = {
     'USERNAME_MYSQL' : 'rony',
     'PWD_MYSQL' : 'rony',

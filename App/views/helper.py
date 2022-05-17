@@ -6,6 +6,7 @@ import jwt
 from werkzeug.security import check_password_hash
 from .users import get_user_by_username
 from App.schema.schema import UsersSchema
+
 def auth():
 
     aut = request.authorization
@@ -62,7 +63,7 @@ def auth_form():
         try:
             token_decode = token.decode('utf-8')
         except ValueError as err:
-            return jsonify({'message': 'Erro ao decodificar:'+err, 'WWW-Authenticate': 'Basic auth="Login required"'}), 401
+            return jsonify({'message': 'Erro ao decodificar:'+str(err), 'WWW-Authenticate': 'Basic auth="Login required"'}), 401
 
         print(token_decode)
 

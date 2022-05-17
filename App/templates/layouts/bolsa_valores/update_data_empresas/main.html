@@ -87,9 +87,9 @@
 
 
     <div class="container my-2">
-        <button class="btn btn-outline-warning btn-sm my-1 mx-1 active btn-menu" onclick="btn_mostrar_detail_prices_cotacao('detalhes',this);">Detalhes</button>
-        <button class="btn btn-outline-warning btn-sm my-1 mx-1 btn-menu" onclick="btn_mostrar_detail_prices_cotacao('cotacao',this);">Gráfico Cotações</button>
-        <button class="btn btn-outline-warning btn-sm my-1 mx-1 btn-menu" onclick="btn_mostrar_detail_prices_cotacao('dividendos',this);">Gráfico Dividendos</button>
+        <button class="btn btn-outline-warning btn-sm my-1 mx-1 active btn-menu" id="btn-detalhes" onclick="btn_mostrar_detail_prices_cotacao('detalhes',this);">Detalhes</button>
+        <button class="btn btn-outline-warning btn-sm my-1 mx-1 btn-menu" id="btn-cotacao" onclick="btn_mostrar_detail_prices_cotacao('cotacao',this);">Gráfico Cotações</button>
+        <button class="btn btn-outline-warning btn-sm my-1 mx-1 btn-menu" id="btn-dividendos" onclick="btn_mostrar_detail_prices_cotacao('dividendos',this);">Gráfico Dividendos</button>
     </div>
     <div class="d-flex justify-content-center">
         <h5 id="lbl-name-grafic" class="text-warning"></h5>
@@ -105,7 +105,9 @@
                 </div>
                 <button class="btn btn-warning btn-sm my-auto ml-2" onclick="btn_click_gera_grafic_prices_cotacao_diary();"> Gerar </button>
             </div>
-
+            <!--Alerta se não tiver dados para mostrar no gráfico de cotação diário-->
+            <div class="alert alert-warning my-2 d-none" id="alert-cotacao-diario"></div>    
+            <!--Gráfico-->
             <div id="chart-prices-cotacao-diary" class="my-2" style="height: 500px"></div>
 
             <div class="d-flex justify-content-start">
@@ -145,6 +147,9 @@
             </div>
                 <button class="btn btn-warning btn-sm my-auto ml-2" onclick="btn_click_gera_grafic_prices_cotacao_month();"> Gerar </button>
             </div>
+            <!--Alerta se não tiver dados para mostrar no gráfico de cotação diário-->
+            <div class="alert alert-warning my-2 d-none" id="alert-cotacao-mensal"></div>    
+            <!--Gráfico-->    
             <div id="chart-prices-cotacao-month" class="my-2" style="height: 500px"></div>
         </div>
         <div id="div-content-dividendos" class="div-content d-none mx-2">
@@ -162,7 +167,8 @@
                 </div>
                 <button class="btn btn-warning btn-sm my-auto ml-2" onclick="btn_click_gera_grafic_dividendos_month();"> Gerar </button>
             </div>
-            <div id="chart-dividendos-month" class="my-2" style="height: 500px"></div>
+            <div class="alert alert-warning d-none" id="alert-dividendos-mensal"></div>
+            <div id="chart-dividendos-month" class="my-2 d-none" style="height: 500px"></div>
 
         </div>
     </div>

@@ -128,6 +128,7 @@ async function click_btn_update_empresas(btn){
                 document.getElementById(tdemp).innerHTML = '<label class="mx-auto bg-danger">Atualizado:'+att+' </label>';
             });
         }
+        
         else{
             data = [];
         }
@@ -155,11 +156,17 @@ async function generate_grafic_prices_cotacao_dividendos(idpapel,papel,nameempre
     dt.setDate(dt.getDate()+1);
     dtfim = zeroFill(dt.getDate()) + "-"+ zeroFill((dt.getMonth() + 1)) + "-" + dt.getFullYear();
 
-    await generate_grafic_prices_cotacao_diary(papel,dtini,dtfim);
-    await generate_grafic_prices_cotacao_month(papel,dtini,dtfim);
-    await generate_grafic_dividendos_month(papel,dtini,dtfim);
+    //await generate_grafic_prices_cotacao_diary(papel,dtini,dtfim);
+    //await generate_grafic_prices_cotacao_month(papel,dtini,dtfim);
+    //await generate_grafic_dividendos_month(papel,dtini,dtfim);
+    await btn_click_gera_grafic_prices_cotacao_diary();
+    await btn_click_gera_grafic_prices_cotacao_month();
+    await btn_click_gera_grafic_dividendos_month();
     content_bolsa_valores.classList.add('d-none');
     content_detail_empresa.classList.remove('d-none');
+
+    btn_mostrar_detail_prices_cotacao('detalhes',document.querySelector('#btn-detalhes'));
+    
 
 
 }
@@ -193,7 +200,7 @@ async function generate_grafic_prices_cotacao_diary(papel,dtini,dtfim){
     let response = await fetch(url);
     if(response.status == 200){
         response.json().then(async data => {
-            data = await data.data;
+            data = await data;
 
             view_grafic_prices_cotacao_diary(papel,data);
         });
@@ -202,36 +209,47 @@ async function generate_grafic_prices_cotacao_diary(papel,dtini,dtfim){
 
 // GERAR O GRAFICO DIARIO PRECO COTACAO.
 function view_grafic_prices_cotacao_diary(papel,data){
+    let divchartpricesdiary = document.getElementById('chart-prices-cotacao-diary');
+    let alertcotacaodiario = document.getElementById('alert-cotacao-diario');
+    alertcotacaodiario.classList.add('d-none'); 
+    divchartpricesdiary.classList.add('d-none');
+    console.log('Teste Rony ');
+    console.log('Total Dados ' + data.total);
+    console.log(data);
     array_prices = [];
     array_prices[0] = ['Data','Valor'];
     i = 1;
-    if (data.length > 0){
-        data.forEach((pricescot) => {
+    if (data.total > 0){
+        data.data.forEach((pricescot) => {
             dt_cotacao = new Date(pricescot['dt_cotacao']);
             dt_cotacao.setDate(dt_cotacao.getDate()+1);
             dt_cotacao = zeroFill(dt_cotacao.getDate()) + "/" + zeroFill((dt_cotacao.getMonth()+1)) + "/" +dt_cotacao.getFullYear();
             array_prices[i] =[dt_cotacao,pricescot['val_fechamento']];
             i+=1;
         });
+        divchartpricesdiary.classList.remove('d-none');
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(function (){
+            var data = google.visualization.arrayToDataTable(array_prices);
+            var options = {
+                title: 'Histórico de Preços Cotação Diário ' + papel,
+                curveType: 'function',
+                //backgroundColor: '#ffc107',
+                is3D: true,
+                legend: { position: 'bottom' }
+            };
+            var chart = new google.visualization.LineChart(divchartpricesdiary);
+            chart.draw(data, options);
+        });
     }
     else{
         array_prices = [];
         array_prices[0] = ['Data','Valor'];
         array_prices[1] = ['0','0'];
+        alertcotacaodiario.classList.remove('d-none');
+        alertcotacaodiario.innerHTML = 'Nenhum dados foi encontrado para '+ papel;
     }
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(function (){
-        var data = google.visualization.arrayToDataTable(array_prices);
-        var options = {
-            title: 'Histórico de Preços Cotação Diário ' + papel,
-            curveType: 'function',
-            //backgroundColor: '#ffc107',
-            is3D: true,
-            legend: { position: 'bottom' }
-        };
-        var chart = new google.visualization.LineChart(document.getElementById('chart-prices-cotacao-diary'));
-        chart.draw(data, options);
-    });
+    
     content_bolsa_valores.classList.add('d-none');
     content_detail_empresa.classList.remove('d-none');
 }
@@ -252,11 +270,13 @@ async function btn_click_gera_grafic_prices_cotacao_month(){
 // PROCEDIMENTO PARA BUSCAR OS DADOS  DE PRECOS DA COTAÇÃO MENSALMENTE NO BANCO DE ACORDO COM A MES INICIAL E FINAL E ANO INFORMADO,
 async function generate_grafic_prices_cotacao_month(papel,dtini,dtfim){
     url = '/get/prices/cotacao/history/mensal/'+papel+'/'+dtini+'/'+dtfim;
-
+    console.log(url);
     let response = await fetch(url);
+    
     if(response.status == 200){
         response.json().then(async data => {
-            data = await data.data;
+            console.log(data);
+            data = await data;
             view_grafic_prices_cotacao_month(papel,data);
         });
     }
@@ -264,46 +284,61 @@ async function generate_grafic_prices_cotacao_month(papel,dtini,dtfim){
 
 // GERAR O GRAFICO MENSAL PRECOS COTAÇÃO.
 function view_grafic_prices_cotacao_month(papel,data){
+    let chartpricesmonth = document.getElementById('chart-prices-cotacao-month');
+    let alertcotacaomensal = document.getElementById('alert-cotacao-mensal');
+    chartpricesmonth.classList.add('d-none');
+    alertcotacaomensal.classList.add('d-none');
+
     array_prices_month = [];
     array_prices_month[0] = ['Data','Valor',{ role: "style" }];
     i = 1;
-    if (data.length > 0){
-        data.forEach((pricescot) => {
+    if (data.total > 0){
+        
+        data.data.forEach((pricescot) => {
             mes = month_extenso[parseInt(pricescot[0].substr(0,2))-1];
             array_prices_month[i] =[mes,pricescot[1],'#d39e00'];
             i+=1;
         });
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(function (){
+            var data = google.visualization.arrayToDataTable(array_prices_month);
+            var options = {
+                title: 'Histórico de Preços Cotação(Média) Mensal ' + papel + ', ano: '+ document.getElementById('select-ano').value,
+                //curveType: 'function',
+                //backgroundColor: '#212121',
+                height: 500,
+                bar: {groupWidth: "95%"},
+                legend: { position: "none" },
+
+            };
+
+            var view = new google.visualization.DataView(data);
+            view.setColumns([0, 1,
+                        { calc: "stringify",
+                            sourceColumn: 1,
+                            type: "string",
+                            role: "annotation" },
+                        2]);
+            chartpricesmonth.classList.remove('d-none');    
+            var chart = new google.visualization.ColumnChart(chartpricesmonth);
+
+            chart.draw(view, options);
+        });
     }
     else{
+        alertcotacaomensal.classList.remove('d-none');
+        if (!data.result){
+            alertcotacaomensal.innerHTML = 'Erro ao buscar dados! Erro: '+ 
+            '<strong>' + data.error + '</strong>';
+        }
+        else{
+            alertcotacaomensal.innerHTML = 'Nenhum dado foi encontrado para '+papel;
+        }
         array_prices_month = [];
         array_prices_month[0] = ['Data','Valor',{ role: "style" }];
         array_prices_month[1] = ['0','0','#d39e00'];
     }
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(function (){
-        var data = google.visualization.arrayToDataTable(array_prices_month);
-        var options = {
-            title: 'Histórico de Preços Cotação(Média) Mensal ' + papel + ', ano: '+ document.getElementById('select-ano').value,
-            //curveType: 'function',
-            //backgroundColor: '#212121',
-            height: 500,
-            bar: {groupWidth: "95%"},
-            legend: { position: "none" },
-
-        };
-
-        var view = new google.visualization.DataView(data);
-        view.setColumns([0, 1,
-                       { calc: "stringify",
-                         sourceColumn: 1,
-                         type: "string",
-                         role: "annotation" },
-                       2]);
-
-        var chart = new google.visualization.ColumnChart(document.getElementById('chart-prices-cotacao-month'));
-
-        chart.draw(view, options);
-    });
+    
 }
 
 
@@ -323,7 +358,7 @@ async function generate_grafic_dividendos_month(papel,dtini,dtfim){
     let response = await fetch(url);
     if(response.status == 200){
         response.json().then(async data => {
-            data = await data.data;
+            data = await data;
             console.log(data);
             view_grafic_dividendos_month(papel,data);
         });
@@ -331,12 +366,18 @@ async function generate_grafic_dividendos_month(papel,dtini,dtfim){
 }
 function view_grafic_dividendos_month(papel,data){
     let totaldiv = 0;
+    let alertdividendosmensal = document.getElementById('alert-dividendos-mensal');
+    alertdividendosmensal.classList.add('d-none');
+
+    let chartdividendosmonth = document.getElementById('chart-dividendos-month');
+    chartdividendosmonth.classList.add('d-none');
+
     array_prices_month = [];
 
     array_prices_month[0] = ['Data','Valor',{ role: "style" }];
     i = 1;
-    if (data.length > 0){
-        data.forEach((pricescot) => {
+    if (data.total > 0){
+        data.data.forEach((pricescot) => {
             totaldiv = totaldiv + pricescot[1];
             array_prices_month[i] =[pricescot[0],pricescot[1],'#d39e00'];
             i+=1;
@@ -357,16 +398,24 @@ function view_grafic_dividendos_month(papel,data){
                              sourceColumn: 1,
                              role: "annotation" },
                            2]);
-
-            var chart = new google.visualization.ColumnChart(document.getElementById('chart-dividendos-month'));
+            chartdividendosmonth.classList.remove('d-none');    
+            var chart = new google.visualization.ColumnChart(chartdividendosmonth);
 
             chart.draw(view, options);
         });
     }
     else{
-        document.getElementById('chart-dividendos-month').innerHTML = '<div class="alert alert-warning mx-1">'+
-        'Nenhum Dividendo/proventos encontrado no determinado período</div>';
-        array_prices_month[1]= ['Nenhum Valor',0,'#d39e00'];
+        alertdividendosmensal.classList.remove('d-none');
+        if (!data.result){
+            alertdividendosmensal.innerHTML = '<p>Houve um erro ao gerar o gráfico!</p>'+
+            '<p>Erro: <strong>'+data.error+'</strong></p>';
+        }
+        else{
+            alertdividendosmensal.innerHTML = 'Nenhum dividendo foi encontrado para o papel '+papel;
+        }
+        //document.getElementById('chart-dividendos-month').innerHTML = '<div class="alert alert-warning mx-1">'+
+        //'Nenhum Dividendo/proventos encontrado no determinado período</div>';
+        //array_prices_month[1]= ['Nenhum Valor',0,'#d39e00'];
     }
 
 }
@@ -396,9 +445,17 @@ function btn_mostrar_detail_prices_cotacao(tipomenu,btn){
 
 
     btn.classList.add('active');
+    console.log('Menu: '+tipomenu );
     switch (tipomenu) {
       case 'detalhes':
         div_detalhes.classList.remove('d-none');
+        console.log('Empresa Seleciona');
+        console.log(empresa_selected);
+        document.getElementById('lbl-name-grafic').innerHTML = 'Detalhes '+ empresa_selected.papel;
+        div_detalhes.innerHTML=
+        '<div class="d-flex justify-content-center">'+
+        '<h3 class="text-white"><strong>'+empresa_selected.name+'</strong></h3></div>'+
+        '<p class="text-center mt-2 text-warning">'+empresa_selected.desc_empresa+'</p>';
         break;
       case 'cotacao':
         div_prices.classList.remove('d-none');
@@ -483,7 +540,7 @@ function return_tr_table_empresa(contador,rowEmpresa){
                                     rowEmpresa['papel']+'</a>'+
                             '</div>'+
                             '<div class="d-flex justify-content-center div-btn-'+contador+'">'+
-                                '<button class="btn-update-empresa" onclick="update_info_empresa('+rowEmpresa['id']+','+vpapel+','+contador+',this);">'+
+                                '<button class="btn-update-empresa" id="btn-up-info-"'+rowEmpresa['id']+' onclick="update_info_empresa('+rowEmpresa['id']+','+vpapel+','+contador+',this);">'+
                                 '<i class="fas fa-sync-alt" </i></button>'+
                             '</div>'+
 
@@ -580,7 +637,7 @@ function loading_data_empresa(array_empresa){
                     '</div>'+
                     '<div class="col-sm text-center">'+
                         '<label class="lbl-title">Total de Ações</label><br>'+
-                        '<label class="lbl-value">'+format_valorBRL(array_empresa['num_acoes'],2,true)+'</label>'+
+                        '<label class="lbl-value">'+format_valorBRL(array_empresa['num_acoes'],2,false)+'</label>'+
                     '</div>'+
                     '<div class="col-sm text-center">'+
                         '<label class="lbl-title">Último Balanço</label><br>'+

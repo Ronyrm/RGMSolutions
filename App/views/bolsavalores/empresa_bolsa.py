@@ -6,6 +6,7 @@ LPA = val_ primeiro encontra o LPA(lucro por ação): é o Lucro liquido divido 
 import datetime
 import json
 from datetime import  timedelta
+from unittest import result
 
 from flask.helpers import total_seconds
 
@@ -935,6 +936,7 @@ def update_data_papel_with_yfinance_by_papel(idpapel,papel,dtini,dtfim):
     except:
         totdiv = -1
 
+    falha = False
     if totdiv > 0:
         try:
             df_balancetFinancials = yftk.quarterly_financials
@@ -958,12 +960,16 @@ def update_data_papel_with_yfinance_by_papel(idpapel,papel,dtini,dtfim):
             hist_prices = yftk.history(start=dtini,end=dtfim)
             if len(hist_prices)>0:
                 up_history_cotacoes(hist_prices,idpapel)
-
-            return {'atualizado':True,'totdiv': totdiv,'papel': papel}
+            
+        except:
+            falha = True
+    if not falha:
+        try:
+            datainfo = get_update_info_yfinance_by_papel(idpapel,papel) 
+            return {'atualizado':True,'totdiv': totdiv,'papel': papel,'result':datainfo['result']}
         except:
             pass
-
-    return {'atualizado': False,'totdiv': totdiv,'papel': papel}
+    return {'atualizado': False,'totdiv': totdiv,'papel': papel,'result': False}
 
 
 def get_update_info_yfinance_by_papel(idpapel,papel):
@@ -1116,8 +1122,9 @@ def update_balanco_finances_yfinance_by_papel(dffincances,idpapel):
 
             if add: db.session.add(balanco)
             db.session.commit()
-        except:
-            print(f'Erro ao gravar balancete financas data {dt_apuracao} para o papel {idpapel}')
+        except Exception as e:
+            print(f'Erro ao gravar balancete financas data {dt_apuracao} para o papel {idpapel}. \n \
+            Erro: {str(e)}')
             pass
 
 

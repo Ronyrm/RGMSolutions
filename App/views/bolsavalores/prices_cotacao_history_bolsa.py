@@ -1,3 +1,4 @@
+from numpy import result_type
 from App.model.bolsavalores.prices_cotacao_history_bolsa import CotacaoPricesHistory,SchemaCotacaoPricesHistory
 from App.model.bolsavalores.empresa_bolsa import EmpresaBolsa
 from App import db
@@ -39,8 +40,8 @@ def get_prices_cotacao_by_papel_dates(papel,dtini,dtfim):
         else:
             schema = SchemaCotacaoPricesHistory(only=sfieldsvisu)
 
-        return {'data':schema.dump(prices,many=True),'result':True}
-    return {'data':{},'result':False}
+        return {'data':schema.dump(prices,many=True),'result':True,'total':len(prices)}
+    return {'data':{},'result':False,'total':0}
 
 # Filtra Valor cotação agrupando por mes/ano
 def get_prices_cotacao_by_papel_dates_mensal(papel,dtini,dtfim):
@@ -66,9 +67,13 @@ def get_prices_cotacao_by_papel_dates_mensal(papel,dtini,dtfim):
         order_by(CotacaoPricesHistory.dt_cotacao).all()
     tbjson = ''
     # for row in prices:
-    prices = json.dumps(prices, cls=CustomJSONEncoder)
-    prices = json.loads(prices)
-    return {'data':prices }
+    try:
+        prices = json.dumps(prices, cls=CustomJSONEncoder)
+        prices = json.loads(prices)
+        return {'data':prices,'result':True,'total':len(prices),'error':''}
+    except Exception as e:
+        return {'data':{},'error':str(e),'result':False,'total':0}
+
 
 
 def get_prices_cotacao_by_papel_dates_anual(papel, anoini, anofim):

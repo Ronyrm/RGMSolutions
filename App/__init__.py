@@ -2,7 +2,7 @@ from config import SQLALCHEMY_DATABASE_URI
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine
-from flask_migrate import Migrate,upgrade,migrate
+from flask_migrate import Migrate
 from googletrans import Translator
 
 #from flask_script import Manager

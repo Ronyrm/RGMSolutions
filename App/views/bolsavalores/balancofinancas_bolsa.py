@@ -18,7 +18,10 @@ def get_balancofinancas_json_by_papel(papel):
     return {'data':{}}
 
 def get_balancofinancas_by_papel_data(papel,dt):
-    return BalancoFinancas.query.filter(and_(BalancoFinancas.idpapel==papel, BalancoFinancas.dt_apuracao==dt)).all()
+    try:
+        return BalancoFinancas.query.filter(and_(BalancoFinancas.idpapel==papel, BalancoFinancas.dt_apuracao==dt)).first()
+    except Exception as e:
+        print(f'Erro ao tentar buscar balanço finanças\n Errp: {str(e)}')
 
 def add_balancofinancas_bolsas(data):
     pass

@@ -90,9 +90,9 @@ def get_dividendos_mesano_by_idpapel_and_interval_mensal(papel,dt_ini,dt_fim):
         jsonDiv = json.dumps(data)
         jsonDiv = json.loads(jsonDiv)
 
-        return {'data':jsonDiv}
+        return {'data':jsonDiv,'result':True,'total':len(dividendos),'error':''}
     except Exception as e:
-        return {'Error': str(e),'error':'teste'}
+        return {'data':{},'result':False,'total':0,'error': str(e),'error':'teste'}
 
     
 
