@@ -1,10 +1,10 @@
 
 db_locahost = {
-    'USERNAME_MYSQL' : 'rony',
-    'PWD_MYSQL' : 'rony',
+    'USERNAME_MYSQL' : 'root',
+    'PWD_MYSQL' : '',
     'HOST_MYSQL' : 'localhost',
-    'PORT_MYSQL' : '3307',
-    'DATABASE_MYSQL' : 'sisnutri'
+    'PORT_MYSQL' : '3306',
+    'DATABASE_MYSQL' : 'rgmnutri'
 }
 
 db_alwaysdata = {

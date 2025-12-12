@@ -1,11 +1,12 @@
 import re
 
-from App import app,db
+from App import db
+
 import pandas as pd
 from werkzeug.utils import secure_filename
 import os
 import json
-from flask import  request
+from flask import  request,current_app
 from App.views.localidades.cidades import get_cidade_by_uf_and_city
 from App.funcs.funcs import format_date_yyyymmaa
 def csv_to_json():
@@ -29,7 +30,7 @@ def csv_to_json():
 
     if filesvc:
         filename = secure_filename(filesvc.filename)
-        localesave = app.config['UPLOAD_FOLDER']
+        localesave = current_app.config['UPLOAD_FOLDER']
 
 
         spath = os.path.join(localesave,filename)

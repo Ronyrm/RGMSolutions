@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema,fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
 from App.model.covid.exames_covid import SchemaExames
 
 class Analitos_covid(db.Model):
@@ -15,7 +15,7 @@ class Analitos_covid(db.Model):
 
 
 
-class SchemaAnalitos(ModelSchema):
+class SchemaAnalitos(SQLAlchemyAutoSchema):
     class Meta:
         model = Analitos_covid
     exame: fields.Nested(SchemaExames)

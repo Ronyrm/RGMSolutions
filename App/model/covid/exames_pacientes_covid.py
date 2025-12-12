@@ -3,7 +3,7 @@ from App.model.covid.analitos_covid import SchemaAnalitos
 from App.model.covid.pacientes_covid import SchemaPacientes
 from App.model.covid.hospitais_covid import SchemaHospitais
 from App import db
-from marshmallow_sqlalchemy import ModelSchema,fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
 
 
 class Exames_pacientes_covid(db.Model):
@@ -26,7 +26,7 @@ class Exames_pacientes_covid(db.Model):
     observacao = db.Column(db.TEXT)
 
 
-class SchemaExamesPacientesCovid(ModelSchema):
+class SchemaExamesPacientesCovid(SQLAlchemyAutoSchema):
     class Meta:
         model = Exames_pacientes_covid
 

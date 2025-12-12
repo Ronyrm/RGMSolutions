@@ -1,4 +1,4 @@
-from App import app
+from flask  import current_app
 from flask import jsonify,request,render_template,session,url_for,redirect
 from functools import wraps
 import datetime
@@ -20,7 +20,7 @@ def auth():
     if user and check_password_hash(user.password, aut.password):
         dtexp = datetime.datetime.now() + datetime.timedelta(hours=12)
         token = jwt.encode({'username': user.username, 'id': user.id, 'exp': dtexp},
-                           app.config['SECRET_KEY'],
+                           current_app.config['SECRET_KEY'],
                            algorithm='HS256')
         try:
             token_decode = token.decode('utf-8')
@@ -58,7 +58,7 @@ def auth_form():
     if user and valida:
         dtexp = datetime.datetime.now() + datetime.timedelta(hours=12)
         token = jwt.encode({'username': user.username, 'id': user.id, 'exp': dtexp},
-                           app.config['SECRET_KEY'],
+                           current_app.config['SECRET_KEY'],
                            algorithm='HS256')
         try:
             token_decode = token.decode('utf-8')
@@ -104,7 +104,7 @@ def token_required(func):
             return jsonify({'valide': False, 'mensage': ' Token não informado','data': {}}), 401
             #return render_template('layouts/index.html')
         try:
-            data = jwt.decode(token, app.config['SECRET_KEY'])
+            data = jwt.decode(token, current_app.config['SECRET_KEY'])
             current_user = get_user_by_username(data['username'])
 
             #return jsonify({'valide': True, 'mensage': ' Token Valido', 'data': data}), 201

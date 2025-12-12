@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema, fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, fields
 
 
 class BalancoPatrimonial(db.Model):
@@ -36,6 +36,6 @@ class BalancoPatrimonial(db.Model):
     val_contas_apagar = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3)) #Accounts Payable
 
 
-class SchemaBalancoPatrimonialBolsa(ModelSchema):
+class SchemaBalancoPatrimonialBolsa(SQLAlchemyAutoSchema):
     class Meta:
         model = BalancoPatrimonial

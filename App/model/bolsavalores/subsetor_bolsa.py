@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema, fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, fields
 
 
 class SubSetorBolsa(db.Model):
@@ -7,6 +7,6 @@ class SubSetorBolsa(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
 
-class SchemaSubSetorBolsa(ModelSchema):
+class SchemaSubSetorBolsa(SQLAlchemyAutoSchema):
     class Meta:
         model = SubSetorBolsa

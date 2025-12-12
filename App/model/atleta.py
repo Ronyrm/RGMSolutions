@@ -25,3 +25,12 @@ class Atleta(UserMixin,db.Model):
 
     phone = db.Column(db.String(20))
     profilenamephone = db.Column(db.String(20))
+
+#from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
+#from App.model.pessoas.pessoa import SchemaPessoas
+#class SchemaAtletas(SQLAlchemyAutoSchema):
+    #class Meta:
+        #model = Atleta
+    #pessoa = fields.Nested(SchemaPessoas)
+    #metaatleta = fields.Nested(SchemaMetaAtletas)
+

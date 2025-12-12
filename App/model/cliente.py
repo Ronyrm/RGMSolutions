@@ -13,3 +13,11 @@ class Cliente(db.Model):
     idpessoa = db.Column(db.Integer, db.ForeignKey('pessoa.id'))
     pessoa = db.relationship("Pessoa", back_populates="cliente")
 
+#from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
+#from App.model.pessoas.pessoa import SchemaPessoas
+#class SchemaClientes(SQLAlchemyAutoSchema):
+    #class Meta:
+     #   model = Cliente
+    #pessoa = fields.Nested("SchemaPessoas")
+
+#from App.model.pessoas.pessoa import Pessoa

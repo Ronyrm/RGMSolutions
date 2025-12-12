@@ -1,5 +1,5 @@
-from App import db,app
-from flask import request
+from App import db
+from flask import request,current_app
 from App.model.tributacao.reinfs import REINFs,SchemaREINFs
 from werkzeug.utils import secure_filename
 from flask_paginate import get_page_args
@@ -63,7 +63,7 @@ def insert_into_sql():
         if file_sql:
             try:
                 filename = secure_filename(file_sql.filename)
-                localesave = app.config['UPLOAD_FOLDER']
+                localesave = current_app.config['UPLOAD_FOLDER']
 
                 spath = os.path.join(localesave, filename)
 

@@ -1,13 +1,11 @@
-from App import db,app
+from App import db,login_manager
 from App.model.packagetrack import PackageTrack
 from flask import request,render_template,jsonify,redirect,url_for
 from App.schema.schema import PackageTrackSchema
 from flask_login import LoginManager,current_user
 from App.model.atleta import Atleta
 
-login_manager = LoginManager()
-#login_manager.login_view = 'routesatleta.get_mainatleta'
-login_manager.init_app(app)
+
 
 
 @login_manager.user_loader

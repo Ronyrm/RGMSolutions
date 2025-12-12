@@ -1,4 +1,4 @@
-from App import db,engine
+from App import db
 from sqlalchemy.sql import text
 def execute_procedure_db(nameproc,parameter):
     result = False

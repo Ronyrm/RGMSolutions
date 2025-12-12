@@ -3,6 +3,7 @@ import math
 import json
 import re
 import decimal
+import pandas as pd
 # Gera chave aleatoria
 def gera_keyacess(qtd=20):
     import string
@@ -89,6 +90,16 @@ def convert_date_int_timestamp_in_date(inttimestamp,tpcaracter):
 def capture_float_in_string(str):
     return re.findall(r"[-+]?\d*\.\d+|\d+",str)
 
+def FormatStrToFloat(sValue):
+    try:    
+        if sValue != None:
+            return float(sValue.replace('.','').replace(',','.'))
+        else:
+            return None
+    except:
+        return None
+
+
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, decimal.Decimal):
@@ -104,4 +115,5 @@ class CustomJSONEncoder(json.JSONEncoder):
             return float(o)
         # Any other serializer if needed
         return super(CustomJSONEncoder, self).default(o)
+    
 

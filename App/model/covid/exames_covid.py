@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 
 class Exames_covid(db.Model):
@@ -8,6 +8,6 @@ class Exames_covid(db.Model):
     descricao = db.Column(db.String(100), nullable=False)
 
 
-class SchemaExames(ModelSchema):
+class SchemaExames(SQLAlchemyAutoSchema):
     class Meta:
         model = Exames_covid

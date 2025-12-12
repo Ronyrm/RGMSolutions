@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema,fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
 from App.schema.localidades.localidades import CidadesSchema
 from .hospitais_covid import SchemaHospitais
 class Pacientes_covid(db.Model):
@@ -16,7 +16,7 @@ class Pacientes_covid(db.Model):
     idhospital = db.Column(db.Integer,db.ForeignKey('hospitais.id'))
     hospital = db.relationship("Hospitais")
 
-class SchemaPacientes(ModelSchema):
+class SchemaPacientes(SQLAlchemyAutoSchema):
     class Meta:
         model = Pacientes_covid
     cidade = fields.Nested(CidadesSchema)

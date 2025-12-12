@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 class NCMS(db.Model):
     __tablename__ = 'ncms'
@@ -21,6 +21,6 @@ class NCMS(db.Model):
     status = db.Column(db.String(1))
 
 
-class SchemaNCMS(ModelSchema):
+class SchemaNCMS(SQLAlchemyAutoSchema):
     class Meta:
         model = NCMS

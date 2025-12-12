@@ -1,6 +1,6 @@
-from App import db,app
+from App import db
 from App.model.tributacao.cst_icms import CST_Icms,SchemaCSTICMS
-from flask import request,render_template,jsonify
+from flask import request,render_template,jsonify,current_app
 from werkzeug.utils import secure_filename
 import os
 def get_cst_icms():
@@ -31,7 +31,7 @@ def insert_into():
         if file_sql:
             try:
                 filename = secure_filename(file_sql.filename)
-                localesave = app.config['UPLOAD_FOLDER']
+                localesave = current_app.config['UPLOAD_FOLDER']
 
                 spath = os.path.join(localesave, filename)
 

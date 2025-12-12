@@ -1,5 +1,4 @@
-from App import app
-from flask import request
+from flask import request,current_app
 from werkzeug.utils import secure_filename
 import os
 import pandas as pd
@@ -22,7 +21,7 @@ def return_data_frame():
             file_csv = request.files['file_csv']
     if file_csv:
         filename = secure_filename(file_csv.filename)
-        localesave = app.config['UPLOAD_FOLDER']
+        localesave = current_app.config['UPLOAD_FOLDER']
         spath = os.path.join(localesave, filename)
         if os.path.exists(spath):
             os.remove(spath)
@@ -244,7 +243,7 @@ def read_covid19_pacientes_hc_csv():
 
     if file_csv:
         filename = secure_filename(file_csv.filename)
-        localesave = app.config['UPLOAD_FOLDER']
+        localesave = current_app.config['UPLOAD_FOLDER']
 
         spath = os.path.join(localesave, filename)
 

@@ -1,7 +1,7 @@
 import json
 import pandas as pd
 
-from App import db,engine
+from App import db
 from flask import request,jsonify
 from App.funcs.getpagination import get_pagination, preenche_pagination
 from flask_paginate import get_page_args

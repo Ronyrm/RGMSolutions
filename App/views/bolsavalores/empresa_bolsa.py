@@ -8,8 +8,6 @@ import json
 from datetime import  timedelta
 from unittest import result
 
-from flask.helpers import total_seconds
-
 from App.funcs.funcs import format_date_yyyymmaa
 import numpy
 import requests
@@ -32,8 +30,9 @@ from App.views.bolsavalores.balancofinancas_bolsa import get_balancofinancas_by_
 
 from App.model.bolsavalores.balancofinancas_bolsa import BalancoFinancas
 
-from flask import jsonify,request
+from flask import jsonify,request,current_app
 from App.views.several import translate
+from io import StringIO
 
 import yfinance as yf
 yf.pdr_override()
@@ -67,6 +66,7 @@ def get_all_empresabolsa():
     arraydividends = []
     arraysetor = []
     arrayvalcotacao = []
+    print('to aqui')
 
 
     if request.method == 'GET':
@@ -268,6 +268,7 @@ def add_empresa(data):
         empresa = EmpresaBolsa.query.get(getempresa[0].id)
 
     try:
+        empresa.ativa = data['ativa'] 
         empresa.papel = data['papel']
         empresa.name = data['name']
         empresa.idsetor = verify_setor(data['setor'])
@@ -370,7 +371,8 @@ def update_papel_of_fundamentus():
     with open(spath,'w') as arq:
          arq.write(resp)
 
-    df = pd.read_html(resp, decimal=',', thousands='.', encoding="UTF-8")[0]
+    #df = pd.read_html(resp, decimal=',', thousands='.', encoding="UTF-8")[0]
+    df = pd.read_html(StringIO(resp), decimal=',', thousands='.')[0]
 
     df = df[df['Cotação'] > 0]
     df['Cresc. Rec.5a'] = (df['Cresc. Rec.5a'].str.strip('%'))
@@ -386,7 +388,7 @@ def update_papel_of_fundamentus():
         # cotacao min e maxima
 
         tableone = tables[0]
-        df_tb = pd.read_html(str(tableone),decimal=',', thousands='.', encoding="UTF-8")[0]
+        df_tb = pd.read_html(StringIO(str(tableone)),decimal=',', thousands='.', encoding="UTF-8")[0]
         tipo = df_tb[1][1]
         nameempresa = df_tb[1][2]
         setor = df_tb[1][3] if not pd.isna(df_tb[1][3]) else None
@@ -398,7 +400,7 @@ def update_papel_of_fundamentus():
 
         # captura tabela dados: valor firma, mercado, total de acoes e data ultimo balanço
         tabletwo = tables[1]
-        df_tb = pd.read_html(str(tabletwo), decimal=',', thousands='.', encoding="UTF-8")[0]
+        df_tb = pd.read_html(StringIO(str(tabletwo)), decimal=',', thousands='.', encoding="UTF-8")[0]
 
         if type(df_tb[1][0]) == numpy.int64:
             val_mercado = df_tb[1][0]
@@ -419,7 +421,7 @@ def update_papel_of_fundamentus():
 
         # captura tabela dados: valor firma, mercado, total de acoes e data ultimo balanço
         tabletree = tables[2]
-        df_tb = pd.read_html(str(tabletree), decimal=',', thousands='.', encoding="UTF-8")[0]
+        df_tb = pd.read_html(StringIO(str(tabletree)), decimal=',', thousands='.', encoding="UTF-8")[0]
         val_lpa = float(df_tb[5][1])
         val_vpa = float(df_tb[5][2])
 
@@ -427,7 +429,7 @@ def update_papel_of_fundamentus():
             print(val_vpa)
 
         tablefour = tables[3]
-        df_tb = pd.read_html(str(tablefour), decimal=',', thousands='.', encoding="UTF-8")[0]
+        df_tb = pd.read_html(StringIO(str(tablefour)), decimal=',', thousands='.', encoding="UTF-8")[0]
         try:
             val_balanc_patr_atv = float(df_tb[1][1])
         except:
@@ -451,7 +453,7 @@ def update_papel_of_fundamentus():
             val_balanc_patr_div_liq = None
 
         tablefive = tables[4]
-        df_tb = pd.read_html(str(tablefive), decimal=',', thousands='.', encoding="UTF-8")[0]
+        df_tb = pd.read_html(StringIO(str(tablefive)), decimal=',', thousands='.', encoding="UTF-8")[0]
 
         try:
             val_luc_liq_12mes = float(df_tb[1][4])
@@ -479,6 +481,7 @@ def update_papel_of_fundamentus():
             val_ebit_liq_3mes = None
 
         data = {'papel': item[0],
+                'ativa':'S',
                 'name':nameempresa,
                 'val_lpa':val_lpa,
                 'val_vpa':val_vpa,
@@ -531,7 +534,9 @@ def update_papel_of_fundamentus():
         empresa = add_empresa(data)
         if empresa:
             json_info_empresa = capture_info_empresa(empresa['papel'])
-            if len(json_info_empresa) > 0:
+            print('peguei')
+            print(json_info_empresa)
+            if not json_info_empresa:
                 addcotacao = False
                 try:
                     datacot = {
@@ -554,6 +559,7 @@ def update_papel_of_fundamentus():
 
         print(item)
     return get_all_empresabolsa()
+
 
 
 def capture_detail_yfinance(name,dt_start,dt_end):
@@ -622,89 +628,171 @@ def capture_val_cotacao_datareader_yahoo(name,start):
 
 def capture_info_empresa(name):
     msft = yf.Ticker('{}.SA'.format(name))
-    return msft.info
+    return msft.fast_info
 
-# BUSCA E ATUALIZA TODOS OS DIVIDENDOS
-def get_update_dividendos_by_papel(papel,dt_ini,dt_fim,acao):
-    # se acao igual a 0 busca todos os dividendos do determinado papel
-    ticker = papel
-    if not re.search('.SA',papel):
-        ticker = '{}.SA'.format(papel)
+# -----------------------------------------------------------
+# Função segura para obter o Ticker evitando bloqueios do Yahoo
+# -----------------------------------------------------------
+
+import yfinance as yf
+import requests
+import random
+import time
+import pandas as pd
+
+# ----------------------------------------------------------
+# USER AGENTS (rotação anti-bloqueio)
+# ----------------------------------------------------------
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+    "Mozilla/5.0 (X11; Linux x86_64)",
+]
+
+# ----------------------------------------------------------
+# CRIA SESSÃO SAFE PARA YFINANCE
+# ----------------------------------------------------------
+def create_safe_session():
+    session = requests.Session()
+    session.headers.update({
+        "User-Agent": random.choice(USER_AGENTS),
+        "Accept": "application/json",
+        "Connection": "keep-alive"
+    })
+    return session
+
+# ----------------------------------------------------------
+# FUNÇÃO SAFE PARA OBTER TICKER (ANTI-BLOQUEIO)
+# ----------------------------------------------------------
+def safe_yf_ticker(ticker, tentativas=6):
+    for i in range(tentativas):
+        try:
+            session = create_safe_session()
+            tk = yf.Ticker(ticker, session=session)
+
+            # Teste real: histórico curto
+            hist = tk.history(period="5d")
+
+            if hist is not None and not hist.empty:
+                return tk  # SUCESSO
+
+        except Exception as e:
+            pass
+
+        espera = random.uniform(1.0, 3.0)
+        print(f"Tentativa {i+1}/{tentativas} falhou para {ticker}. Esperando {espera:.1f}s...")
+        time.sleep(espera)
+
+    print(f"ERRO FINAL: Yahoo bloqueou {ticker}.")
+    return None
+
+# ----------------------------------------------------------
+# DIVIDENDOS COM PROTEÇÃO ANTI-BLOQUEIO
+# ----------------------------------------------------------
+def get_update_dividendos_by_papel(papel, dt_ini, dt_fim, acao):
+
+    ticker = papel if papel.endswith(".SA") else f"{papel}.SA"
+
+    # proteção Yahoo
+    tk = safe_yf_ticker(ticker)
+    if tk is None:
+        return {
+            "data": {},
+            "mensagem": f"Não foi possível consultar {ticker}. O Yahoo pode ter bloqueado temporariamente."
+        }
+
+    # Obtém dividendos
     try:
-        dividends = yf.Ticker(ticker).dividends
-        dividends = dividends if acao == '0' else dividends.loc[format_date_yyyymmaa(dt_ini):format_date_yyyymmaa(dt_fim)]
-        array_datas = dividends.axes[0]
-    except:
-        return {'data': {}, f'mensagem': f'Erro ao encontrar Papel: {papel}'}
-    cont = 0
-    empresa = get_empresabolsa_by_papel(papel.replace('.SA',''))
+        dividends = tk.dividends
+    except Exception as e:
+        return {"data": {}, "mensagem": f"Erro ao obter dividendos: {str(e)}"}
+
+    if dividends is None or dividends.empty:
+        return {"data": {}, "mensagem": f"Sem dividendos encontrados para {papel}"}
+
+    # Filtra intervalo se necessário
+    if acao != '0':
+        dividends = dividends.loc[
+            format_date_yyyymmaa(dt_ini):format_date_yyyymmaa(dt_fim)
+        ]
+
+        if dividends.empty:
+            return {"data": {}, "mensagem": "Nenhum dividendo no intervalo informado"}
+
+    # Obter empresa do banco
+    empresa = get_empresabolsa_by_papel(papel.replace('.SA', ''))
     if not empresa:
-        return {'data':{},'mensagem':'Empresa não encontrada'}
+        return {"data": {}, "mensagem": "Empresa não encontrada"}
+
     idpapel = empresa[0].id
 
-    for row in dividends:
-        dt_pagto = array_datas[cont].strftime('%Y-%m-%d')
+    # Salva dividendos
+    for dt_pagto, valor in dividends.items():
         data = {
-            'idpapel': idpapel,
-            'dt_pagto' : dt_pagto,
-            'valor': row
+            "idpapel": idpapel,
+            "dt_pagto": dt_pagto.strftime("%Y-%m-%d"),
+            "valor": valor
         }
-        print('Gravou Dividendo na data: {} :  {}'.format(dt_pagto,add_dividendos(data)))
-        cont +=1
+        print(f"[DIVIDENDO] {papel} – {data['dt_pagto']} → {valor}")
+        add_dividendos(data)
 
-    return get_all_dividendos_by_idpapel(idpapel) if acao == '0'  else get_dividendos_by_idpapel_and_intervaldate(idpapel,dt_ini,dt_fim)
+    # Retorno
+    return (
+        get_all_dividendos_by_idpapel(idpapel)
+        if acao == '0'
+        else get_dividendos_by_idpapel_and_intervaldate(idpapel, dt_ini, dt_fim)
+    )
 
-# ATUALIZA TODAS AS EMPRESAS
-
-def up_cotacoes(df_cotacoes,idpapel):
-    array_datas = df_cotacoes.axes[0]
-    cont = 0
-    for row in df_cotacoes.values:
-        dt_cotacao = array_datas[cont].strftime('%Y-%m-%d')
-        data = {
-            'idpapel': idpapel,
-            'dt_cotacao': dt_cotacao,
-            'val_abertura': row[0],
-            'val_maior': row[1],
-            'val_menor': row[2],
-            'val_fechamento': row[3],
-            'volume': row[4],
-            'val_dividendos': row[5],
-            'val_divacoes': row[6]
-        }
-        print('Gravou Cotação na data: {} :  {}'.format(dt_cotacao, add_price_cotacao(data)))
-        cont +=1
-
-
-def update_data_papel_with_yfinance(dtini,dtfim):
+# ----------------------------------------------------------
+# ATUALIZA COTAÇÕES COM PROTEÇÃO
+# ----------------------------------------------------------
+def update_data_papel_with_yfinance(dtini, dtfim):
     empresas = get_all_empresabolsa()
 
-    def up_dividendos(df_dividendos,idpapel):
-        array_datas = df_dividendos.axes[0]
-        cont = 0
-        for row in df_dividendos:
-            dt_pagto = array_datas[cont].strftime('%Y-%m-%d')
+    def up_dividendos(df, idpapel):
+        for dt, valor in df.items():
             data = {
-                'idpapel': idpapel,
-                'dt_pagto': dt_pagto,
-                'valor': row
+                "idpapel": idpapel,
+                "dt_pagto": dt.strftime("%Y-%m-%d"),
+                "valor": valor
             }
-            print('Gravou Dividendo na data: {} :  {}'.format(dt_pagto, add_dividendos(data)))
-            cont+=1
+            print(f"[DIVIDENDO] {data['dt_pagto']} → {valor}")
+            add_dividendos(data)
 
-    if empresas:
-        for empresa in empresas['data']:
-            yftk = yf.Ticker('{}.SA'.format(empresa['papel']))
+    if not empresas:
+        return jsonify({"atualizado": False, "mensagem": "Nenhuma empresa cadastrada"})
 
-            dividendos = yftk.dividends
-            dividendos = dividendos.loc[dtini:dtfim]
+    for empresa in empresas["data"]:
+        papel = empresa["papel"]
+        ticker = f"{papel}.SA"
 
-            up_dividendos(dividendos,empresa['id'])
+        tk = safe_yf_ticker(ticker)
+        if tk is None:
+            print(f"[ERRO] Bloqueado ao consultar {ticker}. Pulando.")
+            continue
 
-            hist_prices = yftk.history(start=dtini,end=dtfim)
-            up_cotacoes(hist_prices,empresa['id'])
+        # Dividendos
+        try:
+            dividendos = tk.dividends.loc[dtini:dtfim]
+            up_dividendos(dividendos, empresa["id"])
+        except:
+            print(f"[FALHA] Não trouxe dividendos de {ticker}")
 
-    return jsonify({'atualizado':True})
+        time.sleep(random.uniform(1, 3))  # anti-spam
+
+        # Cotações
+        try:
+            hist = tk.history(start=dtini, end=dtfim)
+
+            if hist is not None and not hist.empty:
+                up_cotacoes(hist, empresa["id"])
+        except:
+            print(f"[FALHA] Não trouxe preços de {ticker}")
+
+        time.sleep(random.uniform(1, 3))
+
+    return jsonify({"atualizado": True})
+
 
 
 # ATUALIZA DADOS ATUAIS DIARIO DE UMA DETERMINADA  EMPRESA
@@ -1139,14 +1227,13 @@ def convert_tickers_csv_statusinvest():
 
 
     from werkzeug.utils import secure_filename
-    from App import app
     import os
     if request.method == 'POST':
         if 'filecsv' in request.files:
             filecsv = request.files['filecsv']
 
             filename = secure_filename(filecsv.filename)
-            localsaver = app.config['UPLOAD_FOLDER']
+            localsaver = current_app.config['UPLOAD_FOLDER']
             spath = os.path.join(localsaver,filename)
             if os.path.exists(spath):
                 os.remove(spath)
@@ -1165,7 +1252,9 @@ def convert_tickers_csv_statusinvest():
                 preco = rowsimbol['PRECO'][index]
                 print(simbol)
 
-            empresas = get_all_empresabolsa(0)
+            empresas = get_all_empresabolsa()
+            if empresas is None:
+                print('nENHUMA EMPRESA')
             totalencontrada = 0
             totalnaoencontrada = 0
             arrayNaoEncontrada = []
@@ -1224,3 +1313,5 @@ def update_History_Values_Ibovespa(dtini,dtfim):
             return up_history_cotacoes(history,empresa.id)
         else:
             return {'result':True,'msg':'Vazio'}
+        
+        

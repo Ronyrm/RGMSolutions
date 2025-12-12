@@ -1,8 +1,8 @@
 from marshmallow import fields
-from marshmallow_sqlalchemy import ModelSchema
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from App.model.pandas.schedules import Schedules
 from App.schema.localidades.localidades import CidadesSchema
-class SchedulesSchema(ModelSchema):
+class SchedulesSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Schedules
     cidade = fields.Nested(CidadesSchema)

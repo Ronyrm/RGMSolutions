@@ -1,10 +1,9 @@
 import json
-from App import app
 import os
 import pandas as pd
 from App.model.pandas.schedules import Schedules
 from flask_paginate import get_page_args, get_page_parameter, Pagination
-from flask import render_template,request,send_file
+from flask import render_template,request,send_file,current_app
 from App.schema.pandas.pandas import SchedulesSchema
 from sqlalchemy import and_
 from sqlalchemy.sql.expression import func
@@ -84,7 +83,7 @@ def get_schedules(page,per_page):
 
             if gerarcsv == 'S':
                 try:
-                    localesave = 'App/'+app.config['DOWNLOAD_FOLDER']
+                    localesave = 'App/'+current_app.config['DOWNLOAD_FOLDER']
                     filename = 'contact_renzo.csv'
 
                     spath = os.path.join(localesave, filename)
@@ -119,7 +118,7 @@ def get_schedules_by_name(name):
     return None
 
 def download_schedules_csv():
-    localesave = app.config['DOWNLOAD_FOLDER']
+    localesave = current_app.config['DOWNLOAD_FOLDER']
     filename = 'contact_renzo.csv'
 
 

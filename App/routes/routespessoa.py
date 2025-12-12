@@ -1,4 +1,3 @@
-from App import app
 from flask import jsonify,Blueprint,url_for,request
 from App.views import pessoas
 

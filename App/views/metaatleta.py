@@ -1,4 +1,4 @@
-from App import db,app
+from App import db
 from App.model.atleta import Atleta
 from App.model.metaatleta import Metaatleta
 from App.schema.schema import MetaAtletaschema

@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema, fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, fields
 
 
 class BalancoFinancas(db.Model):
@@ -30,6 +30,6 @@ class BalancoFinancas(db.Model):
     val_lucro_liquido_operacoes_continuas = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3)) # Net Income From Continuing Ops
     val_lucro_liquido_acoes_ordinarias = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3)) # Long Term Debt
 
-class SchemaBalancoFinancasBolsa(ModelSchema):
+class SchemaBalancoFinancasBolsa(SQLAlchemyAutoSchema):
     class Meta:
         model = BalancoFinancas

@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema, fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, fields
 from .empresa_bolsa import SchemaEmpresaBolsa
 
 class CotacaoPricesHistory(db.Model):
@@ -15,7 +15,7 @@ class CotacaoPricesHistory(db.Model):
     val_dividendos = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
     val_divacoes = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
 
-class SchemaCotacaoPricesHistory(ModelSchema):
+class SchemaCotacaoPricesHistory(SQLAlchemyAutoSchema):
     class Meta:
         model = CotacaoPricesHistory
     #papel = fields.Nested(SchemaEmpresaBolsa)

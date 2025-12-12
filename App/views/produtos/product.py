@@ -1,5 +1,5 @@
-
-from App import app,db
+from flask import current_app
+from App import db
 from App.model.produtos.products import Product
 from flask import flash, jsonify, request,redirect,render_template,url_for
 from App.schema.schema import ProductSchema
@@ -11,7 +11,7 @@ import random
 
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
 ## Adiciona Produto
 def add_product_form(current_user, token,page,totporpag):
@@ -41,7 +41,7 @@ def add_product_form(current_user, token,page,totporpag):
             #return redirect(request.url)
         if filephotoprod and allowed_file(filephotoprod.filename):
             filename = secure_filename(filephotoprod.filename)
-            localesave = os.path.abspath(os.getcwd())+app.config['UPLOAD_FOLDER']
+            localesave = os.path.abspath(os.getcwd())+current_app.config['UPLOAD_FOLDER']
             filephotoprod.save(os.path.join(localesave, key_img + filename))
             caminhoimg = key_img + filename
 
@@ -82,7 +82,7 @@ def update_product_form(current_user, token,page,totporpag):
             product = Product()
 
         descricao = data['edtdescricao']
-        subdescricao = data['edtsubdescricao'] + app.config['DIRECTORY_APP']
+        subdescricao = data['edtsubdescricao'] + current_app.config['DIRECTORY_APP']
         estoquemin = data['edtestoqminimo']
         estoqueatual = data['edtestoqatual']
         precocusto = data['edtprecocusto']
@@ -112,7 +112,7 @@ def update_product_form(current_user, token,page,totporpag):
                     try:
                         if filephotoprod and allowed_file(filephotoprod.filename):
                             filename = secure_filename(filephotoprod.filename)
-                            localesave = app.config['UPLOAD_FOLDER']
+                            localesave = current_app.config['UPLOAD_FOLDER']
                             caminhoimg = key_img + filename
                     except:
                         caminhoimg = ''
@@ -208,7 +208,7 @@ def get_allproducts(current_user,token,page,totporpag):
     products = pagination.items
     totalprod = len(products)
 
-    data = jwt.decode(token, app.config['SECRET_KEY'])
+    data = jwt.decode(token, current_app.config['SECRET_KEY'])
 
     if products:
         productsschema = ProductSchema(many=True)
@@ -238,7 +238,7 @@ def get_allproducts(current_user,token,page,totporpag):
 
         datapag = json.loads(datapag)
 
-        caminhoimg = app.config['DIRECTORY_APP']+app.config['UPLOAD_FOLDER']
+        caminhoimg = current_app.config['DIRECTORY_APP']+current_app.config['UPLOAD_FOLDER']
         return render_template('layouts/products/products.html',
                                 divmsg = msg,
                                 divmsgerro=msgerro,

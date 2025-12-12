@@ -1,4 +1,4 @@
-from App import db,app
+from App import db,login_manager
 from App.model.atleta import Atleta
 from App.model.pessoas.pessoa import Pessoa
 from App.views.metaatleta import get_metaatleta
@@ -8,9 +8,7 @@ from App.schema.schema import Atletaschema,RefeicaoSchema,MetaAtletaschema
 from flask_login import login_user,logout_user, LoginManager,current_user
 from datetime import datetime
 
-login_manager = LoginManager()
-#login_manager.login_view = 'routesatleta.get_mainatleta'
-login_manager.init_app(app)
+ 
 
 
 @login_manager.user_loader

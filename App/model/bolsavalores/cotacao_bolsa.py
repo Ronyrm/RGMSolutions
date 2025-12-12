@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema, fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, fields
 
 
 class CotacoesBolsa(db.Model):
@@ -45,6 +45,6 @@ class CotacoesBolsa(db.Model):
 
 
 
-class SchemaCotacoesBolsa(ModelSchema):
+class SchemaCotacoesBolsa(SQLAlchemyAutoSchema):
     class Meta:
         model = CotacoesBolsa

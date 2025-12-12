@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema, fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema, fields
 from .empresa_bolsa import SchemaEmpresaBolsa
 
 class DividendosBolsa(db.Model):
@@ -9,7 +9,7 @@ class DividendosBolsa(db.Model):
     dt_pagto = db.Column(db.Date,primary_key=True,nullable=False)
     valor = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
 
-class SchemaDividendosBolsa(ModelSchema):
+class SchemaDividendosBolsa(SQLAlchemyAutoSchema):
     class Meta:
         model = DividendosBolsa
     #papel = fields.Nested(SchemaEmpresaBolsa)

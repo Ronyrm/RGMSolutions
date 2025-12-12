@@ -22,7 +22,7 @@ Formula = val_roe = val_luc_liq_12mes / vl_patr_liq
 """
 
 from App import db
-from marshmallow_sqlalchemy import ModelSchema,fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
 
 class EmpresaBolsa(db.Model):
     __tablename__ = 'empresas_bolsa'
@@ -103,7 +103,7 @@ class EmpresaBolsa(db.Model):
 from App.model.bolsavalores.setor_bolsa import SchemaSetorBolsa
 from App.model.bolsavalores.subsetor_bolsa import SchemaSubSetorBolsa
 
-class SchemaEmpresaBolsa(ModelSchema):
+class SchemaEmpresaBolsa(SQLAlchemyAutoSchema):
     class Meta:
         model = EmpresaBolsa
     setor = fields.Nested(SchemaSetorBolsa)

@@ -1,5 +1,5 @@
 from marshmallow import fields
-from marshmallow_sqlalchemy import ModelSchema
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 
 from App.model.pessoas.pessoa import Pessoa
@@ -18,67 +18,67 @@ from App.model.unalimento import Unalimento
 from App.model.mensagewhatsapp import MensageWhatsApp
 from App.model.packagetrack import PackageTrack
 
-class GroupProductsSchema(ModelSchema):
+class GroupProductsSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = GroupProducts
 
 
-class ProductSchema(ModelSchema):
+class ProductSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Product
     produto_grupo = fields.Nested(GroupProductsSchema)
 
 
 
-class PessoaSchema(ModelSchema):
+class PessoaSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Pessoa
 
-class ClienteSchema(ModelSchema):
+class ClienteSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Cliente
     pessoa = fields.Nested("PessoaSchema")
 
 
-class VendedorSchema(ModelSchema):
+class VendedorSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Vendedor
     pessoa = fields.Nested("PessoaSchema")
 
-class UsersSchema(ModelSchema):
+class UsersSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Users
 
 
-class RefeicaoSchema(ModelSchema):
+class RefeicaoSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Refeicao
     #pessoa = fields.Nested(PessoaSchema)
 
-class UnAlimentoSchema(ModelSchema):
+class UnAlimentoSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Unalimento
 
-class AlimentoSchema(ModelSchema):
+class AlimentoSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Alimentos
 
     unalimento = fields.Nested(UnAlimentoSchema)
 
-class ItemDietaSchema(ModelSchema):
+class ItemDietaSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = ItemDieta
     #dieta = fields.Nested('DietaSchema',only=('id','descricao','data',))
     alimento = fields.Nested('AlimentoSchema',only=('id','descricao','unalimento'))
 
 
-class PessoaSchema(ModelSchema):
+class PessoaSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Pessoa
     cliente = fields.Nested(ClienteSchema,many=True)
     refeicao =fields.Nested(RefeicaoSchema,many=True)
 
-class PessoaClienteRefeicoesSchema(ModelSchema):
+class PessoaClienteRefeicoesSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Pessoa
 
@@ -86,33 +86,33 @@ class PessoaClienteRefeicoesSchema(ModelSchema):
     cliente  = fields.Nested(ClienteSchema(many=True),exclude=('pessoa',),dump_only=True)
 
 
-class ClienteFoodsschema(ModelSchema):
+class ClienteFoodsschema(SQLAlchemyAutoSchema):
     class Meta:
        model = Cliente
 
-class ClientePessoaschema(ModelSchema):
+class ClientePessoaschema(SQLAlchemyAutoSchema):
     class Meta:
         model = Pessoa
     cliente = fields.Nested(ClienteFoodsschema,many=True,only=('id','cpf'))
 
 
-class UnFoodsSchema(ModelSchema):
+class UnFoodsSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Unalimento
 
 
-class FoodsSchema(ModelSchema):
+class FoodsSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Alimentos
 
     pessoa = fields.Nested(ClientePessoaschema)
     unalimento = fields.Nested(UnFoodsSchema)
 
-class Atletaschema(ModelSchema):
+class Atletaschema(SQLAlchemyAutoSchema):
     class Meta:
         model = Atleta
 
-class MetaAtletaschema(ModelSchema):
+class MetaAtletaschema(SQLAlchemyAutoSchema):
     class Meta:
         model = Metaatleta
 
@@ -120,7 +120,7 @@ class MetaAtletaschema(ModelSchema):
 
 
 
-class DietaSchema(ModelSchema):
+class DietaSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Dieta
 
@@ -128,13 +128,13 @@ class DietaSchema(ModelSchema):
     metaatleta = fields.Nested(MetaAtletaschema)
 
 
-class MensageWhatsAppSchema(ModelSchema):
+class MensageWhatsAppSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = MensageWhatsApp
 
     pessoa = fields.Nested(PessoaSchema)
 
 
-class PackageTrackSchema(ModelSchema):
+class PackageTrackSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = PackageTrack

@@ -19,3 +19,10 @@ class Dieta(db.Model):
     create_on = db.Column(db.DateTime, default=datetime.datetime.now())
     dieta_refeicao = db.relationship('Refeicao')
     metaatleta = db.relationship('Metaatleta')
+
+#from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
+#class  SchemaDietas(SQLAlchemyAutoSchema):
+#    class Meta:
+#        model = Dieta
+#    dieta_refeicao = fields.Nested("SchemaRefeicao")
+    #metaatleta = fields.Nested("SchemaMetaAtletas")

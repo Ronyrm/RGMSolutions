@@ -1,6 +1,5 @@
-from App import app
 import pandas as pd
-from flask import request
+from flask import request,current_app
 from werkzeug.utils import secure_filename
 import os
 
@@ -12,7 +11,7 @@ def read_medicamentos_anvisa_xls_to_csv():
 
     if filexls:
         filename = secure_filename(filexls.filename)
-        localesave = app.config['UPLOAD_FOLDER']
+        localesave = current_app.config['UPLOAD_FOLDER']
 
         spath = os.path.join(localesave, filename)
 
@@ -34,7 +33,7 @@ def read_medicamentos_anvisa_csv_db():
 
     if file_csv:
         filename = secure_filename(file_csv.filename)
-        localesave = app.config['UPLOAD_FOLDER']
+        localesave = current_app.config['UPLOAD_FOLDER']
 
         spath = os.path.join(localesave, filename)
 

@@ -2,6 +2,7 @@ from App import db
 import datetime
 
 class Metaatleta(db.Model):
+    __tablename__ = 'metaatleta'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     descricao = db.Column(db.String(50), nullable=False)
     create_on = db.Column(db.DateTime, default=datetime.datetime.now())
@@ -45,3 +46,11 @@ class Metaatleta(db.Model):
     dataprevisaofinal = db.Column(db.DateTime)
     datafinalizada = db.Column(db.DateTime)
     pesofinalizado = db.Column(db.NUMERIC(precision=8, asdecimal=False, scale=2))
+
+#from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
+#from App.model.atleta import SchemaAtletas
+
+#class SchemaMetaAtletas(SQLAlchemyAutoSchema):
+    #class Meta:
+        #model = Metaatleta
+    #atleta = fields.Nested(SchemaAtletas)

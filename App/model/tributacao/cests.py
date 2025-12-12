@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema,fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
 from App.model.tributacao.segmentos_cest import SchemaSegmentosCest
 from App.model.tributacao.ncms import SchemaNCMS
 class Cests(db.Model):
@@ -15,7 +15,7 @@ class Cests(db.Model):
     segmentocest = db.relationship("SegmentosCest")
     ncm = db.relationship("NCMS")
 
-class SchemaCests(ModelSchema):
+class SchemaCests(SQLAlchemyAutoSchema):
     class Meta:
         model = Cests
     segmentocest = fields.Nested(SchemaSegmentosCest)

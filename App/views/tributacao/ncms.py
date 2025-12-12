@@ -1,6 +1,6 @@
-from App import app, db
+from App import db
 from App.model.tributacao.ncms import NCMS,SchemaNCMS
-from flask import request,render_template
+from flask import request,render_template,current_app
 from werkzeug.utils import secure_filename
 import os
 
@@ -177,7 +177,7 @@ def insert_into_sql():
         if file_sql:
             try:
                 filename = secure_filename(file_sql.filename)
-                localesave = app.config['UPLOAD_FOLDER']
+                localesave = current_app.config['UPLOAD_FOLDER']
 
                 spath = os.path.join(localesave, filename)
 

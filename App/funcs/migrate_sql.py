@@ -1,16 +1,16 @@
-from App import engine
+#from App import engine
 from sqlalchemy import text
 from App.sql.migrate_triggers import sql_array
 
 # Atualiza as trigger criadas
-def migrate_trigger():
-    with engine.connect() as conn:
-        for row in sql_array:
-            try:
-                sql = text(sql_array[row])
-                conn.execute(sql)
-            except:
-                pass
+#def migrate_trigger():
+#    with engine.connect() as conn:
+#        for row in sql_array:
+#            try:
+#                sql = text(sql_array[row])
+#                conn.execute(sql)
+#            except:
+#                pass
 
 
 def insert_data_script_sql(spath):

@@ -1,16 +1,16 @@
-from App import db,app
+from App import db,login_manager
+from flask  import current_app
 from App.model.alimentos import Alimentos
 from App.schema.schema import FoodsSchema
 from App.model.atleta import Atleta
 from flask import jsonify, request,render_template
-from flask_login import LoginManager,current_user
+from flask_login import current_user
 
 import json
 
 from flask_paginate import get_page_args
 
-login_manager = LoginManager()
-login_manager.init_app(app)
+
 @login_manager.user_loader
 def load_user(user_id):
     return Atleta.query.get(int(user_id))
@@ -279,7 +279,7 @@ def get_alimento_bydesc():
             page, per_page, offset = get_page_args()
 
             per_page = totpage
-            from App.funcs.getpagination import get_pagination
+            from current_app.funcs.getpagination import get_pagination
             pagination = get_pagination(
                 page=page,
                 per_page=per_page,
@@ -358,7 +358,7 @@ def get_alimento_bydesc_json():
             page, per_page, offset = get_page_args()
 
             per_page = totpage
-            from App.funcs.getpagination import get_pagination
+            from current_app.funcs.getpagination import get_pagination
             pagination = get_pagination(
                 page=page,
                 per_page=per_page,

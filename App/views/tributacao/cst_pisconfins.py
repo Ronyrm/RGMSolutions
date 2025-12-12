@@ -1,4 +1,4 @@
-from App import db, app
+from App import db
 from App.model.tributacao.cst_piscofins import CST_PisCofins, SchemaCSTPisCofins
 from flask import request, render_template, jsonify
 from werkzeug.utils import secure_filename
@@ -33,7 +33,7 @@ def insert_into():
         if file_sql:
             try:
                 filename = secure_filename(file_sql.filename)
-                localesave = app.config['UPLOAD_FOLDER']
+                localesave = current_app.config['UPLOAD_FOLDER']
 
                 spath = os.path.join(localesave, filename)
 

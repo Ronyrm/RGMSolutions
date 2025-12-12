@@ -1,7 +1,6 @@
 import json
 
 import sqlalchemy
-from App import  app
 from App.model.bolsavalores.dividendos_history_bolsa import DividendosBolsa,SchemaDividendosBolsa
 from App.model.bolsavalores.empresa_bolsa import EmpresaBolsa
 from App import db

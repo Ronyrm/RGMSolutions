@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 class REINFs(db.Model):
     __tablename__ = 'reinfs'
@@ -7,6 +7,6 @@ class REINFs(db.Model):
     codreinf = db.Column(db.String(9))
     descricao = db.Column(db.String(100), nullable=False)
 
-class SchemaREINFs(ModelSchema):
+class SchemaREINFs(SQLAlchemyAutoSchema):
     class Meta:
         model = REINFs

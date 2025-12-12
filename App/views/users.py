@@ -1,4 +1,5 @@
-from App import db,app
+from flask import current_app
+from App import db
 from App.model.users import Users
 from App.schema.schema import UsersSchema
 from werkzeug.security import generate_password_hash
@@ -80,7 +81,7 @@ def get_userstemplate():
     token = request.args.get('token')
     data = []
     if token:
-        data = jwt.decode(token, app.config['SECRET_KEY'])
+        data = jwt.decode(token, current_app.config['SECRET_KEY'])
         print('ID:'+str(data['id'])+', Nome: '+data['username'])
         print(token)
     users = Users.query.all()

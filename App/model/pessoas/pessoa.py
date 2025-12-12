@@ -21,11 +21,17 @@ class Pessoa(db.Model):
     profilenamephone = db.Column(db.String(20))
 
 
-#class PessoasSchema(ma.Schema):
-#    class Meta:
-#        fields = ('id', 'username', 'nome', 'razaosocial', 'tipopessoa','email','datacadastro')
+#from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
+#from App.model.refeicao import SchemaRefeicao
+#class SchemaPessoas(SQLAlchemyAutoSchema):
+    #class Meta:
+        #model = Pessoa
+    #refeicao = fields.Nested("SchemaRefeicao")
+    #cliente = fields.Nested("SchemaClientes")
+    #atleta = fields.Nested("SchemaAtletas")
+    
 
-
-#pessoa_schema = PessoasSchema()
-#pessoas_schema = PessoasSchema(many=True)
+#pessoa_schema = SchemaPessoas()
+#pessoas_schema = SchemaPessoas(many=True)
+#from App.model.cliente import Cliente
 

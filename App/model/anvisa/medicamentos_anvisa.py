@@ -1,5 +1,5 @@
 from App import db
-from marshmallow_sqlalchemy import ModelSchema,fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
 from App.model.anvisa.classe_terapeutica_anvisa import SchemaClasseTerapeutica_anvisa
 from App.model.anvisa.substancia_anvisa import SchemaSubstancia_anvisa
 from App.model.anvisa.laboratorios_anvisa import SchemaLaboratorios_anvisa
@@ -26,7 +26,7 @@ class Medicamentos_anvisa(db.Model):
     tipomedicamento = db.relationship("TiposMedicamentos_anvisa")
     tarja = db.Column(db.String(50))
 
-class SchemaMedicamentos_anvisa(ModelSchema):
+class SchemaMedicamentos_anvisa(SQLAlchemyAutoSchema):
     class Meta:
         model = Medicamentos_anvisa
 

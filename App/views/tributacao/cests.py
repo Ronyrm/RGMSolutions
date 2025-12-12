@@ -1,5 +1,5 @@
-from App import db,app
-from flask import request
+from App import db
+from flask import request,current_app
 from App.model.tributacao.cests import Cests,SchemaCests
 from App.model.tributacao.segmentos_cest import SegmentosCest
 from App.model.tributacao.ncms import NCMS
@@ -131,7 +131,7 @@ def insert_into_sql(table):
         if file_sql:
             try:
                 filename = secure_filename(file_sql.filename)
-                localesave = app.config['UPLOAD_FOLDER']
+                localesave = current_app.config['UPLOAD_FOLDER']
 
                 spath = os.path.join(localesave, filename)
 

@@ -2,7 +2,7 @@ import json
 from flask import jsonify
 from config import UPLOAD_FOLDER
 import requests
-from IPython.core.display import display
+#from IPython.core.display import display
 from bs4 import BeautifulSoup
 import  pandas as pd
 from  pandas_datareader  import  data as web
@@ -201,8 +201,8 @@ def finance_cotacao(name):
     listname = name.split(',')
     df = web.DataReader(listname,data_source='yahoo',start=start,end=end)
 
-    display(df)
-    df['Adj Close'].plot(figsize=(15,10))
+    #display(df)
+    #df['Adj Close'].plot(figsize=(15,10))
 
     spath = os.path.join(UPLOAD_FOLDER, f'grafic_{name}.png')
     if os.path.exists(spath):
