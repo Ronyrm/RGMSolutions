@@ -184,7 +184,21 @@ def get_prices_cotacao_ibovespa():
 
 
 # ADICIONA PRECOS COTAÇÃO
+from datetime import timedelta
+import pandas as pd
+def GetValorFechamentoUltSalvo(idPapel,dtCotacao):
+    #dtAnt = pd.to_datetime(dtCotacao) - timedelta(days=1)
+    
+    filterData =CotacaoPricesHistory.dt_cotacao < dtCotacao
+    filteId = CotacaoPricesHistory.idpapel == idPapel
+    price = CotacaoPricesHistory.query.\
+        filter(and_(filteId,filterData)).\
+        order_by(CotacaoPricesHistory.dt_cotacao.desc()).first()
+    if price:
+        return price.val_fechamento
+    return 0
 def add_price_cotacao(data):
+    print('Gravando Historico')
     price = get_price_cotacao_by_papel_date(data['idpapel'],data['dt_cotacao'])
     add = False
     if not price:
@@ -200,6 +214,7 @@ def add_price_cotacao(data):
     price.val_abertura = data['val_abertura']
     price.val_dividendos = data['val_dividendos']
     price.val_divacoes = data['val_divacoes']
+    price.val_fechamento_ant = GetValorFechamentoUltSalvo(data['idpapel'],data['dt_cotacao'])
     try:
         if add:
             db.session.add(price)

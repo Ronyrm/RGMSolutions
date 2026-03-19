@@ -83,7 +83,7 @@ function return_ModalFiltrar(){
         '<hr class="solid"></hr>'+
 
 
-        /* P/L */
+    /* P/L */
         '<div class="form-row">'+
             '<div class="col mx-1 p-2">'+
                 '<div class="form-check" >';
@@ -115,8 +115,40 @@ function return_ModalFiltrar(){
         '<small class="text-danger d-none" id="small-pls"></small>'+
         '<hr class="solid"></hr>'+
 
+    /* ROE */
+        '<div class="form-row">'+
+            '<div class="col mx-1 p-2">'+
+                '<div class="form-check" >';
+    checked_Roe = (aFilterRoe.length > 0) ? 'checked' : '';
+    valRoeDe= 0;
+    valRoeAte= 0;
+    if (checked_Roe == 'checked'){
+        valRoeDe= aFilterRoe[0];
+        valRoeAte= aFilterRoe[1];
+    }
+    div +=
+                    '<input class="form-check-input" '+checked_Roe+' type="checkbox" onchange="change_chkroe(this);" id="chk-roe">'+
+                    '<label class´="form-check-label text-warning" for="chk-roe">ROE</label>'+
+                '</div>'+
+            '</div>'+
+            '<div class="col-7 d-none" id="div-val-roe">'+
+                '<div class="row d-flex justify-content-start">'+
+                    '<label>De:</label>'+
+                    '<div class="col">'+
+                        '<input type="number"  class="form-control" value="'+valRoeDe+'" id="input-roe-de">'+
+                    '</div>'+
+                    '<label>a</label>'+
+                    '<div class="col">'+
+                        '<input type="number"  class="form-control" value="'+valRoeAte+'" id="input-roe-ate">'+
+                    '</div>'+
+                '</div>'+
+            '</div>'+
+        '</div>'+
+        '<small class="text-danger d-none" id="small-roes"></small>'+
+        '<hr class="solid"></hr>'+
+   
 
-        /* P/VPA */
+    /* P/VPA */
         '<div class="form-row">'+
             '<div class="col mx-1 p-2">'+
                 '<div class="form-check" >';
@@ -149,7 +181,7 @@ function return_ModalFiltrar(){
         '<hr class="solid"></hr>'+
 
 
-        /* Valor da Cotacao */
+    /* Valor da Cotacao */
         '<div class="form-row">'+
             '<div class="col mx-1 p-2">'+
                 '<div class="form-check" >';
@@ -272,6 +304,7 @@ async function loadingFieldModalFilter(){
     change_chkDividends(document.getElementById("chk-dividends"));
     change_chkpl(document.getElementById("chk-pl"));
     change_chkpvpa(document.getElementById("chk-pvpa"));
+    change_chkroe(document.getElementById("chk-roe"));
     change_chkvalcotacao(document.getElementById("chk-valcotacao"));
     change_chksetores(document.getElementById("chk-Setores"));
     verifySetoresSelected();
@@ -458,6 +491,15 @@ function change_chkpvpa(check){
         div_PVPA.classList.remove('d-none');
     }
 }
+function change_chkroe(check){
+    div_ROE = document.getElementById('div-val-roe');
+    print('tOaQUI');
+    print(div_ROE);
+    div_ROE.classList.add('d-none');
+    if(check.checked){
+        div_ROE.classList.remove('d-none');
+    }
+}
 function change_chkvalcotacao(check){
     div_valcotacao = document.getElementById('div-val-cotacao');
     div_valcotacao.classList.add('d-none');
@@ -478,6 +520,7 @@ function clickFilltrarEmpresas(){''
     filterValcotacao = '';
     filterSetores = '';
     filterValPVPA = '';
+    filterRoe = '';
     tipo_order = '0';
     orderby = 'ASC';
 
@@ -578,10 +621,33 @@ function clickFilltrarEmpresas(){''
                 }
             }
         }
-
         if (msg != ''){
             small_pvpas.innerHTML = msg;
             small_pvpas.classList.remove('d-none');
+        }
+        /*Comparar ROE*/
+        else{
+            chk_roe = document.querySelector('#chk-roe');
+            vroe_de = parseFloat(document.querySelector('#input-roe-de').value);
+            vroe_ate = parseFloat(document.querySelector('#input-roe-ate').value);
+
+            msg = '';
+            if ((chk_roe.checked) && (vroe_de<= 0) && (vroe_ate<=0)){
+                msg += (vroe_de <= 0 )? 'Forneça o valor ROE que começa.' : '';
+                msg += (vroe_ate <= 0 )? 'Forneça o valor ROE que termina.' : '';
+                filtrar = false;
+            }
+            else{
+                if ((chk_roe.checked) && (vroe_de >= vroe_ate)){
+                    msg += 'O valor inicial de ROE não pode ser maior que o valor final.';
+                    filtrar = false;
+                }
+            }
+        }
+
+        if (msg != ''){
+            small_roe.innerHTML = msg;
+            small_roe.classList.remove('d-none');
         }
         /*Comparar Valor da Cotação*/
         else{
@@ -629,6 +695,7 @@ function clickFilltrarEmpresas(){''
                 urlfilter = 'tipo='+select_tipo+'&limit='+input_limit.value;
                 filterValPL = ( chk_pl.checked) ? parseFloat(vpl_de)+','+ parseFloat(vpl_ate) : '';
                 filterValPVPA = ( chk_pvpa.checked) ? parseFloat(vpvpa_de)+','+ parseFloat(vpvpa_ate) : '';
+                filterValRoe = ( chk_roe.checked) ? parseFloat(vroe_de)+','+ parseFloat(vroe_ate) : '';
                 filterValDividends = (chk_dividends.checked) ? vdividends_de+','+vdividends_ate : '';
                 filterValcotacao = (chk_valcotacao.checked) ? vcotacao_de+','+vcotacao_ate : '';
                 if (filterSetores == 'S'){
@@ -645,6 +712,7 @@ function clickFilltrarEmpresas(){''
         tipo_order = document.getElementById('select-tipo-order').value;
         orderby = document.getElementById('select-orderby').value;
         window.location.href = '/bolsavalores/empresas/main?'+urlfilter+'&ativa='+select_ativa.value+
+        '&filterroe='+filterValRoe+
         '&filterpl='+filterValPL+'&filterpvpa='+filterValPVPA+'&filterdividends='+filterValDividends+'&filtersetor='+filterSetores+
         '&filtervalcotacao='+filterValcotacao+'&tipoorder='+tipo_order+'&orderby='+orderby;
 

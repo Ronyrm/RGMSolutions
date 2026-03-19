@@ -9,6 +9,7 @@
     var tipoorder_filtro = "{{tabempresas.tipoorder}}";
 
     var aFilterDividends = {{tabempresas.filterdividends|safe}};
+    var aFilterRoe = {{tabempresas.filterroe|safe}};
     var aFilterPL = {{tabempresas.filterpl|safe}};
     var aFilterPVPA = {{tabempresas.filterpvpa|safe}};
     var aFilterValCotacao = {{tabempresas.filtervalcotacao|safe}};
@@ -41,10 +42,15 @@
                 <th scope="col">Nome</th>
                 <th scope="col">Setor - Sub</th>
                 <th scope="col">Ult.Att</th>
-                <th scope="col" class="th-table-empresas" onclick="sorted_tabempresas_value('perc_dif_cotacao');">
-                    <div class="d-flex justify-content-between">
-                        Val.Cotação
-                        <i class="fas fa-sort-down"></i>
+                <th scope="col" class="th-table-empresas" >
+                    <div class="d-flex flex-column align-items-center justify-content-between">
+                        <div  onclick="sorted_tabempresas_value('perc_dif_cotacao');">
+                            Val.Cotação <i class="fas fa-sort-down"></i>
+                        </div>
+                        <div  onclick="update_cotacao_geral(this);">
+                            <i class="fas fa-sync-alt" aria-hidden="true"></i>
+                        </div>
+                    </div>
                 </th>
                 <th scope="col" class="th-table-empresas" onclick="sorted_tabempresas_value('val_divyield');">Div.Yield % - R$</th>
                 <th scope="col" class="th-table-empresas" onclick="sorted_tabempresas_date('ex_date_dividend');">Ex-data</th>

@@ -81,6 +81,30 @@ function arredonda(valor,decimal){
     }
 }
 
+async function update_cotacao_geral(btn){
+    updayeEmpresa = true;
+    btn.disabled = true;
+
+    let contador = 1;
+
+
+    for (const empresa of tabempresas.data) {
+        div_btn = document.querySelector('.div-btn-'+contador);  
+        innerTemp = div_btn.innerHTML;
+        div_btn.innerHTML = '<div class="loader"></div><small class="text-warning ml-2">&nbsp;Atualizando</small>';
+    
+       //const contador   = document.getElementById('lbl-identificador-' + empresa.id).innerHTML;
+
+        // chama direto a função async que já existe
+        await update_info_empresa(empresa.id, empresa.papel, contador, btn);
+        
+        contador += 1;
+        
+        div_btn.innerHTML = innerTemp;
+    }
+
+    btn.disabled = false;
+}
 
 // BOTAO DE ATUALIZAR VALORES DE ACORDO COM A DATA ESPECIFICADA, BUSCA DADOS YAHOO FINANCE
 async function click_btn_update_empresas(btn){
@@ -529,7 +553,7 @@ function return_tr_table_empresa(contador,rowEmpresa){
                                 '<input onchange="click_selectpapel(this);" class="form-check-input" name="chk-identificador" '+
                                 'type="checkbox" value="'+rowEmpresa['id']+'"'+
                                 ' id="chk-identificador-'+rowEmpresa['id']+'">'+
-                                '<label class="form-check-label" for="chk-identificador-'+rowEmpresa['id']+'">'+contador+'</label>'+
+                                '<label class="form-check-label" id="lbl-identificador-"'+rowEmpresa['id']+'" for="chk-identificador-'+rowEmpresa['id']+'">'+contador+'</label>'+
                             '</div>'+
                         '</td>'+
                         '<td class="text-center align-center">'+
@@ -540,7 +564,8 @@ function return_tr_table_empresa(contador,rowEmpresa){
                                     rowEmpresa['papel']+'</a>'+
                             '</div>'+
                             '<div class="d-flex justify-content-center div-btn-'+contador+'">'+
-                                '<button class="btn-update-empresa" id="btn-up-info-"'+rowEmpresa['id']+' onclick="update_info_empresa('+rowEmpresa['id']+','+vpapel+','+contador+',this);">'+
+                                '<button class="btn-update-empresa" id="btn-up-info-'+rowEmpresa['id']+
+                                '" onclick="update_info_empresa('+rowEmpresa['id']+','+vpapel+','+contador+',this);">'+
                                 '<i class="fas fa-sync-alt" </i></button>'+
                             '</div>'+
 
@@ -551,7 +576,7 @@ function return_tr_table_empresa(contador,rowEmpresa){
         //preço cotacao
         color_tpPercDiferenceCot =  (rowEmpresa['perc_dif_cotacao'] >=0 ) ? 'text-primary' : 'text-danger';
 
-        bodyTemp +='<td class="align-middle text-center">'+
+        bodyTemp +='<td class="align-middle text-center" id="td-val-cotacao-'+rowEmpresa['id']+'">'+
                         '<div class="row d-flex justify-content-center">'+
                             format_valorBRL(rowEmpresa['val_cotacao'],2,true)+
                         '</div>'+

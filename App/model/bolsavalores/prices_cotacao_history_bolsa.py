@@ -14,6 +14,8 @@ class CotacaoPricesHistory(db.Model):
     volume = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
     val_dividendos = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
     val_divacoes = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
+    val_fechamento_ant = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
+
 
 class SchemaCotacaoPricesHistory(SQLAlchemyAutoSchema):
     class Meta:

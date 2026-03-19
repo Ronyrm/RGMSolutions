@@ -35,7 +35,7 @@ from App.views.several import translate
 from io import StringIO
 
 import yfinance as yf
-yf.pdr_override()
+
 
 
 def get_empresabolsa_by_papel(name):

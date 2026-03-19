@@ -1,4 +1,3 @@
-# empresa_bolsa_safe.py
 # Versão do seu arquivo com integração anti-bloqueio para yfinance (safe_yf_ticker)
 # e fallback para BRAPI.dev quando o Yahoo está indisponível.
 #
@@ -14,7 +13,7 @@ import json
 from datetime import timedelta
 from unittest import result
 
-from App.funcs.funcs import format_date_yyyymmaa
+from App.funcs.funcs import format_date_yyyymmaa,validar_valor_decimal
 import numpy
 import requests
 import re
@@ -45,7 +44,7 @@ from App.views.several import translate
 from io import StringIO
 
 import yfinance as yf
-yf.pdr_override()
+#yf.pdr_override()
 
 # ---------------------------
 # Anti-bloqueio / Fallbacks
@@ -75,21 +74,19 @@ def create_safe_session():
     # optional: set small timeout on requests; yfinance uses requests internally but we control session
     return session
 
-def safe_yf_ticker(ticker, tentativas=6):
+def safe_yf_ticker(ticker, tentativas=2):
     """
     Tenta criar e validar um yf.Ticker com retries e delays.
     Retorna o objeto ticker se for possível obter um histórico curto, ou None.
     """
-    print('Get ticker')
     for i in range(tentativas):
         try:
-            session = create_safe_session()
-            tk = yf.Ticker(ticker, session=session)
-
+            #session = create_safe_session()
+            tk = yf.Ticker(ticker)
             # Teste real: histórico curto
-            hist = tk.history(period="5d")
-            if hist is not None and not hist.empty:
-                return tk  # sucesso
+            #hist = tk.history(period="5d")
+            #if hist is not None and not hist.empty:
+            return tk  # sucesso
         except Exception as e:
             # não falhar aqui, tentará novamente
             pass
@@ -209,14 +206,17 @@ def get_all_empresabolsa():
     filterpl = ''
     filterpvpa = ''
     filterdividends = ''
+    filterroe = ''
     filtersetor = ''
     filtervalcotacao = ''
+    
 
     arraypl = []
     arraypvpa = []
     arraydividends = []
     arraysetor = []
     arrayvalcotacao = []
+    arrayroe = []
     print('to aqui')
 
     if request.method == 'GET':
@@ -230,6 +230,10 @@ def get_all_empresabolsa():
             filterpl = request.args.get('filterpl') if request.args.get('filterpl') != None else ''
             if filterpl != '':
                 arraypl = filterpl.split(',')
+            
+            filterroe = request.args.get('filterroe') if request.args.get('filterroe') != None else ''
+            if filterroe != '':
+                arrayroe = filterroe.split(',')
 
             filterpvpa = request.args.get('filterpvpa') if request.args.get('filterpvpa') != None else ''
             if filterpvpa != '':
@@ -340,6 +344,13 @@ def get_all_empresabolsa():
             else:
                 filterpvpa = EmpresaBolsa.id != -1
 
+            # Roe
+            if filterroe != '':
+                filterroe = EmpresaBolsa.val_roe.between(arrayroe[0], arrayroe[1])
+            else:
+                filterroe = EmpresaBolsa.id != -1
+
+
             # Dividendos
             if filterdividends != '':
                 filterdividends = EmpresaBolsa.perc_divyield.between(arraydividends[0],arraydividends[1])
@@ -374,6 +385,7 @@ def get_all_empresabolsa():
                 'orderby': orderby,
                 'tipoorder': tipoorder,
                 'filterpl': arraypl,
+                'filterroe': arrayroe,
                 'filterpvpa': arraypvpa,
                 'filterdividends': arraydividends,
                 'filtersetor': arraysetor,
@@ -670,7 +682,7 @@ def update_papel_of_fundamentus():
 
         }
         empresa = add_empresa(data)
-        if empresa:
+        """if empresa:
             json_info_empresa = capture_info_empresa(empresa['papel'])
             print('peguei')
             print(json_info_empresa)
@@ -695,17 +707,20 @@ def update_papel_of_fundamentus():
                     pass
 
                 print('Papel:{}, cotacao adicionada? {}'.format(empresa['papel'], addcotacao))
-
+        """
         print(item)
     return get_all_empresabolsa()
 
 def capture_detail_yfinance(name, dt_start, dt_end):
+    print('DataInicial:{}, DataFinal{}'.format(dt_start, dt_end))
     """
+    
     Função que antes usava yahoofinancials + yf.Ticker.
     Agora: tentamos obter via safe_yf_ticker; se falhar, tentamos BRAPI para preços.
     Retorna dicionário similar ao original (com 'prices_cot' e 'info' quando possível).
     """
-    listname = '{}.SA'.format(name) if name != '^BVSP' else '^BVSP'
+    #listname = '{}.SA'.format(name) if name != '^BVSP' else '^BVSP'
+    listname = '{}'.format(name) if name != '^BVSP' else '^BVSP'
     prices_cot = {}
     try:
         # tenta Yahoo
@@ -981,8 +996,8 @@ def update_dados_empresa(datacot):
             empresa.dt_ult_cotacao = datacot['dt_cotacao']
             empresa.val_patr_liq = datacot['val_patr_liquido']
             empresa.num_acoes = datacot['num_tot_acoes']
-            empresa.val_luc_liq_12mes = datacot['val_lucro_liquido12']
-            empresa.val_luc_liq_3mes = datacot['val_lucro_liquido3']
+            empresa.val_luc_liq_12mes = validar_valor_decimal(datacot['val_lucro_liquido12'])
+            empresa.val_luc_liq_3mes = validar_valor_decimal(datacot['val_lucro_liquido3'])
             empresa.val_luc_liq_atual = datacot['val_lucro_liquido']
             empresa.val_roe = round((empresa.val_luc_liq_atual / empresa.val_patr_liq) * 100,2)
             empresa.val_ebit_liq_12mes = datacot['val_ebitda']
@@ -1205,7 +1220,15 @@ def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
                 if df_balancetFinancials is not None and len(df_balancetFinancials) > 0:
                     update_balanco_finances_yfinance_by_papel(df_balancetFinancials, idpapel)
                     lucroliquido12meses = df_balancetFinancials.loc['Net Income'].sum() if 'Net Income' in df_balancetFinancials.index else None
-                    lucroliquido3meses = df_balancetFinancials.loc['Net Income'].iloc[0] if 'Net Income' in df_balancetFinancials.index else None
+                    try:
+                        lucroliquido3meses = df_balancetFinancials.loc['Net Income'].iloc[0] if 'Net Income' in df_balancetFinancials.index else None
+                        if lucroliquido3meses is not None and (isinstance(lucroliquido3meses,float) or isinstance(lucroliquido3meses,int)):
+                            lucroliquido3meses = lucroliquido3meses
+                        else:
+                            lucroliquido3meses = None
+                    except:
+                        lucroliquido3meses = None
+
                     get_val_patrimonio = up_balance_trimenstral(yftk.quarterly_balancesheet) if hasattr(yftk, 'quarterly_balancesheet') else None
                 else:
                     lucroliquido12meses = None
@@ -1213,6 +1236,7 @@ def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
                     get_val_patrimonio = None
 
                 # dfinfo attempt
+                print('Lucro Liquido 3 meses: {}'.format(lucroliquido3meses))
                 try:
                     dfinfo = yftk.info
                 except:
@@ -1248,8 +1272,11 @@ def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
 
             # history prices
             if yftk is not None:
+                
                 try:
                     hist_prices = yftk.history(start=dtini, end=dtfim)
+                    print('Historico') 
+                    print(hist_prices)
                     if len(hist_prices) > 0:
                         up_history_cotacoes(hist_prices, idpapel)
                 except:
@@ -1323,12 +1350,13 @@ def get_update_info_yfinance_by_papel(idpapel, papel):
         except:
             df_balancetFinancials = None
 
-        if df_balancetFinancials and len(df_balancetFinancials) > 0:
+        try:
             lucroliquido12meses = df_balancetFinancials.loc['Net Income Applicable To Common Shares'].sum() if 'Net Income Applicable To Common Shares' in df_balancetFinancials.index else None
             lucroliquido3meses = df_balancetFinancials.loc['Net Income Applicable To Common Shares'].iloc[0] if 'Net Income Applicable To Common Shares' in df_balancetFinancials.index else None
-        else:
-            lucroliquido12meses = None
-            lucroliquido3meses = None
+        except:
+            lucroliquido12meses = 0
+            lucroliquido3meses  = 0
+        
 
         try:
             numactions = None if dfinfo.get('netIncomeToCommon') == None or dfinfo.get('trailingEps') == None \
@@ -1494,10 +1522,14 @@ def convert_tickers_csv_statusinvest():
             empresas = get_all_empresabolsa()
             if empresas is None:
                 print('nENHUMA EMPRESA')
+                totEmpresas =0
+            else:
+                totEmpresas = len(empresas['data'])
+
             totalencontrada = 0
             totalnaoencontrada = 0
             arrayNaoEncontrada = []
-            totEmpresas = len(empresas['data'])
+            
             for index, empresa in enumerate(empresas['data']):
                 print(f'Pos:{str(index)} de {str(totEmpresas)}')
                 dfemp = df.loc[df['TICKER'] == empresa['papel']]

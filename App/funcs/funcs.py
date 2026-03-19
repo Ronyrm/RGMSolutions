@@ -4,6 +4,19 @@ import json
 import re
 import decimal
 import pandas as pd
+import math
+from decimal import Decimal
+from typing import Any, Dict, Any
+
+def validar_valor_decimal(valor: Any) -> Decimal:
+    """Converte valor para Decimal ou 0 se for NaN/None"""
+    if valor is None or math.isnan(valor):
+        return Decimal('0.00')
+    if isinstance(valor, (int, float)):
+        return Decimal(str(valor))
+    if isinstance(valor, str):
+        return Decimal(valor)
+    return Decimal('0.00')
 # Gera chave aleatoria
 def gera_keyacess(qtd=20):
     import string
@@ -91,13 +104,22 @@ def capture_float_in_string(str):
     return re.findall(r"[-+]?\d*\.\d+|\d+",str)
 
 def FormatStrToFloat(sValue):
-    try:    
-        if sValue != None:
-            return float(sValue.replace('.','').replace(',','.'))
-        else:
-            return None
-    except:
-        return None
+    vRet = None
+    if not sValue:
+        vRet = None
+        
+
+    valor = sValue.strip()
+
+    if re.fullmatch(r'-?\d{1,3}(\.\d{3})*,\d+', valor):
+        vRet = float(valor.replace('.', '').replace(',', '.'))
+
+    if re.fullmatch(r'-?\d+(\.\d+)?', valor):
+        vRet = float(valor)
+
+    print(f"Input string:{sValue} => converted float:{vRet}")
+    return vRet
+    
 
 
 class DecimalEncoder(json.JSONEncoder):
