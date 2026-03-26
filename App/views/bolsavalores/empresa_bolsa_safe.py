@@ -10,7 +10,7 @@ LPA = val_ primeiro encontra o LPA(lucro por ação): é o Lucro liquido divido 
 
 import datetime
 import json
-from datetime import timedelta
+from datetime import timedelta,date
 from unittest import result
 
 from App.funcs.funcs import format_date_yyyymmaa,validar_valor_decimal
@@ -59,6 +59,78 @@ USER_AGENTS = [
     "Mozilla/5.0 (X11; Linux x86_64)",
 ]
 
+from bs4 import BeautifulSoup   
+
+def get_lpa_vpa_fundamentus(idpapel) -> dict:
+    papel = EmpresaBolsa.query.get(idpapel).papel
+    url = f"https://www.fundamentus.com.br/detalhes.php?papel={papel}"
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        def find_float(label):
+            tag = soup.find(string=label)
+            if tag:
+                next_tag = tag.find_next("span")
+                if next_tag:
+                    text = next_tag.get_text(strip=True)
+                    
+                    return float(text.replace(",", ".").replace('%',''))
+            return None
+
+        lpa = find_float("LPA")
+        vpa = find_float("VPA")
+        dy  = find_float("Div. Yield") 
+
+        return {
+            "lpa": lpa,
+            "vpa": vpa,
+            "dy":dy
+        }
+
+    except Exception as e:
+        print("Erro:", e)
+        return {"lpa": None, "vpa": None,"dy":None, "error":str(e) }
+
+
+
+def GetValoresAtualizadosStatusInvest(idpapel):
+    papel = EmpresaBolsa.query.get(idpapel).papel
+    
+    print('Cheguei Aqui e o papel é: {}'.format(papel)) 
+    url = "https://statusinvest.com.br/acoes/{}".format(papel)
+    print(url)
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Procura por "LPA" e "VPA" no texto
+    lpa = None
+    vpa = None
+
+    for tag in soup.find_all(string=True):
+        if "LPA" in tag and "Indicadores" in tag.parent.get_text():
+            sibling = tag.find_next("strong")
+            prinT('Entrei no while:{}'.format(sibling))
+            if sibling:
+                lpa = float(sibling.get_text(strip=True).replace(",", "."))
+        if "VPA" in tag and "Indicadores" in tag.parent.get_text():
+            sibling = tag.find_next("strong")
+            if sibling:
+                vpa = float(sibling.get_text(strip=True).replace(",", "."))
+
+    return {'lpa':lpa,'vpa':vpa}
+    
 def _espera_random(min_s=1.2, max_s=3.0):
     t = round(random.uniform(min_s, max_s), 1)
     time.sleep(t)
@@ -999,7 +1071,7 @@ def update_dados_empresa(datacot):
             empresa.val_luc_liq_12mes = validar_valor_decimal(datacot['val_lucro_liquido12'])
             empresa.val_luc_liq_3mes = validar_valor_decimal(datacot['val_lucro_liquido3'])
             empresa.val_luc_liq_atual = datacot['val_lucro_liquido']
-            empresa.val_roe = round((empresa.val_luc_liq_atual / empresa.val_patr_liq) * 100,2)
+            empresa.val_roe = datacot['val_roe']#round((empresa.val_luc_liq_atual / empresa.val_patr_liq) * 100,2)
             empresa.val_ebit_liq_12mes = datacot['val_ebitda']
             empresa.val_tot_debito = datacot['val_tot_debito']
             empresa.val_lucro_bruto = datacot['val_lucro_bruto']
@@ -1023,7 +1095,8 @@ def update_dados_empresa(datacot):
             db.session.commit()
             return True
     except Exception as e:
-        print("Erro update_dados_empresa:", e)
+        print("Erro update_dados_empresa empresa:{}. Error: {}".format(empresa.papel,str(e)))
+        print(datacot)
     return False
 
 def up_history_cotacoes(df_cotacoes, idpapel):
@@ -1127,14 +1200,35 @@ def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
     def cotacao_now(dfinfo, idpapel, val_patrimonio_passado, val_lucroliquido12, val_lucroliquido3):
         addcotacao = False
         try:
-            numactions = None if dfinfo.get('netIncomeToCommon') == None or dfinfo.get('trailingEps') == None \
+            lpavpa = get_lpa_vpa_fundamentus(idpapel)
+            numactions = 0 if dfinfo.get('netIncomeToCommon') == None or dfinfo.get('trailingEps') == None \
                 else int(dfinfo.get('netIncomeToCommon') / dfinfo.get('trailingEps'))
+            
+            valRoe = dfinfo.get('returnOnEquity') 
+
+            if valRoe != None:
+                valRoe = round(valRoe * 100,2)
+            else:
+                if dfinfo.get('netIncomeToCommon') == None or numactions == None or dfinfo.get('bookValue') == None :
+                     valRoe = 0
+                else:
+                  valRoe = (((dfinfo.get('netIncomeToCommon') / numactions) * 
+                          dfinfo.get('bookValue') ) * 100)
+            
+            dt_cotacao = None
+            if dfinfo.get('regularMarketTime'):
+                dt_cotacao = date.fromtimestamp(dfinfo.get('regularMarketTime')).strftime('%Y-%m-%d %H:%M:%S')
+
+            # Ou previous close time (se mercado fechado)
+            elif dfinfo.get('regularMarketPreviousClose'):
+                dt_cotacao = date.fromtimestamp(dfinfo.get('previousCloseTime')).strftime('%Y-%m-%d %H:%M:%S')
+            
             datacot = {
                 'val_lucro_liquido12': val_lucroliquido12,
                 'val_lucro_liquido3': val_lucroliquido3,
                 'desc_empresa': dfinfo.get('longBusinessSummary'),
                 'val_patrimonio_passado': val_patrimonio_passado,
-                'dt_cotacao': datetime.datetime.now().strftime('%y-%m-%d'),
+                'dt_cotacao': dt_cotacao,
                 'idpapel': idpapel,
                 'val_compra': dfinfo.get('bid'),
                 'val_venda': dfinfo.get('ask'),
@@ -1143,7 +1237,7 @@ def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
                 'val_max_day': dfinfo.get('dayHigh'),
                 'val_min_day': dfinfo.get('dayLow'),
                 'val_tot_receita' : dfinfo.get('totalRevenue'),
-                'val_vpa' : dfinfo.get('bookValue'),
+                'val_vpa' : lpavpa['vpa'], #dfinfo.get('bookValue'),
                 'val_lucro_liquido' : dfinfo.get('netIncomeToCommon'),
                 'val_fluxo_cx' : dfinfo.get('totalCash'),
                 'val_empresa' : dfinfo.get('enterpriseValue'),
@@ -1155,12 +1249,16 @@ def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
                 'val_fluxo_cx_operacional' : dfinfo.get('operatingCashflow'),
                 'val_fluxo_cx_livre_alavanc' : dfinfo.get('freeCashflow'),
                 'val_patr_liquido' : None if numactions == None or dfinfo.get('bookValue') == None else numactions * dfinfo.get('bookValue'),
-                'val_lpa' : dfinfo.get('trailingEps'),
-                'val_p_l' : None if numactions == None or
-                                    dfinfo.get('netIncomeToCommon') == None or
-                                    dfinfo.get('currentPrice') == None
-                                 else (dfinfo.get('currentPrice') /  (dfinfo.get('netIncomeToCommon') / numactions)),
-                'val_p_vpa' : None if dfinfo.get('bookValue') == None or  dfinfo.get('currentPrice') == None else dfinfo.get('currentPrice') / dfinfo.get('bookValue'),
+                'val_lpa' : lpavpa['lpa'],#dfinfo.get('trailingEps'),
+                'val_p_l' : dfinfo.get('forwardPE') if dfinfo.get('forwardPE') != None else (dfinfo.get('currentPrice') / (dfinfo.get('netIncomeToCommon') / numactions)),
+                'val_p_vpa': dfinfo.get('priceToBook') if dfinfo.get('priceToBook') !=  None else  dfinfo.get('currentPrice') / dfinfo.get('bookValue'),
+                
+                #'val_p_l' : None if numactions == None or
+                #                    dfinfo.get('netIncomeToCommon') == None or
+                #                    dfinfo.get('currentPrice') == None
+                #                 else (dfinfo.get('currentPrice') /  (dfinfo.get('netIncomeToCommon') / numactions)),
+                #'val_p_vpa' : None if dfinfo.get('bookValue') == None or  dfinfo.get('currentPrice') == None else dfinfo.get('currentPrice') / dfinfo.get('bookValue'),
+
                 'val_p_ebit' : None if dfinfo.get('ebitda') == None or
                                        dfinfo.get('currentPrice') == None or
                                        numactions == None
@@ -1168,10 +1266,7 @@ def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
                 'val_rec_acao' : None if dfinfo.get('totalRevenue') == None or
                                          numactions == None
                                       else dfinfo.get('totalRevenue') / numactions,
-                'val_roe' : None if dfinfo.get('netIncomeToCommon') == None or
-                                    numactions == None or
-                                    dfinfo.get('bookValue') == None
-                                 else (((dfinfo.get('netIncomeToCommon') / numactions) * dfinfo.get('bookValue')) *100),
+                'val_roe': valRoe,
                 'val_mrg_lucro' :  None if dfinfo.get('netIncomeToCommon') == None or
                                     dfinfo.get('totalRevenue') == None
                                  else ((dfinfo.get('netIncomeToCommon') / dfinfo.get('totalRevenue')) * 100),
@@ -1244,16 +1339,17 @@ def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
             else:
                 # fallback BRAPI for dfinfo & dividends/hist
                 dfinfo = _brapi_get_quote_info(f"{papel}.SA")
-            dividendos = None
-            if yftk is not None:
-                try:
-                    dividendos = yftk.dividends
-                except:
-                    dividendos = None
+            try:
+                dividendos = yftk.dividends
+            except:
+                dividendos = None
+                
+            print('Estou aqui e aqui é os divicendos')
 
             if dividendos is not None and len(dividendos) > 0:
                 dividendos = dividendos.loc[dtini:dtfim]
                 if len(dividendos) > 0:
+                    print('COM DIVIDENDOS')
                     up_dividendos(dividendos, idpapel)
             else:
                 # try BRAPI
@@ -1362,10 +1458,31 @@ def get_update_info_yfinance_by_papel(idpapel, papel):
             numactions = None if dfinfo.get('netIncomeToCommon') == None or dfinfo.get('trailingEps') == None \
                 else int(dfinfo.get('netIncomeToCommon') / dfinfo.get('trailingEps'))
 
+            lpavpa = get_lpa_vpa_fundamentus(idpapel)
+            print('LPAVPA:{}'.format(lpavpa))
+            
+            valRoe = dfinfo.get('returnOnEquity') 
+            if valRoe != None:
+                valRoe = round(valRoe * 100,2)
+            else:
+                if dfinfo.get('netIncomeToCommon') == None or numactions == None or dfinfo.get('bookValue') == None :
+                     valRoe = 0
+                else:
+                  valRoe = (((dfinfo.get('netIncomeToCommon') / numactions) * 
+                          dfinfo.get('bookValue') ) * 100)
+            
+            dt_cotacao = None
+            if dfinfo.get('regularMarketTime'):
+                dt_cotacao = date.fromtimestamp(dfinfo.get('regularMarketTime')).strftime('%Y-%m-%d %H:%M:%S')
+
+            # Ou previous close time (se mercado fechado)
+            elif dfinfo.get('regularMarketPreviousClose'):
+                dt_cotacao = date.fromtimestamp(dfinfo.get('previousCloseTime')).strftime('%Y-%m-%d %H:%M:%S')
+
             datacot = {
                 'desc_empresa': dfinfo.get('longBusinessSummary'),
                 'val_patrimonio_passado': val_patrimonio_passado,
-                'dt_cotacao': datetime.datetime.now().strftime('%y-%m-%d'),
+                'dt_cotacao': dt_cotacao,
                 'idpapel': idpapel,
                 'val_compra': dfinfo.get('bid'),
                 'val_venda': dfinfo.get('ask'),
@@ -1374,7 +1491,7 @@ def get_update_info_yfinance_by_papel(idpapel, papel):
                 'val_max_day': dfinfo.get('dayHigh'),
                 'val_min_day': dfinfo.get('dayLow'),
                 'val_tot_receita': dfinfo.get('totalRevenue'),
-                'val_vpa': dfinfo.get('bookValue'),
+                'val_vpa': lpavpa['vpa'], #dfinfo.get('bookValue'),
                 'val_lucro_liquido': dfinfo.get('netIncomeToCommon'),
                 'val_lucro_liquido12': lucroliquido12meses,
                 'val_lucro_liquido3': lucroliquido3meses,
@@ -1388,12 +1505,14 @@ def get_update_info_yfinance_by_papel(idpapel, papel):
                 'val_fluxo_cx_operacional': dfinfo.get('operatingCashflow'),
                 'val_fluxo_cx_livre_alavanc': dfinfo.get('freeCashflow'),
                 'val_patr_liquido': None if numactions == None or dfinfo.get('bookValue') == None else numactions * dfinfo.get('bookValue'),
-                'val_lpa': dfinfo.get('trailingEps'),
-                'val_p_l': None if numactions == None or
-                                   dfinfo.get('netIncomeToCommon') == None or
-                                   dfinfo.get('currentPrice') == None
-                else (dfinfo.get('currentPrice') / (dfinfo.get('netIncomeToCommon') / numactions)),
-                'val_p_vpa': None if dfinfo.get('bookValue') == None or dfinfo.get('currentPrice') == None else dfinfo.get('currentPrice') / dfinfo.get('bookValue'),
+                'val_lpa': lpavpa['lpa'], #dfinfo.get('trailingEps'),
+                'val_p_l' : dfinfo.get('forwardPE') if dfinfo.get('forwardPE') != None else (dfinfo.get('currentPrice') / (dfinfo.get('netIncomeToCommon') / numactions)),
+                'val_p_vpa': dfinfo.get('priceToBook') if dfinfo.get('priceToBook') !=  None else  dfinfo.get('currentPrice') / dfinfo.get('bookValue'),
+                #'val_p_l': None if numactions == None or
+                #                   dfinfo.get('netIncomeToCommon') == None or
+                #                   dfinfo.get('currentPrice') == None
+                #else (dfinfo.get('currentPrice') / (dfinfo.get('netIncomeToCommon') / numactions)),
+                #'val_p_vpa': lpavpa['vpa'],#None if dfinfo.get('bookValue') == None or dfinfo.get('currentPrice') == None else dfinfo.get('currentPrice') / dfinfo.get('bookValue'),
                 'val_p_ebit': None if dfinfo.get('ebitda') == None or
                                       dfinfo.get('currentPrice') == None or
                                       numactions == None
@@ -1401,10 +1520,7 @@ def get_update_info_yfinance_by_papel(idpapel, papel):
                 'val_rec_acao': None if dfinfo.get('totalRevenue') == None or
                                         numactions == None
                 else dfinfo.get('totalRevenue') / numactions,
-                'val_roe': None if dfinfo.get('netIncomeToCommon') == None or
-                                   numactions == None or
-                                   dfinfo.get('bookValue') == None
-                else (((dfinfo.get('netIncomeToCommon') / numactions) * dfinfo.get('bookValue') ) * 100),
+                'val_roe': valRoe,
                 'val_mrg_lucro': None if dfinfo.get('netIncomeToCommon') == None or
                                          dfinfo.get('totalRevenue') == None
                 else ((dfinfo.get('netIncomeToCommon') / dfinfo.get('totalRevenue')) * 100),

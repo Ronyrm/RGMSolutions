@@ -65,6 +65,8 @@ def get_prices_cotacao_by_papel_dates_mensal(papel,dtini,dtfim):
         filter(tipefilter). \
         group_by(func.date_format(CotacaoPricesHistory.dt_cotacao, '%m/%Y')). \
         order_by(CotacaoPricesHistory.dt_cotacao).all()
+    
+    print(prices)
     tbjson = ''
     # for row in prices:
     try:
