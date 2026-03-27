@@ -868,6 +868,60 @@ def capture_info_empresa(name):
 # AQUI COMEÇAM AS FUNÇÕES ANTERIORES, MAS USANDO safe_yf_ticker
 # -----------------------------------------------------------
 
+# ATUALIZA DADOS ATUAIS DIARIO DE UMA DETERMINADA EMPRESA
+def update_dados_empresa(datacot):
+    try:
+        empresa = EmpresaBolsa.query.get(datacot['idpapel'])
+        if empresa:
+            jsonTotalDiv12 = get_valor_total_diviendos_12ult_meses(datacot['idpapel'])
+
+            empresa.perc_divyield = jsonTotalDiv12['perc_div_yield']
+            empresa.val_divyield = jsonTotalDiv12['valor_div_yield']
+            empresa.val_lpa = datacot['val_lpa']
+            empresa.val_vpa = datacot['val_vpa']
+            empresa.val_firma = datacot['val_empresa']
+            empresa.val_empresa = datacot['val_empresa']
+            empresa.val_mercado = datacot['val_mercado']
+            empresa.val_cotacao = datacot['val_atual']
+            empresa.val_cotacao_anterior = datacot['val_anterior_close'] if datacot['val_anterior_close'] != None else 0
+            empresa.val_dif_cotacao = empresa.val_cotacao - empresa.val_cotacao_anterior
+            empresa.perc_dif_cotacao = 0 if empresa.val_cotacao_anterior == 0 else ((empresa.val_cotacao * 100) / empresa.val_cotacao_anterior) - 100
+            empresa.perc_dif_cotacao = 0 if empresa.perc_dif_cotacao == None else empresa.perc_dif_cotacao
+            empresa.dt_ult_cotacao = datacot['dt_cotacao']
+            empresa.val_patr_liq = datacot['val_patr_liquido']
+            empresa.num_acoes = datacot['num_tot_acoes']
+            empresa.val_luc_liq_12mes = validar_valor_decimal(datacot['val_lucro_liquido12'])
+            empresa.val_luc_liq_3mes = validar_valor_decimal(datacot['val_lucro_liquido3'])
+            empresa.val_luc_liq_atual = datacot['val_lucro_liquido']
+            empresa.val_roe = datacot['val_roe']#round((empresa.val_luc_liq_atual / empresa.val_patr_liq) * 100,2)
+            empresa.val_ebit_liq_12mes = datacot['val_ebitda']
+            empresa.val_tot_debito = datacot['val_tot_debito']
+            empresa.val_lucro_bruto = datacot['val_lucro_bruto']
+            empresa.val_fluxo_cx_operacional = datacot['val_fluxo_cx_operacional']
+            empresa.val_fluxo_cx_livre_alavanc = datacot['val_fluxo_cx_livre_alavanc']
+            empresa.val_p_l = datacot['val_p_l']
+            empresa.val_p_vp = datacot['val_p_vpa']
+            empresa.val_p_ebit = datacot['val_p_ebit']
+            empresa.val_rec_acao = datacot['val_rec_acao']
+            empresa.val_mrg_lucro = datacot['val_mrg_lucro']
+            empresa.perc_tx_pagto_divi = datacot['perc_tx_pagto_divi']
+            empresa.ex_date_dividend = datacot['ex_date_dividend']
+            empresa.val_empresa_val_ebit = datacot['val_empresa_val_ebit']
+            empresa.dt_ult_cotacao = datacot['dt_cotacao']
+            empresa.val_patrimonio_passado = datacot['val_patrimonio_passado']
+            empresa.avgvolume = datacot['avg_volume']
+            empresa.ativa = 'S'
+            if datacot['desc_empresa'] != None:
+                json_transale = translate(datacot['desc_empresa'],'en','pt')
+                empresa.desc_empresa = json_transale['traducao']
+
+            db.session.commit()
+            return True
+    except Exception as e:
+        print("Erro update_dados_empresa empresa:{}. Error: {}".format(empresa.papel,str(e)))
+        print(datacot)
+    return False
+
 def get_update_dividendos_by_papel(papel, dt_ini, dt_fim, acao):
     # Ajusta ticker (adiciona .SA)
     ticker = papel if papel.endswith(".SA") else f"{papel}.SA"
@@ -1046,59 +1100,6 @@ def update_data_papel_with_yfinance(dtini, dtfim):
 
     return jsonify({'atualizado': True})
 
-# ATUALIZA DADOS ATUAIS DIARIO DE UMA DETERMINADA EMPRESA
-def update_dados_empresa(datacot):
-    try:
-        empresa = EmpresaBolsa.query.get(datacot['idpapel'])
-        if empresa:
-            jsonTotalDiv12 = get_valor_total_diviendos_12ult_meses(datacot['idpapel'])
-
-            empresa.perc_divyield = jsonTotalDiv12['perc_div_yield']
-            empresa.val_divyield = jsonTotalDiv12['valor_div_yield']
-            empresa.val_lpa = datacot['val_lpa']
-            empresa.val_vpa = datacot['val_vpa']
-            empresa.val_firma = datacot['val_empresa']
-            empresa.val_empresa = datacot['val_empresa']
-            empresa.val_mercado = datacot['val_mercado']
-            empresa.val_cotacao = datacot['val_atual']
-            empresa.val_cotacao_anterior = datacot['val_anterior_close'] if datacot['val_anterior_close'] != None else 0
-            empresa.val_dif_cotacao = empresa.val_cotacao - empresa.val_cotacao_anterior
-            empresa.perc_dif_cotacao = 0 if empresa.val_cotacao_anterior == 0 else ((empresa.val_cotacao * 100) / empresa.val_cotacao_anterior) - 100
-            empresa.perc_dif_cotacao = 0 if empresa.perc_dif_cotacao == None else empresa.perc_dif_cotacao
-            empresa.dt_ult_cotacao = datacot['dt_cotacao']
-            empresa.val_patr_liq = datacot['val_patr_liquido']
-            empresa.num_acoes = datacot['num_tot_acoes']
-            empresa.val_luc_liq_12mes = validar_valor_decimal(datacot['val_lucro_liquido12'])
-            empresa.val_luc_liq_3mes = validar_valor_decimal(datacot['val_lucro_liquido3'])
-            empresa.val_luc_liq_atual = datacot['val_lucro_liquido']
-            empresa.val_roe = datacot['val_roe']#round((empresa.val_luc_liq_atual / empresa.val_patr_liq) * 100,2)
-            empresa.val_ebit_liq_12mes = datacot['val_ebitda']
-            empresa.val_tot_debito = datacot['val_tot_debito']
-            empresa.val_lucro_bruto = datacot['val_lucro_bruto']
-            empresa.val_fluxo_cx_operacional = datacot['val_fluxo_cx_operacional']
-            empresa.val_fluxo_cx_livre_alavanc = datacot['val_fluxo_cx_livre_alavanc']
-            empresa.val_p_l = datacot['val_p_l']
-            empresa.val_p_vp = datacot['val_p_vpa']
-            empresa.val_p_ebit = datacot['val_p_ebit']
-            empresa.val_rec_acao = datacot['val_rec_acao']
-            empresa.val_mrg_lucro = datacot['val_mrg_lucro']
-            empresa.perc_tx_pagto_divi = datacot['perc_tx_pagto_divi']
-            empresa.ex_date_dividend = datacot['ex_date_dividend']
-            empresa.val_empresa_val_ebit = datacot['val_empresa_val_ebit']
-            empresa.dt_ult_cotacao = datacot['dt_cotacao']
-            empresa.val_patrimonio_passado = datacot['val_patrimonio_passado']
-            empresa.avgvolume = datacot['avg_volume']
-            empresa.ativa = 'S'
-            if datacot['desc_empresa'] != None:
-                json_transale = translate(datacot['desc_empresa'],'en','pt')
-                empresa.desc_empresa = json_transale['traducao']
-
-            db.session.commit()
-            return True
-    except Exception as e:
-        print("Erro update_dados_empresa empresa:{}. Error: {}".format(empresa.papel,str(e)))
-        print(datacot)
-    return False
 
 def up_history_cotacoes(df_cotacoes, idpapel):
     array_datas = df_cotacoes.axes[0]
@@ -1130,6 +1131,18 @@ def up_history_cotacoes(df_cotacoes, idpapel):
         msgErro = 'Erro ao gravar a(s) data(s):' + msgErro[0:len(msgErro)-2]
         msg = 'Erro'
     return {'result': result, 'msgErro': msgErro, 'msg': msg}
+
+
+def update_empresa_by_graham(idpapel,empresa):
+    ticker = empresa if empresa.endswith(".SA") else f"{empresa}.SA"
+
+    # Busca ticker com proteção
+    tk = safe_yf_ticker(ticker)
+    print(tk.info)
+    preco = tk.history(period='1d')['Close'].iloc[-1] if tk is not None else 0
+    print('Preço:{}'.format(preco))
+
+    print('Atualizar valores metodo graham. Empresa:{} - {}'.format(str(idpapel),empresa))
 
 def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
 

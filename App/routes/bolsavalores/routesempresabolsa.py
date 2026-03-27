@@ -53,6 +53,12 @@ def update_by_papel(idpapel,papel,dt_ini,dt_fim):
                                                                  papel,
                                                                  dt_ini,
                                                                  dt_fim))
+
+@routesempresabolsa.route('/update/papel/graham/<idpapel>/<papel>')
+def update_empresa_by_graham(idpapel,papel):
+    return jsonify(empresa_bolsa_safe.update_empresa_by_graham(idpapel,
+                                                                 papel))
+
 @routesempresabolsa.route('/update/papel/bolsa/info/<idpapel>/<papel>')
 def get_update_info_yfinance_by_papel(idpapel,papel):
     return jsonify(empresa_bolsa_safe.get_update_info_yfinance_by_papel(idpapel,papel))
