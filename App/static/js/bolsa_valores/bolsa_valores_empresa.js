@@ -107,7 +107,8 @@ async function update_cotacao_geral(btn){
 }
 
 // BOTAO DE ATUALIZAR VALORES DE ACORDO COM A DATA ESPECIFICADA, BUSCA DADOS YAHOO FINANCE
-async function click_btn_update_empresas(btn){
+async function click_btn_update_empresas(btn,graham=false){
+
     updateEmpresa = true;
     btn.disabled = true;
     lbltot.classList.remove('d-none');
@@ -118,8 +119,13 @@ async function click_btn_update_empresas(btn){
     let contador = 0;
     var data = [];
     tabempresas.data.forEach( async (empresa) => {
-
-        url = '/update/papel/bolsa/valores/'+empresa.id+'/'+empresa.papel+'/'+dtini+'/'+dtfim;
+        if (graham == false) {
+            url = '/update/papel/bolsa/valores/'+empresa.id+'/'+empresa.papel+'/'+dtini+'/'+dtfim;
+        }
+        else {
+            url = '/update/papel/graham/'+empresa.id+'/'+empresa.papel;
+            console.log(url);
+        }
         let tdemp = 'tdempresa_'+empresa.id;
         document.getElementById(tdemp).innerHTML = '<div class="spinner-border text-warning mr-1" role="status">'+
                         '<span class="sr-only">Loading...</span></div>Atualizando '+empresa.papel;
