@@ -317,10 +317,10 @@ function view_grafic_prices_cotacao_month(papel,data){
     array_prices_month[0] = ['Data','Valor',{ role: "style" }];
     i = 1;
     if (data.total > 0){
-        
         data.data.forEach((pricescot) => {
-            mes = month_extenso[parseInt(pricescot[0].substr(0,2))-1];
-            array_prices_month[i] =[mes,pricescot[1],'#d39e00'];
+            
+            let mes = month_extenso[parseInt(pricescot.mes.substr(0,2))-1];
+            array_prices_month[i] =[mes,parseFloat(pricescot.valor),'#d39e00'];
             i+=1;
         });
         google.charts.load('current', {'packages':['corechart']});

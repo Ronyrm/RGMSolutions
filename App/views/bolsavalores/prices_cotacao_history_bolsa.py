@@ -66,12 +66,12 @@ def get_prices_cotacao_by_papel_dates_mensal(papel,dtini,dtfim):
         group_by(func.date_format(CotacaoPricesHistory.dt_cotacao, '%m/%Y')). \
         order_by(CotacaoPricesHistory.dt_cotacao).all()
     
-    print(prices)
+    
     tbjson = ''
     # for row in prices:
     try:
-        prices = json.dumps(prices, cls=CustomJSONEncoder)
-        prices = json.loads(prices)
+        prices = [{'mes': mes, 'valor': valor} for mes, valor in prices]
+        print(prices)
         return {'data':prices,'result':True,'total':len(prices),'error':''}
     except Exception as e:
         return {'data':{},'error':str(e),'result':False,'total':0}

@@ -1087,6 +1087,7 @@ def update_dados_empresa(datacot):
             empresa.val_empresa_val_ebit = datacot['val_empresa_val_ebit']
             empresa.dt_ult_cotacao = datacot['dt_cotacao']
             empresa.val_patrimonio_passado = datacot['val_patrimonio_passado']
+            empresa.avgvolume = datacot['avg_volume']
             empresa.ativa = 'S'
             if datacot['desc_empresa'] != None:
                 json_transale = translate(datacot['desc_empresa'],'en','pt')
@@ -1230,6 +1231,7 @@ def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
                 'val_patrimonio_passado': val_patrimonio_passado,
                 'dt_cotacao': dt_cotacao,
                 'idpapel': idpapel,
+                'avg_volume': dfinfo.get('averageVolume'),
                 'val_compra': dfinfo.get('bid'),
                 'val_venda': dfinfo.get('ask'),
                 'val_anterior_close': dfinfo.get('previousClose'),
@@ -1484,6 +1486,7 @@ def get_update_info_yfinance_by_papel(idpapel, papel):
                 'val_patrimonio_passado': val_patrimonio_passado,
                 'dt_cotacao': dt_cotacao,
                 'idpapel': idpapel,
+                'avg_volume': dfinfo.get('averageVolume'),
                 'val_compra': dfinfo.get('bid'),
                 'val_venda': dfinfo.get('ask'),
                 'val_anterior_close': dfinfo.get('previousClose'),
