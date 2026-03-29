@@ -1,5 +1,4 @@
 from flask import Blueprint,jsonify,request,render_template
-from App.views.bolsavalores import empresa_bolsa
 from App.views.bolsavalores import empresa_bolsa_safe
 
 from App.funcs.funcs import format_date_yyyymmaa

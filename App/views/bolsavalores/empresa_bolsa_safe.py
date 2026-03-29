@@ -1134,15 +1134,89 @@ def up_history_cotacoes(df_cotacoes, idpapel):
 
 
 def update_empresa_by_graham(idpapel,empresa):
+    from collections import defaultdict
     ticker = empresa if empresa.endswith(".SA") else f"{empresa}.SA"
 
     # Busca ticker com proteção
     tk = safe_yf_ticker(ticker)
-    print(tk.info)
-    preco = tk.history(period='1d')['Close'].iloc[-1] if tk is not None else 0
-    print('Preço:{}'.format(preco))
+    
+    hist      = tk.history(period="5y")
+    financials = tk.financials
+    balance   = tk.balance_sheet
 
-    print('Atualizar valores metodo graham. Empresa:{} - {}'.format(str(idpapel),empresa))
+    lucros = 0 
+    if "Net Income" in financials.index:
+        lucros = financials.loc["Net Income"].dropna()
+    else:
+        lucros = financials.iloc[0].dropna()
+
+    lucroliquido = lucros.iloc[0]
+     
+    patrimonioliquido = 0
+    
+    for linha in balance.index:
+        if "Equity" in linha:
+            patrimonioliquido = balance.loc[linha].iloc[0]
+            break
+
+    numacoes = tk.info.get("sharesOutstanding", 0)
+
+    lpa_list = (lucros / numacoes).dropna()
+    lpa_5y   = lpa_list.head(5)
+    lpamedio = lpa_5y.mean()
+    vpa = patrimonioliquido / numacoes
+    preco_graham = numpy.sqrt(22.5 * lpamedio * vpa)
+    
+    preco_medio = hist["Close"].mean()
+
+    eps = tk.info["trailingEps"]
+
+    pl= preco_medio / eps
+
+    preco = tk.history(period='1d')['Close'].iloc[-1] if tk is not None else 0
+    
+    dividendoyield = tk.info.get('dividendYield')
+    if dividendoyield != None:
+        dividendoyield = dividendoyield * 100
+    
+    dividends5y = tk.dividends.tail(5)
+    dividends5y = [{"data":str(date.date()),"valor": float(value)} for date,value in dividends5y.items()]
+
+
+    # Dividendos últimos 10 anos
+    dividends = tk.dividends
+    dividends = dividends[dividends.index.year >= 2014]  # filtra últimos 10 anos
+
+    div_per_year = defaultdict(float)
+    for date, value in dividends.items():
+        year = str(date.year)
+        div_per_year[year] += value
+
+    yield_per_year = {}
+    for year, total_div in div_per_year.items():
+        hist = tk.history(start=f"{year}-01-01", end=f"{year}-12-31")
+        if not hist.empty:
+            avg_price = hist['Close'].mean()
+            yield_per_year[year] = round((total_div / avg_price) * 100, 2)
+        else:
+            yield_per_year[year] = None
+
+    print(json.dumps(yield_per_year, indent=4))
+    jsonReturn = {
+        "precoatual": preco,
+        "precomedio": preco_medio,
+        "precograham": preco_graham,
+        "vpa": vpa,
+        "pl":pl,
+        "lpamedio":lpamedio,
+        "patrimonioliquido": patrimonioliquido,
+        "lucroliquido":lucroliquido,
+        "numacoes":numacoes,
+        "divindos5y":dividends5y,
+        "dividend_yield_json":yield_per_year
+    }
+
+    return {"data": jsonReturn,"sucesso": True}
 
 def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
 
