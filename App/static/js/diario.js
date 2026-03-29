@@ -767,6 +767,6 @@ function gerarpdf(){
     win.document.write(bodypdf);                          // O CONTEUDO DA TABELA DENTRO DA TAG BODY
     win.document.write('</body></html>');
     win.document.close(); 	                                         // FECHA A JANELA
-    win.print();
+    //win.print();
 
 }

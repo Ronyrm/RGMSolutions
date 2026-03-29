@@ -493,8 +493,6 @@ function change_chkpvpa(check){
 }
 function change_chkroe(check){
     div_ROE = document.getElementById('div-val-roe');
-    print('tOaQUI');
-    print(div_ROE);
     div_ROE.classList.add('d-none');
     if(check.checked){
         div_ROE.classList.remove('d-none');

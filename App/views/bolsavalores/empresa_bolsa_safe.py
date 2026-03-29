@@ -1201,7 +1201,30 @@ def update_empresa_by_graham(idpapel,empresa):
         else:
             yield_per_year[year] = None
 
-    print(json.dumps(yield_per_year, indent=4))
+
+    # somar dividendos por ano
+    hist = tk.history(period="max")
+    div_por_ano = defaultdict(float)
+
+    for data, valor in dividends.items():
+        ano = data.year
+        div_por_ano[ano] += valor
+
+    dy_por_ano = {}
+
+    for ano, total_div in div_por_ano.items():
+
+        hist_ano = hist.loc[str(ano)]
+
+        if not hist_ano.empty:
+            preco_medio = hist_ano["Close"].mean()
+
+            dy = (total_div / preco_medio) * 100
+
+            dy_por_ano[ano] = round(dy,2)
+
+
+    #print(json.dumps(yield_per_year, indent=4))
     jsonReturn = {
         "precoatual": preco,
         "precomedio": preco_medio,
@@ -1213,7 +1236,8 @@ def update_empresa_by_graham(idpapel,empresa):
         "lucroliquido":lucroliquido,
         "numacoes":numacoes,
         "divindos5y":dividends5y,
-        "dividend_yield_json":yield_per_year
+        "dividend_yield_json":yield_per_year,
+        "dy_por_ano": dy_por_ano
     }
 
     return {"data": jsonReturn,"sucesso": True}
