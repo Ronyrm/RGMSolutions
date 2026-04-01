@@ -7,7 +7,6 @@
 """
 LPA = val_ primeiro encontra o LPA(lucro por ação): é o Lucro liquido divido pela numeros de acoes totais
 """
-
 import datetime
 import json
 from datetime import timedelta,date
@@ -891,7 +890,11 @@ def update_dados_empresa(datacot):
             empresa.val_patr_liq = datacot['val_patr_liquido']
             empresa.num_acoes = datacot['num_tot_acoes']
             empresa.val_luc_liq_12mes = validar_valor_decimal(datacot['val_lucro_liquido12'])
-            empresa.val_luc_liq_3mes = validar_valor_decimal(datacot['val_lucro_liquido3'])
+            try :
+                empresa.val_luc_liq_3mes = validar_valor_decimal(datacot['val_lucro_liquido3'])
+            except:
+                pass
+
             empresa.val_luc_liq_atual = datacot['val_lucro_liquido']
             empresa.val_roe = datacot['val_roe']#round((empresa.val_luc_liq_atual / empresa.val_patr_liq) * 100,2)
             empresa.val_ebit_liq_12mes = datacot['val_ebitda']
@@ -910,10 +913,20 @@ def update_dados_empresa(datacot):
             empresa.dt_ult_cotacao = datacot['dt_cotacao']
             empresa.val_patrimonio_passado = datacot['val_patrimonio_passado']
             empresa.avgvolume = datacot['avg_volume']
+            empresa.precoatual = datacot['precoatual']
+            empresa.precomedio = datacot['precomedio']
+            empresa.precograham = datacot['precograham']
+            empresa.lpamedio = datacot['lpamedio']
+            empresa.val_compra = datacot['val_compra'] 
+            empresa.val_venda = datacot['val_venda'] 
+
             empresa.ativa = 'S'
-            if datacot['desc_empresa'] != None:
-                json_transale = translate(datacot['desc_empresa'],'en','pt')
-                empresa.desc_empresa = json_transale['traducao']
+            try:
+                if datacot['desc_empresa'] != None:
+                    json_transale = translate(datacot['desc_empresa'],'en','pt')
+                    empresa.desc_empresa = json_transale['traducao']
+            except:
+                pass
 
             db.session.commit()
             return True
@@ -1133,56 +1146,71 @@ def up_history_cotacoes(df_cotacoes, idpapel):
     return {'result': result, 'msgErro': msgErro, 'msg': msg}
 
 
-def update_empresa_by_graham(idpapel,empresa):
-    from collections import defaultdict
-    ticker = empresa if empresa.endswith(".SA") else f"{empresa}.SA"
+def update_empresa_by_graham(idpapel,papel):
+    try: 
+        from collections import defaultdict
+        ticker = papel if papel.endswith(".SA") else f"{papel}.SA"
 
-    # Busca ticker com proteção
-    tk = safe_yf_ticker(ticker)
+        # Busca ticker com proteção
+        tk = safe_yf_ticker(ticker)
+        
+        hist      = tk.history(period="5y")
+        financials = tk.financials
+        balance   = tk.balance_sheet
+
+
+        lucros = 0 
+        if "Net Income" in financials.index:
+            lucros = financials.loc["Net Income"].dropna()
+        else:
+            lucros = financials.iloc[0].dropna()
+
+        lucroliquido = lucros.iloc[0]
+        
+        patrimonioliquido = 0
+        
+        for linha in balance.index:
+            if "Equity" in linha:
+                patrimonioliquido = balance.loc[linha].iloc[0]
+                break
+
+        numacoes = tk.info.get("sharesOutstanding", 0)
+
+        lpa_list = (lucros / numacoes).dropna()
+        lpa_5y   = lpa_list.head(5)
+        lpamedio = lpa_5y.mean()
+        lpamedio = round(lpamedio,3)
+        
+        vpa = patrimonioliquido / numacoes
+        vpa = round(vpa,3)
+
+        preco_graham = 0  
+        try: 
+            preco_graham = numpy.sqrt(22.5 * lpamedio * vpa)
+            print('Lpa Médio: {}, Vpa:{}, Preço Graham:{}'.format(lpamedio,vpa,preco_graham))
+            preco_graham = validar_valor_decimal(preco_graham)
+        except Exception as e:
+            return { 'data':{}, 'erro': True, 'msg': str(e),'empresa':papel} 
+        
+        preco_medio = hist["Close"].mean()
+
+        eps = tk.info["trailingEps"]
+        
+        pl= preco_medio / eps
+
+        preco = tk.history(period='1d')['Close'].iloc[-1] if tk is not None else 0
+        
+        dividendyield = tk.info.get('dividendYield')
+    except Exception as e:
+        return { 'data':{}, 'erro': True, 'msg': str(e)} 
     
-    hist      = tk.history(period="5y")
-    financials = tk.financials
-    balance   = tk.balance_sheet
-
-    lucros = 0 
-    if "Net Income" in financials.index:
-        lucros = financials.loc["Net Income"].dropna()
-    else:
-        lucros = financials.iloc[0].dropna()
-
-    lucroliquido = lucros.iloc[0]
-     
-    patrimonioliquido = 0
     
-    for linha in balance.index:
-        if "Equity" in linha:
-            patrimonioliquido = balance.loc[linha].iloc[0]
-            break
-
-    numacoes = tk.info.get("sharesOutstanding", 0)
-
-    lpa_list = (lucros / numacoes).dropna()
-    lpa_5y   = lpa_list.head(5)
-    lpamedio = lpa_5y.mean()
-    vpa = patrimonioliquido / numacoes
-    preco_graham = numpy.sqrt(22.5 * lpamedio * vpa)
     
-    preco_medio = hist["Close"].mean()
-
-    eps = tk.info["trailingEps"]
-
-    pl= preco_medio / eps
-
-    preco = tk.history(period='1d')['Close'].iloc[-1] if tk is not None else 0
-    
-    dividendoyield = tk.info.get('dividendYield')
-    if dividendoyield != None:
-        dividendoyield = dividendoyield * 100
-    
+    """    
     dividends5y = tk.dividends.tail(5)
     dividends5y = [{"data":str(date.date()),"valor": float(value)} for date,value in dividends5y.items()]
 
-
+    
     # Dividendos últimos 10 anos
     dividends = tk.dividends
     dividends = dividends[dividends.index.year >= 2014]  # filtra últimos 10 anos
@@ -1223,6 +1251,7 @@ def update_empresa_by_graham(idpapel,empresa):
 
             dy_por_ano[ano] = round(dy,2)
 
+    """
 
     #print(json.dumps(yield_per_year, indent=4))
     jsonReturn = {
@@ -1235,12 +1264,94 @@ def update_empresa_by_graham(idpapel,empresa):
         "patrimonioliquido": patrimonioliquido,
         "lucroliquido":lucroliquido,
         "numacoes":numacoes,
-        "divindos5y":dividends5y,
-        "dividend_yield_json":yield_per_year,
-        "dy_por_ano": dy_por_ano
+        "dividendyield": dividendyield
+    }
+    #"divindos5y":dividends5y,
+    #"dividend_yield_json":yield_per_year,
+    #"dy_por_ano": dy_por_ano
+
+    lpavpa = get_lpa_vpa_fundamentus(idpapel)
+    
+            
+    valRoe = tk.info.get('returnOnEquity') 
+
+    if valRoe != None:
+        valRoe = round(valRoe * 100,2)
+    else:
+        if tk.info.get('netIncomeToCommon') == None or numacoes == None or tk.info.get('bookValue') == None :
+            valRoe = 0
+        else:
+            valRoe = (((tk.info.get('netIncomeToCommon') / numacoes) * 
+                        tk.info.get('bookValue') ) * 100)
+            
+    dt_cotacao = None
+    if tk.info.get('regularMarketTime'):
+        dt_cotacao = date.fromtimestamp(tk.info.get('regularMarketTime')).strftime('%Y-%m-%d %H:%M:%S')
+
+    # Ou previous close time (se mercado fechado)
+    elif tk.info.get('regularMarketPreviousClose'):
+        dt_cotacao = date.fromtimestamp(tk.info.get('previousCloseTime')).strftime('%Y-%m-%d %H:%M:%S')
+            
+    datacot = {
+        'val_lucro_liquido12': None if lucroliquido == None else round(lucroliquido,3),
+        'val_patrimonio_passado': None if patrimonioliquido == None else round(patrimonioliquido,3),
+        'dt_cotacao': dt_cotacao,
+        'idpapel': idpapel,
+        'avg_volume': None if tk.info.get('averageVolume') == None else round(tk.info.get('averageVolume'),3),
+        'val_compra': None if tk.info.get('bid') == None else round(tk.info.get('bid'),3),
+        'val_venda': None if tk.info.get('ask') == None else round(tk.info.get('ask'),3),
+        'val_anterior_close': None if tk.info.get('previousClose') == None else  round(tk.info.get('previousClose'),3),
+        'val_atual': None if tk.info.get('currentPrice') == None else round(tk.info.get('currentPrice'),3),
+        'val_max_day': None if tk.info.get('dayHigh') == None else round(tk.info.get('dayHigh'),3),
+        'val_min_day': None if tk.info.get('dayLow') == None else round(tk.info.get('dayLow'),3),
+        'val_tot_receita' : None if tk.info.get('totalRevenue') == None else round(tk.info.get('totalRevenue'),3),
+        'val_vpa' : round(lpavpa['vpa'],3),
+        'val_lucro_liquido' : None if tk.info.get('netIncomeToCommon') == None else round(tk.info.get('netIncomeToCommon'),3),
+        'val_fluxo_cx' : None if tk.info.get('totalCash') == None else  round(tk.info.get('totalCash'),3),
+        'val_empresa' : None if tk.info.get('enterpriseValue') == None else round(tk.info.get('enterpriseValue'),3),
+        'val_mercado' : None if tk.info.get('marketCap') == None else round(tk.info.get('marketCap'),3),
+        'num_tot_acoes' : numacoes,
+        'val_ebitda' : None if tk.info.get('ebitda') == None else round(tk.info.get('ebitda'),3),
+        'val_tot_debito' : None if tk.info.get('totalDebt') == None else round(tk.info.get('totalDebt'),3),
+        'val_lucro_bruto' : None if tk.info.get('grossProfits') == None else round(tk.info.get('grossProfits'),3),
+        'val_fluxo_cx_operacional' : None if tk.info.get('operatingCashflow') == None else round(tk.info.get('operatingCashflow'),3),
+        'val_fluxo_cx_livre_alavanc' : None if tk.info.get('freeCashflow') == None else round(tk.info.get('freeCashflow'),3),
+        'val_patr_liquido' : None if patrimonioliquido == None else round(patrimonioliquido,3),
+        'val_lpa' : round(lpavpa['lpa'],3),#dfinfo.get('trailingEps'),
+        'val_p_l' : round(tk.info.get('forwardPE') if tk.info.get('forwardPE') != None else (tk.info.get('currentPrice') / (tk.info.get('netIncomeToCommon') / numacoes)),3),
+        'val_p_vpa': round(tk.info.get('priceToBook') if tk.info.get('priceToBook') !=  None else  tk.info.get('currentPrice') / tk.info.get('bookValue'),3),
+        'val_p_ebit' : None if tk.info.get('ebitda') == None or
+                               tk.info.get('currentPrice') == None or numacoes == None
+                            else (round(tk.info.get('currentPrice') / tk.info.get('ebitda') / numacoes,3)),
+        'val_rec_acao' : None if tk.info.get('totalRevenue') == None or
+                                 numacoes == None
+                              else round(tk.info.get('totalRevenue') / numacoes,3),
+        'val_roe': round(valRoe,3),
+        'val_mrg_lucro' :  None if tk.info.get('netIncomeToCommon') == None or
+                                   tk.info.get('totalRevenue') == None
+                                else round((tk.info.get('netIncomeToCommon') / tk.info.get('totalRevenue')) * 100,3),
+        'perc_tx_pagto_divi' : None if tk.info.get('payoutRatio') == None else round(tk.info.get('payoutRatio') * 100,2),
+        'ex_date_dividend': None if tk.info.get('exDividendDate') == None else  (datetime.datetime.fromtimestamp(int(tk.info.get('exDividendDate'))) + timedelta(days=1)).strftime('%Y-%m-%d'),
+        'val_empresa_val_ebit': None if tk.info.get('enterpriseToEbitda') == None else  round(tk.info.get('enterpriseToEbitda'),3),
+        'val_empresa_val_rec': None if tk.info.get('enterpriseToRevenue') == None else round(tk.info.get('enterpriseToRevenue'),3),
+        'val_tx_dividendo': None if tk.info.get('dividendRate') == None else round(tk.info.get('dividendRate'),3),
+        'perc_dividendo_yield': None if tk.info.get('dividendYield') == None 
+                                     else round((tk.info.get('dividendYield') * 100),2),
+        'precoatual' : round(preco,3),
+        'precomedio' : round(preco_medio,3),
+        'precograham': round(preco_graham,3),
+        'lpamedio'   : round(lpamedio,3)
+    
     }
 
-    return {"data": jsonReturn,"sucesso": True}
+    sucesso = update_dados_empresa(datacot)
+    if sucesso:
+        empresa =get_empresabolsa_by_papel(papel)
+        schema = SchemaEmpresaBolsa()
+        return {'data': schema.dump(empresa, many=True)}
+
+    return {"data": jsonReturn,"sucesso": sucesso}
+    
 
 def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
 
@@ -1392,6 +1503,7 @@ def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
                     (dfinfo.get('dividendYield') * 100),1)
             }
             upt_empresa = update_dados_empresa(datacot)
+            print('Atualizar cotacao empresa')
             addcotacao = add_cotacao(datacot)
         except Exception as e:
             print("Erro cotacao_now:", e)
@@ -1456,9 +1568,7 @@ def update_data_papel_with_yfinance_by_papel(idpapel, papel, dtini, dtfim):
                 dividendos = yftk.dividends
             except:
                 dividendos = None
-                
-            print('Estou aqui e aqui é os divicendos')
-
+               
             if dividendos is not None and len(dividendos) > 0:
                 dividendos = dividendos.loc[dtini:dtfim]
                 if len(dividendos) > 0:

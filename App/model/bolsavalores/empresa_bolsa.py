@@ -96,7 +96,13 @@ class EmpresaBolsa(db.Model):
     idsubsetor = db.Column(db.Integer, db.ForeignKey('sub_setores_bolsa.id'))
     subsetor = db.relationship("SubSetorBolsa")
     avgvolume = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
-
+    precoatual = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
+    precomedio = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
+    precograham = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
+    lpamedio = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
+    val_compra =  db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
+    val_venda =  db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3)) 
+        
 
 
 

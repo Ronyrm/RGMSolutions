@@ -31,15 +31,14 @@ def create_app():
     # Conexão bruta opcional
     engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 
+
     # Importa models
-    from App.model.atleta import Atleta
-    
     # Registra blueprints
     register_blueprints(app)
 
     # Cria tabelas caso não existam
-    with app.app_context():
-        db.create_all()
+    #with app.app_context():
+    #    db.create_all()
 
         # Atualiza triggers
         #from App.funcs.migrate_sql import migrate_trigger

@@ -1,3 +1,4 @@
+
 from flask import Blueprint,jsonify,request,render_template
 from App.views.bolsavalores import empresa_bolsa_safe
 
