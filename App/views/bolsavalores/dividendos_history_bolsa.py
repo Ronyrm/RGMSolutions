@@ -5,7 +5,7 @@ from App.model.bolsavalores.dividendos_history_bolsa import DividendosBolsa,Sche
 from App.model.bolsavalores.empresa_bolsa import EmpresaBolsa
 from App import db
 from sqlalchemy.sql import and_,or_,func
-from sqlalchemy import cast,FLOAT
+from sqlalchemy import cast,FLOAT,extract
 from flask import request
 import pandas as pd
 from datetime import datetime,timedelta
@@ -116,6 +116,22 @@ def add_dividendos(data):
         return False
 
 
+def get_valor_total_diviendos_Ano(idpapel,papel,ano):
+    if idpapel == None:
+        empresa = EmpresaBolsa.papel == papel
+        idpapel = empresa.id 
+    print('idpapel: {}, papel: {}, ano: {}'.format(idpapel,papel,ano))
+    
+    regtotal = db.session.query(
+        cast(func.round((func.sum(DividendosBolsa.valor) * 100) / EmpresaBolsa.val_cotacao,2),FLOAT),
+        func.sum(DividendosBolsa.valor)).\
+        join(EmpresaBolsa,DividendosBolsa.idpapel==EmpresaBolsa.id).\
+        filter(and_(DividendosBolsa.idpapel == idpapel,extract('year', DividendosBolsa.dt_pagto) == ano))
+    
+    regtotal = regtotal.all()
+    if regtotal:
+        return {'perc_div_yield':regtotal[0][0],'valor_div_yield':regtotal[0][1]}
+    
 def get_valor_total_diviendos_12ult_meses(papel):
     filterpapel = DividendosBolsa.idpapel == papel
     try:

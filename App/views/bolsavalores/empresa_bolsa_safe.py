@@ -28,6 +28,7 @@ from App.views.bolsavalores.dividendos_history_bolsa import (
     get_all_dividendos_by_idpapel,
     get_dividendos_by_idpapel_and_intervaldate,
     get_valor_total_diviendos_12ult_meses,
+    get_valor_total_diviendos_Ano
 )
 from App.views.bolsavalores.cotacoes_bolsa import add_cotacao
 from App.views.bolsavalores.prices_cotacao_history_bolsa import add_price_cotacao
@@ -868,7 +869,7 @@ def capture_info_empresa(name):
 # -----------------------------------------------------------
 
 # ATUALIZA DADOS ATUAIS DIARIO DE UMA DETERMINADA EMPRESA
-def update_dados_empresa(datacot):
+def update_dados_empresa(datacot,modoGraham = False):
     try:
         empresa = EmpresaBolsa.query.get(datacot['idpapel'])
         if empresa:
@@ -913,12 +914,19 @@ def update_dados_empresa(datacot):
             empresa.dt_ult_cotacao = datacot['dt_cotacao']
             empresa.val_patrimonio_passado = datacot['val_patrimonio_passado']
             empresa.avgvolume = datacot['avg_volume']
-            empresa.precoatual = datacot['precoatual']
-            empresa.precomedio = datacot['precomedio']
-            empresa.precograham = datacot['precograham']
-            empresa.lpamedio = datacot['lpamedio']
-            empresa.val_compra = datacot['val_compra'] 
-            empresa.val_venda = datacot['val_venda'] 
+            if modoGraham:
+                empresa.precoatual = datacot['precoatual']
+                empresa.precomedio = datacot['precomedio']
+                empresa.precograham = datacot['precograham']
+                empresa.lpamedio = datacot['lpamedio']
+                empresa.val_compra = datacot['val_compra'] 
+                empresa.val_venda = datacot['val_venda'] 
+                empresa.val_divyeild_12ult_meses = datacot['val_divyeild_12ult_meses'] 
+                empresa.perc_divyeild_12ult_meses = datacot['perc_divyeild_12ult_meses']
+                empresa.val_divyeild_ultAno = datacot['val_divyeild_ultAno']
+                empresa.perc_divyeild_ultAno = datacot['perc_divyeild_ultAno']
+                empresa.precobazin = datacot['precobazin']
+                
 
             empresa.ativa = 'S'
             try:
@@ -1175,6 +1183,13 @@ def update_empresa_by_graham(idpapel,papel):
                 break
 
         numacoes = tk.info.get("sharesOutstanding", 0)
+        if numacoes == 0:
+            try:
+                numacoes = 0 if tk.info.get('netIncomeToCommon') == None or tk.info.get('trailingEps') == None \
+                            else int(tk.info.get('netIncomeToCommon') / tk.info.get('trailingEps'))
+            except:
+                numacoes = 0
+            
 
         lpa_list = (lucros / numacoes).dropna()
         lpa_5y   = lpa_list.head(5)
@@ -1201,6 +1216,22 @@ def update_empresa_by_graham(idpapel,papel):
         preco = tk.history(period='1d')['Close'].iloc[-1] if tk is not None else 0
         
         dividendyield = tk.info.get('dividendYield')
+
+        divult12meses = get_valor_total_diviendos_12ult_meses(idpapel)
+        divultAnoAnt  = get_valor_total_diviendos_Ano(idpapel,papel,date.today().year-1)
+        
+        
+        val_divyeild_12ult_meses  = divult12meses['valor_div_yield'] if divult12meses else None
+        perc_divyeild_12ult_meses = divult12meses['perc_div_yield']  if divult12meses else None
+        
+        val_divyeild_ultAno  = divultAnoAnt['valor_div_yield'] if divultAnoAnt else None
+        perc_divyeild_ultAno = divultAnoAnt['perc_div_yield']  if divultAnoAnt else None
+        
+        
+        precobazin = val_divyeild_12ult_meses / 0.08
+
+        print('Valores_Div_12:{}|{}, Valores_Div_Ano:{}|{}, Preço Bazin: {}'.format(val_divyeild_12ult_meses, perc_divyeild_12ult_meses, val_divyeild_ultAno, perc_divyeild_ultAno, precobazin))
+
     except Exception as e:
         return { 'data':{}, 'erro': True, 'msg': str(e)} 
     
@@ -1321,10 +1352,9 @@ def update_empresa_by_graham(idpapel,papel):
         'val_p_l' : round(tk.info.get('forwardPE') if tk.info.get('forwardPE') != None else (tk.info.get('currentPrice') / (tk.info.get('netIncomeToCommon') / numacoes)),3),
         'val_p_vpa': round(tk.info.get('priceToBook') if tk.info.get('priceToBook') !=  None else  tk.info.get('currentPrice') / tk.info.get('bookValue'),3),
         'val_p_ebit' : None if tk.info.get('ebitda') == None or
-                               tk.info.get('currentPrice') == None or numacoes == None
+                               tk.info.get('currentPrice') == None or numacoes <= 0
                             else (round(tk.info.get('currentPrice') / tk.info.get('ebitda') / numacoes,3)),
-        'val_rec_acao' : None if tk.info.get('totalRevenue') == None or
-                                 numacoes == None
+        'val_rec_acao' : None if tk.info.get('totalRevenue') == None or numacoes <= 0
                               else round(tk.info.get('totalRevenue') / numacoes,3),
         'val_roe': round(valRoe,3),
         'val_mrg_lucro' :  None if tk.info.get('netIncomeToCommon') == None or
@@ -1340,11 +1370,15 @@ def update_empresa_by_graham(idpapel,papel):
         'precoatual' : round(preco,3),
         'precomedio' : round(preco_medio,3),
         'precograham': round(preco_graham,3),
-        'lpamedio'   : round(lpamedio,3)
-    
+        'lpamedio'   : round(lpamedio,3),
+        'val_divyeild_12ult_meses': round(val_divyeild_12ult_meses,3),
+        'perc_divyeild_12ult_meses':round(perc_divyeild_12ult_meses,3),
+        'val_divyeild_ultAno': round(val_divyeild_ultAno,3),
+        'perc_divyeild_ultAno': round(perc_divyeild_ultAno,3),
+        'precobazin' : round(val_divyeild_12ult_meses / 0.08,3)
     }
 
-    sucesso = update_dados_empresa(datacot)
+    sucesso = update_dados_empresa(datacot,True)
     if sucesso:
         empresa =get_empresabolsa_by_papel(papel)
         schema = SchemaEmpresaBolsa()

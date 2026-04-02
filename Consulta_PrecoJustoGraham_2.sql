@@ -1,21 +1,31 @@
-WITH tabpreco_garam AS (
-  SELECT id, ROUND(COALESCE(SQRT(22.5 * val_lpa * val_vpa), 0), 2) AS val_preco_justo
-  FROM empresas_bolsa WHERE val_lpa > 0 AND val_vpa > 0  -- Evita sqrt(0)
-)
-
 SELECT 
+    e.dt_ult_cotacao,
     e.papel,e.val_liq_corrent,val_ev_ebitda,
-    e.val_mercado,e.avgvolume,
-
+	 e.val_mercado,e.avgvolume, 
     e.`name` AS empresa,
     s.`name` AS setor,
     ss.`name` AS subsetor,
+    
     e.val_cotacao AS Preco_Atual,
-    preco_garam.val_preco_justo AS Preco_Justo_Graham,
-    ROUND(((preco_garam.val_preco_justo - e.val_cotacao) / preco_garam.val_preco_justo) * 100,2) AS Desconto_Graham,
+    preco_garam.val_preco_justo AS Preco_Justo_Garham,
+    ROUND(((preco_garam.val_preco_justo - e.val_cotacao) / preco_garam.val_preco_justo) * 100,2) AS Desconto,
+    e.val_cotacao,
+    e.val_cotacao_anterior,
+    e.val_dif_cotacao,
+    e.precoatual,
+    e.precograham,
+    e.lpamedio ,
+    e.val_vpa AS  vpa_g,
+    ROUND(((e.precograham - e.val_cotacao) / e.precograham) * 100,2) AS DescontoGraham,
     
     e.precobazin,
+    e.val_divyeild_12ult_meses,
     ROUND(((e.precobazin - e.val_cotacao) / e.precobazin)  * 100,2) AS Desconto_Bazin,
+    
+    
+
+    
+    
     
    COALESCE(ROUND(((((preco_garam.val_preco_justo - e.val_cotacao) / preco_garam.val_preco_justo) * 100) *0.5) + 
 	 (LEAST(e.val_roe,30)*0.3)  + (e.perc_divyield * 0.2),2) +
@@ -82,36 +92,17 @@ LEFT JOIN (
     FROM cotacao_prices_history_bolsa
     WHERE EXTRACT(YEAR FROM dt_cotacao) = 2026 AND EXTRACT(month FROM dt_cotacao) = 3
 ) c_ultima ON c_ultima.idpapel = e.id AND c_ultima.rn = 1 
-left join tabpreco_garam  preco_garam on preco_garam.id = e.id
+LEFT JOIN (
+     SELECT e.id,
+     ROUND(coalesce(SQRT(22.5 * e.val_lpa * e.val_vpa),0),2) AS val_preco_justo
+     FROM empresas_bolsa e
+     
+) preco_garam on preco_garam.id = e.id
 INNER JOIN setores_bolsa s ON s.id = e.idsetor
 INNER JOIN sub_setores_bolsa ss ON ss.id =e.idsubsetor
-WHERE ((e.val_roe >= 12)  AND (e.val_lpa < 50) AND  (e.perc_divyield BETWEEN 6 AND 15) AND 
-(e.val_p_l BETWEEN 0 AND 10) AND  
-(ss.`name`<>'Bancos') AND 
+WHERE (e.papel IN ('BBSE3','ITSA4','PETR4','WEGE3','ENGI4','VULC3','SAPR4','RECV3','CXSE3','BRAV3','BBAS3',
+'AUAU3','BEEF3','CYRE3')) 
 
-
-(
- (
-   s.name NOT IN ('Madeira e Papel','Intermediários Financeiros', 'Energia Elétrica', 'Petróleo, Gás e Biocombustíveis')
-   AND (e.val_liq_corrent >= 1.2) 
-	AND (
-        e.val_p_vp <= 1.5
-        OR e.val_roe >= 20   -- 👈 libera empresas boas tipo SUZB3
-       )
-   AND (e.val_ev_ebitda BETWEEN 3 AND 8) 
- )
- OR
- (
-   (s.name IN ('Madeira e Papel','Intermediários Financeiros', 'Energia Elétrica', 'Petróleo, Gás e Biocombustíveis'))
-
- )
-) AND
-
-/*e.papel IN ("PETR4","ITSA4","WEGE3","BBSE3","VULC3","ENGI4","TAEE11","KEPL3","RECV3","SAPR11") AND */
-(ROUND(((preco_garam.val_preco_justo - e.val_cotacao) / preco_garam.val_preco_justo) * 100,2)>=30))
-
-/*OR (e.papel IN ('ITUB4','SAPR4','SAPR3','RAIL3','TAEE11')) */
-
-/*HAVING preco_garam.val_preco_justo > 0  AND e.perc_divyield > 8 AND desconto > 15*/
+/*HAVING PRECOjUSTO > 0  AND e.val_divyield > 0 AND desconto > 15*/
 
 ORDER BY SCORE DESC,ss.`name`

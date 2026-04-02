@@ -102,6 +102,12 @@ class EmpresaBolsa(db.Model):
     lpamedio = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
     val_compra =  db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
     val_venda =  db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3)) 
+    val_divyeild_12ult_meses = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
+    perc_divyeild_12ult_meses = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=2))
+    val_divyeild_ultAno = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
+    perc_divyeild_ultAno = db.Column(db.NUMERIC(precision=16,   asdecimal=False, scale=2))  
+    precobazin = db.Column(db.NUMERIC(precision=16, asdecimal=False, scale=3))
+    
         
 
 
