@@ -27,11 +27,8 @@ SELECT
     
     
     
-   COALESCE(ROUND(((((preco_garam.val_preco_justo - e.val_cotacao) / preco_garam.val_preco_justo) * 100) *0.5) + 
+   COALESCE(ROUND((LEAST(((preco_garam.val_preco_justo - e.val_cotacao) / preco_garam.val_preco_justo) * 100,50) *0.4) + 
 	 (LEAST(e.val_roe,30)*0.3)  + (e.perc_divyield * 0.2),2) +
-	 (CASE WHEN e.val_liq_corrent >= 1.5 THEN 5     
-	       WHEN e.val_liq_corrent >= 1.2 THEN 3
-     ELSE 0 END) + 
 	 (CASE 
      WHEN e.val_liq_corrent >= 1.5 THEN 5
      WHEN e.val_liq_corrent >= 1.2 THEN 3
@@ -48,6 +45,7 @@ SELECT
      ELSE 0
     END) +
 	 ((((e.precobazin - e.val_cotacao) / e.precobazin)  * 100) * 0.2),2) AS Score,
+	 
     e.val_lpa,e.val_vpa, e.val_p_l AS 'p/l', e.val_p_vp,
     e.perc_divyield,
 	 e.val_divyield,
