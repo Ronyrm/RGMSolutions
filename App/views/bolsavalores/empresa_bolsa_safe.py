@@ -1154,6 +1154,18 @@ def up_history_cotacoes(df_cotacoes, idpapel):
     return {'result': result, 'msgErro': msgErro, 'msg': msg}
 
 
+def update_empresas_by_graham_selection(data):
+    try:
+        papeis = data['papeis']
+        for papel in papeis:
+            empresa = get_empresabolsa_by_papel(papel)
+            print('Atualizando empresa {} (papel {})'.format(empresa[0].name, papel))
+            update_empresa_by_graham(empresa[0].id,papel)
+    except Exception as e:
+        print("Erro update_empresas_by_graham_selection:", e)
+        return {'result': False, 'msg': str(e)}
+    return {'result': True, 'msg': 'Empresas atualizadas com sucesso'}
+
 def update_empresa_by_graham(idpapel,papel):
     try: 
         from collections import defaultdict
@@ -1196,12 +1208,14 @@ def update_empresa_by_graham(idpapel,papel):
         lpamedio = lpa_5y.mean()
         lpamedio = round(lpamedio,3)
         
-        vpa = patrimonioliquido / numacoes
-        vpa = round(vpa,3)
+        lpavpa = get_lpa_vpa_fundamentus(idpapel)
+
+        vpa = round(lpavpa['vpa'],3)
+        lpa = round(lpavpa['lpa'],3)
 
         preco_graham = 0  
         try: 
-            preco_graham = numpy.sqrt(22.5 * lpamedio * vpa)
+            preco_graham = numpy.sqrt(22.5 * lpa * vpa)
             print('Lpa Médio: {}, Vpa:{}, Preço Graham:{}'.format(lpamedio,vpa,preco_graham))
             preco_graham = validar_valor_decimal(preco_graham)
         except Exception as e:
@@ -1301,7 +1315,7 @@ def update_empresa_by_graham(idpapel,papel):
     #"dividend_yield_json":yield_per_year,
     #"dy_por_ano": dy_por_ano
 
-    lpavpa = get_lpa_vpa_fundamentus(idpapel)
+    
     
             
     valRoe = tk.info.get('returnOnEquity') 

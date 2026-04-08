@@ -1,5 +1,6 @@
 SELECT 
     e.dt_ult_cotacao,
+    e.id,
     e.papel,e.val_liq_corrent,val_ev_ebitda,
 	 e.val_mercado,e.avgvolume, 
     e.`name` AS empresa,
@@ -98,9 +99,12 @@ LEFT JOIN (
 ) preco_garam on preco_garam.id = e.id
 INNER JOIN setores_bolsa s ON s.id = e.idsetor
 INNER JOIN sub_setores_bolsa ss ON ss.id =e.idsubsetor
-WHERE (e.papel IN ('BBSE3','ITSA4','PETR4','WEGE3','ENGI4','VULC3','SAPR4','RECV3','CXSE3','BRAV3','BBAS3',
-'AUAU3','BEEF3','CYRE3')) 
+WHERE  e.val_roe>15 AND e.perc_divyield BETWEEN 6 AND 15
 
-/*HAVING PRECOjUSTO > 0  AND e.val_divyield > 0 AND desconto > 15*/
+/*(e.papel IN ('BBSE3','ITSA4','PETR4','WEGE3','ENGI4','VULC3','SAPR4','RECV3','CXSE3','BRAV3','BBAS3',
+'AUAU3','BEEF3','CYRE3','AXIA3','CMIG4','BBDC3','PRIO3','AMER3')) /
+
+HAVING preco_garam.val_preco_justo > 0  
+/*AND e.val_divyield > 0 AND desconto > 15*/
 
 ORDER BY SCORE DESC,ss.`name`

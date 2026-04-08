@@ -6,7 +6,6 @@ from App.funcs.funcs import format_date_yyyymmaa
 
 routesempresabolsa = Blueprint('routesempresabolsa',__name__)
 
-
 @routesempresabolsa.route('/bolsavalores/empresas/main')
 def main_bolsavalores_main():
     empresas = empresa_bolsa_safe.get_all_empresabolsa()
@@ -53,6 +52,12 @@ def update_by_papel(idpapel,papel,dt_ini,dt_fim):
                                                                  papel,
                                                                  dt_ini,
                                                                  dt_fim))
+
+@routesempresabolsa.route('/update/papeis/graham',methods=['POST'])
+def update_empresas_by_graham_selection():
+    data = request.get_json()
+    print(data)
+    return jsonify(empresa_bolsa_safe.update_empresas_by_graham_selection(data))
 
 @routesempresabolsa.route('/update/papel/graham/<idpapel>/<papel>')
 def update_empresa_by_graham(idpapel,papel):
