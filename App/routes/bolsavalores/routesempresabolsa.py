@@ -8,8 +8,12 @@ routesempresabolsa = Blueprint('routesempresabolsa',__name__)
 
 @routesempresabolsa.route('/bolsavalores/empresas/main')
 def main_bolsavalores_main():
-    empresas = empresa_bolsa_safe.get_all_empresabolsa()
-    return render_template('layouts/bolsa_valores/update_data_empresas/main.html',tabempresas=empresas)
+    try: 
+        empresas = empresa_bolsa_safe.get_all_empresabolsa()
+        return render_template('layouts/bolsa_valores/update_data_empresas/main.html',tabempresas=empresas)
+    except Exception as e:
+        print("Erro na rota main_bolsavalores_main:", e)
+        return render_template('layouts/bolsa_valores/update_data_empresas/main.html',tabempresas=[])
 
 
 @routesempresabolsa.route('/get/empresa/all/bolsavalores')
@@ -19,6 +23,7 @@ def get_all_empresas():
 
 @routesempresabolsa.route('/update/empresas/bolsavalores/fundamentus')
 def update_papel_empresas():
+    print('entrei aqui')
     return jsonify(empresa_bolsa_safe.update_papel_of_fundamentus())
 
 

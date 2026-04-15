@@ -6,6 +6,7 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema,fields
 class Fiis(db.Model):
     __tablename__ = 'fiis'
     ticker = Column(String(20), primary_key=True)
+    nome   = Column(String(100)) 
     preco = Column(Float)
     ultimo_dividendo = Column(Float)
     dy = Column(Float)

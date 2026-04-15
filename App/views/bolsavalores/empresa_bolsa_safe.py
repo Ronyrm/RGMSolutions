@@ -1,3 +1,4 @@
+print('Abrindoooo')
 # Versão do seu arquivo com integração anti-bloqueio para yfinance (safe_yf_ticker)
 # e fallback para BRAPI.dev quando o Yahoo está indisponível.
 #
@@ -121,7 +122,6 @@ def GetValoresAtualizadosStatusInvest(idpapel):
     for tag in soup.find_all(string=True):
         if "LPA" in tag and "Indicadores" in tag.parent.get_text():
             sibling = tag.find_next("strong")
-            prinT('Entrei no while:{}'.format(sibling))
             if sibling:
                 lpa = float(sibling.get_text(strip=True).replace(",", "."))
         if "VPA" in tag and "Indicadores" in tag.parent.get_text():
@@ -1094,7 +1094,7 @@ def update_data_papel_with_yfinance(dtini, dtfim):
                     # criar índice datetime
                     try:
                         df_hist.index = pd.to_datetime([r['date'] for r in hist])
-                        up_cotacoes(df_hist, empresa['id'])
+                        #up_cotacoes(df_hist, empresa['id'])
                     except Exception as e:
                         print("Erro convertendo historico BRAPI:", e)
                 else:
@@ -1102,8 +1102,8 @@ def update_data_papel_with_yfinance(dtini, dtfim):
             else:
                 try:
                     hist_prices = tk.history(start=dtini, end=dtfim)
-                    if hist_prices is not None and len(hist_prices) > 0:
-                        up_cotacoes(hist_prices, empresa['id'])
+                    #if hist_prices is not None and len(hist_prices) > 0:
+                        #up_cotacoes(hist_prices, empresa['id'])
                 except Exception as e:
                     print(f"[SAFE] Falha obtendo histórico yfinance para {ticker_full}: {e}")
                     # fallback BRAPI
@@ -1115,7 +1115,7 @@ def update_data_papel_with_yfinance(dtini, dtfim):
                                 5: None, 6: None
                             } for row in hist])
                             df_hist.index = pd.to_datetime([r['date'] for r in hist])
-                            up_cotacoes(df_hist, empresa['id'])
+                            #up_cotacoes(df_hist, empresa['id'])
                         except Exception as e2:
                             print("Erro convertendo historico BRAPI (2):", e2)
 

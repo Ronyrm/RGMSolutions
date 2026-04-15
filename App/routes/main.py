@@ -1,11 +1,16 @@
 from flask import Blueprint, render_template, session
 from App.views import main,helper
 from App.schema.schema import UsersSchema
+from App import db
 
 main = Blueprint('main', __name__)
 
+@main.route('/testdb/')
+def testdb():
+    db.session.execute("SELECT 1")
+    return "Banco OK"
 
-@main.route('/main/', methods=['GET'])
+@main.route('/mainnnn/', methods=['GET'])
 @helper.token_required
 def indexmain(current_user, token):
     if token:

@@ -15,7 +15,6 @@ translator = Translator()
 login_manager = LoginManager()
 
 def create_app():
-    print('entrei')
     app = Flask(__name__)
     
     # Configuração do banco
@@ -35,11 +34,12 @@ def create_app():
     # Importa models
     # Registra blueprints
     register_blueprints(app)
+    print(app.url_map)
 
     # Cria tabelas caso não existam
-    #with app.app_context():
-    #    db.create_all()
-
+    with app.app_context():
+        db.create_all()
+    
         # Atualiza triggers
         #from App.funcs.migrate_sql import migrate_trigger
         #migrate_trigger()
@@ -48,6 +48,8 @@ def create_app():
 
 
 def register_blueprints(app):
+    from App.routes.bolsavalores.routesfiis import routesfiis
+    app.register_blueprint(routesfiis)
     from App.routes.main import main
     app.register_blueprint(main)
 
@@ -179,7 +181,6 @@ def register_blueprints(app):
 
     from App.routes.mercadopago.mercadopago import routemercadopago
     app.register_blueprint(routemercadopago)
+    
 
-    from App.routes.bolsavalores.routesfiis import routesfiis
-    app.register_blueprint(routesfiis)
-
+    
