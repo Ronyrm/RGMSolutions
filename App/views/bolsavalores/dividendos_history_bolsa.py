@@ -144,12 +144,15 @@ def get_valor_total_diviendos_12ult_meses(papel):
 
     dtini = dtini.strftime('%Y-%m-%d')
     dtfim = dtfim.strftime('%Y-%m-%d')
-
+    print('cheguei aq')
     regtotal = db.session.query(
-        cast(func.round((func.sum(DividendosBolsa.valor) * 100) / EmpresaBolsa.val_cotacao,2),FLOAT),
-        func.sum(DividendosBolsa.valor)).\
+        cast(func.coalesce(func.round((func.sum(DividendosBolsa.valor) * 100) /
+             EmpresaBolsa.val_cotacao,2),0),FLOAT),
+        func.coalesce(func.sum(DividendosBolsa.valor),0)).\
         join(EmpresaBolsa,DividendosBolsa.idpapel==EmpresaBolsa.id).\
         filter(and_(filterpapel,DividendosBolsa.dt_pagto.between(dtini,dtfim)))
+    print(regtotal)
     regtotal = regtotal.all()
+    print(regtotal)
     if regtotal:
         return {'perc_div_yield':regtotal[0][0],'valor_div_yield':regtotal[0][1]}

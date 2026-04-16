@@ -1222,7 +1222,8 @@ def update_empresa_by_graham(idpapel,papel):
             return { 'data':{}, 'erro': True, 'msg': str(e),'empresa':papel} 
         
         preco_medio = hist["Close"].mean()
-
+        print('preco_medio:')
+        
         eps = tk.info["trailingEps"]
         
         pl= preco_medio / eps
@@ -1337,6 +1338,7 @@ def update_empresa_by_graham(idpapel,papel):
     elif tk.info.get('regularMarketPreviousClose'):
         dt_cotacao = date.fromtimestamp(tk.info.get('previousCloseTime')).strftime('%Y-%m-%d %H:%M:%S')
             
+    
     datacot = {
         'val_lucro_liquido12': None if lucroliquido == None else round(lucroliquido,3),
         'val_patrimonio_passado': None if patrimonioliquido == None else round(patrimonioliquido,3),
@@ -1387,9 +1389,9 @@ def update_empresa_by_graham(idpapel,papel):
         'lpamedio'   : round(lpamedio,3),
         'val_divyeild_12ult_meses': round(val_divyeild_12ult_meses,3),
         'perc_divyeild_12ult_meses':round(perc_divyeild_12ult_meses,3),
-        'val_divyeild_ultAno': round(val_divyeild_ultAno,3),
-        'perc_divyeild_ultAno': round(perc_divyeild_ultAno,3),
-        'precobazin' : round(val_divyeild_12ult_meses / 0.08,3)
+        'val_divyeild_ultAno': None if val_divyeild_ultAno == None else round(val_divyeild_ultAno,3),
+        'perc_divyeild_ultAno': None if perc_divyeild_ultAno == None else round(perc_divyeild_ultAno,3),
+        'precobazin' : None if val_divyeild_12ult_meses == None else round(val_divyeild_12ult_meses / 0.08,3)
     }
 
     sucesso = update_dados_empresa(datacot,True)
