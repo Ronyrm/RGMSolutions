@@ -1173,6 +1173,8 @@ def update_empresa_by_graham(idpapel,papel):
 
         # Busca ticker com proteção
         tk = safe_yf_ticker(ticker)
+
+        print('teste')
         
         hist      = tk.history(period="5y")
         financials = tk.financials
@@ -1180,12 +1182,14 @@ def update_empresa_by_graham(idpapel,papel):
 
 
         lucros = 0 
-        if "Net Income" in financials.index:
-            lucros = financials.loc["Net Income"].dropna()
-        else:
-            lucros = financials.iloc[0].dropna()
+        lucroliquido = 0
+        if len(financials) > 0 :
+            if "Net Income" in financials.index:
+                lucros = financials.loc["Net Income"].dropna()
+            else:
+                lucros = financials.iloc[0].dropna()
 
-        lucroliquido = lucros.iloc[0]
+            lucroliquido = lucros.iloc[0]
         
         patrimonioliquido = 0
         
@@ -1201,31 +1205,39 @@ def update_empresa_by_graham(idpapel,papel):
                             else int(tk.info.get('netIncomeToCommon') / tk.info.get('trailingEps'))
             except:
                 numacoes = 0
+        print('Lucro Líquido: {}, Patrimônio Líquido: {}, Número de Ações: {}'.format(lucroliquido, patrimonioliquido, numacoes))
             
-
-        lpa_list = (lucros / numacoes).dropna()
-        lpa_5y   = lpa_list.head(5)
-        lpamedio = lpa_5y.mean()
-        lpamedio = round(lpamedio,3)
+        lpamedio = 0
+        if lucros != 0 and  numacoes != 0:
+            lpa_list = (lucros / numacoes).dropna()
+            lpa_5y   = lpa_list.head(5)
+            lpamedio = lpa_5y.mean()
+            lpamedio = round(lpamedio,3)
         
         lpavpa = get_lpa_vpa_fundamentus(idpapel)
 
-        vpa = round(lpavpa['vpa'],3)
-        lpa = round(lpavpa['lpa'],3)
+        print('lpavpa: {}'.format(lpavpa))
+
+        
+        vpa = 0 if lpavpa['vpa'] is None else round(lpavpa['vpa'],3)
+        lpa = 0 if lpavpa['lpa'] is None else round(lpavpa['lpa'],3)
+
 
         preco_graham = 0  
-        try: 
-            preco_graham = numpy.sqrt(22.5 * lpa * vpa)
-            print('Lpa Médio: {}, Vpa:{}, Preço Graham:{}'.format(lpamedio,vpa,preco_graham))
-            preco_graham = validar_valor_decimal(preco_graham)
-        except Exception as e:
-            return { 'data':{}, 'erro': True, 'msg': str(e),'empresa':papel} 
-        
+        if vpa != 0 and lpa != 0:
+            try: 
+                preco_graham = numpy.sqrt(22.5 * lpa * vpa)
+                print('Lpa Médio: {}, Vpa:{}, Preço Graham:{}'.format(lpamedio,vpa,preco_graham))
+                preco_graham = validar_valor_decimal(preco_graham)
+            except Exception as e:
+                return { 'data':{}, 'erro': True, 'msg': str(e),'empresa':papel} 
+            
         preco_medio = hist["Close"].mean()
-        print('preco_medio:')
+        
         
         eps = tk.info["trailingEps"]
         
+        print('PRECO MÉDIO: {}, EPS: {}'.format(preco_medio, eps))
         pl= preco_medio / eps
 
         preco = tk.history(period='1d')['Close'].iloc[-1] if tk is not None else 0

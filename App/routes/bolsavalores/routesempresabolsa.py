@@ -23,7 +23,6 @@ def get_all_empresas():
 
 @routesempresabolsa.route('/update/empresas/bolsavalores/fundamentus')
 def update_papel_empresas():
-    print('entrei aqui')
     return jsonify(empresa_bolsa_safe.update_papel_of_fundamentus())
 
 
