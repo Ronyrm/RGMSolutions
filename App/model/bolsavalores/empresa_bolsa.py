@@ -121,3 +121,35 @@ class SchemaEmpresaBolsa(SQLAlchemyAutoSchema):
     setor = fields.Nested(SchemaSetorBolsa)
     subsetor = fields.Nested(SchemaSubSetorBolsa)
 
+class CarteiraAcoes(db.Model):
+    __tablename__ = 'carteiraacoes'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    idempresa = db.Column(db.Integer,db.ForeignKey('empresas_bolsa.id'), nullable=False) 
+    iduser = db.Column(db.Integer,db.ForeignKey('users.id') ,nullable=False) 
+    empresa = db.relationship('EmpresaBolsa')
+    user = db.relationship('Users')
+    precomedio = db.Column(db.Float)
+
+from App.schema.schema import UsersSchema 
+class SchemaCarteiraAcoes(SQLAlchemyAutoSchema):
+    class Meta:
+        model = CarteiraAcoes 
+    fii = fields.Nested("SchemaEmpresaBolsa")
+    user = fields.Nested("UsersSchema")
+
+class MovimentacoesAcoes(db.Model):
+    __tablename__ = 'movimentacoesacoes'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    idcarteiraacao = db.Column(db.Integer,db.ForeignKey('carteiraacoes.id'),nullable=False) 
+    data = db.Column(db.Date,nullable=False)
+    tipo = db.Column(db.String(1), nullable=False)
+    valorcota = db.Column(db.Float)
+    quantidade = db.Column(db.Integer)
+    total = db.Column(db.Float)
+    carteiraacoes = db.relationship('CarteiraAcoes')
+
+
+class SchemaMovimentacoesAcoes(SQLAlchemyAutoSchema):
+    class Meta:
+        model = MovimentacoesAcoes
+    carteiraacoes = fields.Nested("SchemaCarteiraAcoes")

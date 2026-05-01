@@ -6,7 +6,7 @@ from App.funcs.funcs import format_date_yyyymmaa
 
 routesempresabolsa = Blueprint('routesempresabolsa',__name__)
 
-@routesempresabolsa.route('/bolsavalores/empresas/main')
+@routesempresabolsa.route('/bolsavalores/empresas/main',methods=['GET'])
 def main_bolsavalores_main():
     try: 
         empresas = empresa_bolsa_safe.get_all_empresabolsa()

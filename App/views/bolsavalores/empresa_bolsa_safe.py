@@ -21,7 +21,7 @@ import re
 from App import db
 from sqlalchemy.sql import and_, func
 import pandas as pd
-from App.model.bolsavalores.empresa_bolsa import EmpresaBolsa, SchemaEmpresaBolsa
+from App.model.bolsavalores.empresa_bolsa import EmpresaBolsa, SchemaEmpresaBolsa,CarteiraAcoes
 from App.views.bolsavalores.subsetor_bolsa import get_subsetor_by_name, add_subsetor
 from App.views.bolsavalores.setor_bolsa import get_setor_by_name, add_setor
 from App.views.bolsavalores.dividendos_history_bolsa import (
@@ -281,6 +281,7 @@ def get_all_empresabolsa():
     filterroe = ''
     filtersetor = ''
     filtervalcotacao = ''
+    soCarteira = 'N'
     
 
     arraypl = []
@@ -293,6 +294,7 @@ def get_all_empresabolsa():
 
     if request.method == 'GET':
         try:
+            soCarteira = request.args.get('carteira')
             tipo = int(request.args.get('tipo') if request.args.get('tipo') != None else '0')
             limit = int(request.args.get('limit') if request.args.get('limit') != None else '0')
             ativa = request.args.get('ativa') if request.args.get('ativa') != None else 'W'
@@ -349,7 +351,12 @@ def get_all_empresabolsa():
         only = ['id', 'papel', 'name', 'setor', 'subsetor','perc_divyield',
                     'val_divyield','val_cotacao','dt_ult_cotacao','ex_date_dividend']
 
-        if tipo == 0: # Todos os Simbolos
+        print('Carteira {}'.format(soCarteira))
+        if soCarteira == 'S':
+            empresas = EmpresaBolsa.query.\
+                join(CarteiraAcoes,EmpresaBolsa.id == CarteiraAcoes.idempresa).\
+                order_by(order_BY).all()
+        elif tipo == 0: # Todos os Simbolos
             empresas = EmpresaBolsa.query.\
                 filter(and_(EmpresaBolsa.id!=-1,filter_ativa,filterind)).\
                 order_by(order_BY).all()
@@ -448,7 +455,7 @@ def get_all_empresabolsa():
                 empresas = empresas.limit(limit).all() if limit != -1 else empresas.all()
 
         schema = SchemaEmpresaBolsa()
-        return {'data': schema.dump(empresas, many=True),
+        dataReturn = {'data': schema.dump(empresas, many=True),
                 'total': len(empresas),
                 'only': only,
                 'tipo': tipo,
@@ -463,6 +470,8 @@ def get_all_empresabolsa():
                 'filtersetor': arraysetor,
                 'filtervalcotacao': arrayvalcotacao
         }
+        print(dataReturn)
+        return dataReturn
 
 def add_empresa(data):
 
