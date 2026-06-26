@@ -55,6 +55,9 @@ class CarteiraFiis(db.Model):
     iduser = Column(Integer,db.ForeignKey('users.id')      ,nullable=False) 
     fii = db.relationship('Fiis')
     user = db.relationship('Users')
+    qtdcotas = Column(Integer)
+    valortotalinvestido = Column(Float)
+
     
 class SchemaCarteiraFiis(SQLAlchemyAutoSchema):
     class Meta:

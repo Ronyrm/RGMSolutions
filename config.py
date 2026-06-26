@@ -12,7 +12,7 @@ DEBUG = True
 
 
 from App.conections.conns import return_db
-SQLALCHEMY_DATABASE_URI ="mysql+pymysql://root:@localhost:3307/rgmnutri?charset=utf8"
+SQLALCHEMY_DATABASE_URI ="mysql+pymysql://root:@localhost:3306/rgmnutri?charset=utf8"
 #SQLALCHEMY_DATABASE_URI = return_db(0)
 #SQLALCHEMY_DATABASE_URI = 'mysql://root:root@db/sisnutri' #docker criando banco mariadb(container tmb:localhost)
 #SQLALCHEMY_DATABASE_URI = 'mysql://221068:rony0608@mysql-rgmsolutions.alwaysdata.net/rgmsolutions_siscontrol'
